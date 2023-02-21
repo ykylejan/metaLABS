@@ -4,7 +4,18 @@
  */
 package com.metaLabs;
 
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatArcDarkIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatSolarizedDarkContrastIJTheme;
+import com.formdev.flatlaf.themes.FlatMacDarkLaf;
+import java.awt.event.KeyEvent;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 
 /**
  *
@@ -20,24 +31,32 @@ public class Login extends javax.swing.JFrame {
         String getUsername = userNameField.getText();
         String getPassword = passwordField.getText();
         
-        String adminUsername = "admin";
-        String adminPassword = "admin";
+        String jdbcUrl = "jdbc:sqlite:/C:\\Users\\user\\OneDrive\\Documents\\NetBeansProjects\\MetaLabs\\src\\com\\database\\metalabsDatabase.db";
         
-        if (getUsername.equals(adminUsername) && getPassword.equals(adminPassword)) {
-            JOptionPane.showMessageDialog(null, "Login Successfully");
+        try {
+            Connection connection = DriverManager.getConnection(jdbcUrl);   
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM loginDatabase WHERE username = ? AND password = ?");
+        
+            ps.setString(1, getUsername);
+            ps.setString(2, getPassword);
+        
+            ResultSet rs = ps.executeQuery();
             
-            EnrollmentEncoding ee = new EnrollmentEncoding();
-            ee.setVisible(true);
-            this.setVisible(true);
-            this.setVisible(false);
-            
-        } else {
-            JOptionPane.showMessageDialog(null, "Incorrect Username or Password");
-            userNameField.setText("");
-            passwordField.setText("");
-            userNameField.requestFocus(true);
+            if(rs.next()) {
+                JOptionPane.showMessageDialog(null, "Login Successful");
+                this.setVisible(false);
+                EnrollmentEncoding ee = new EnrollmentEncoding();
+                ee.setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(null, "Incorrect Password");
+                userNameField.setText("");
+                passwordField.setText("");
+                userNameField.requestFocus(true);
+            } 
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        
+
     }
     
     
@@ -74,6 +93,11 @@ public class Login extends javax.swing.JFrame {
                 userNameFieldActionPerformed(evt);
             }
         });
+        userNameField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                userNameFieldKeyPressed(evt);
+            }
+        });
 
         loginButton.setBackground(new java.awt.Color(0, 204, 255));
         loginButton.setText("Login");
@@ -85,8 +109,16 @@ public class Login extends javax.swing.JFrame {
             }
         });
 
+        passwordField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                passwordFieldKeyPressed(evt);
+            }
+        });
+
+        jLabel1.setBackground(new java.awt.Color(0, 0, 0));
         jLabel1.setText("Username");
 
+        jLabel2.setBackground(new java.awt.Color(0, 0, 0));
         jLabel2.setText("Password");
 
         showPasswordCheckbox.setBackground(new java.awt.Color(255, 255, 255));
@@ -195,34 +227,28 @@ public class Login extends javax.swing.JFrame {
         LoginAction();
     }//GEN-LAST:event_loginButtonActionPerformed
 
+    private void passwordFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_passwordFieldKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+           LoginAction();
+       }
+    }//GEN-LAST:event_passwordFieldKeyPressed
+
+    private void userNameFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_userNameFieldKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+           LoginAction();
+       }
+    }//GEN-LAST:event_userNameFieldKeyPressed
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Metal".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
+//            FlatSolarizedDarkContrastIJTheme.setup();
+            UIManager.setLookAndFeel(new FlatMacDarkLaf());
 
-        /* Create and display the form */
+        } catch (Exception e) {
+        }
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new Login().setVisible(true);
