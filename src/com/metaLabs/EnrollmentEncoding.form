@@ -2119,7 +2119,7 @@
                               <EmptySpace min="-2" pref="149" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="1" max="-2" attributes="0">
                                   <Group type="102" attributes="0">
-                                      <Component id="jButton2" min="-2" pref="132" max="-2" attributes="0"/>
+                                      <Component id="SEEnrollButton" min="-2" pref="132" max="-2" attributes="0"/>
                                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                       <Component id="jButton1" min="-2" pref="132" max="-2" attributes="0"/>
                                   </Group>
@@ -2146,7 +2146,7 @@
                       <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="jButton1" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                          <Component id="jButton2" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                          <Component id="SEEnrollButton" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace pref="424" max="32767" attributes="0"/>
                   </Group>
@@ -2226,12 +2226,12 @@
                                       <Group type="102" alignment="1" attributes="0">
                                           <Component id="jLabel130" min="-2" pref="95" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="jComboBox45" min="-2" pref="89" max="-2" attributes="0"/>
+                                          <Component id="SEGenderBox" min="-2" pref="89" max="-2" attributes="0"/>
                                       </Group>
                                       <Group type="102" alignment="0" attributes="0">
                                           <Component id="jLabel131" min="-2" pref="95" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="jComboBox46" min="-2" pref="89" max="-2" attributes="0"/>
+                                          <Component id="SEMaritalStatusField" min="-2" pref="89" max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
                                   <EmptySpace min="-2" pref="126" max="-2" attributes="0"/>
@@ -2239,35 +2239,35 @@
                                       <Group type="102" alignment="0" attributes="0">
                                           <Component id="jLabel134" min="-2" pref="95" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="jComboBox47" min="-2" pref="89" max="-2" attributes="0"/>
+                                          <Component id="SECitizenshipBox" min="-2" pref="89" max="-2" attributes="0"/>
                                       </Group>
                                       <Group type="102" alignment="1" attributes="0">
                                           <Component id="jLabel135" min="-2" pref="95" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="jComboBox48" min="-2" pref="89" max="-2" attributes="0"/>
+                                          <Component id="SEReligionBox" min="-2" pref="89" max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
                                   <EmptySpace min="-2" pref="60" max="-2" attributes="0"/>
                                   <Component id="jLabel133" min="-2" pref="95" max="-2" attributes="0"/>
                                   <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
-                                  <Component id="jTextField37" min="-2" pref="188" max="-2" attributes="0"/>
+                                  <Component id="SEContactNumberField" min="-2" pref="188" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Group type="102" alignment="0" attributes="0">
                                           <Component id="jLabel125" min="-2" pref="95" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="jTextField32" min="-2" pref="188" max="-2" attributes="0"/>
+                                          <Component id="SEFirstNameField" min="-2" pref="188" max="-2" attributes="0"/>
                                           <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
                                       </Group>
                                       <Group type="102" alignment="1" attributes="0">
                                           <Component id="jLabel129" min="-2" pref="95" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="jComboBox42" min="-2" pref="56" max="-2" attributes="0"/>
+                                          <Component id="SEBirthMonthBox" min="-2" pref="56" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="jComboBox43" min="-2" pref="56" max="-2" attributes="0"/>
+                                          <Component id="SEBirthDateBox" min="-2" pref="56" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="jComboBox44" min="-2" pref="62" max="-2" attributes="0"/>
+                                          <Component id="SEBirthYearBox" min="-2" pref="62" max="-2" attributes="0"/>
                                           <EmptySpace min="-2" pref="29" max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
@@ -2275,16 +2275,16 @@
                                       <Group type="102" alignment="0" attributes="0">
                                           <Component id="jLabel132" min="-2" pref="95" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="jTextField36" max="32767" attributes="0"/>
+                                          <Component id="SEAddressField" max="32767" attributes="0"/>
                                       </Group>
                                       <Group type="102" alignment="0" attributes="0">
                                           <Component id="jLabel126" min="-2" pref="95" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="jTextField33" min="-2" pref="139" max="-2" attributes="0"/>
+                                          <Component id="SEMiddleNameField" min="-2" pref="139" max="-2" attributes="0"/>
                                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                           <Component id="jLabel127" min="-2" pref="95" max="-2" attributes="0"/>
                                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                          <Component id="jTextField34" min="-2" pref="188" max="-2" attributes="0"/>
+                                          <Component id="SELastNameField" min="-2" pref="188" max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
                               </Group>
@@ -2299,36 +2299,36 @@
                           <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel125" alignment="3" min="-2" pref="22" max="-2" attributes="0"/>
-                              <Component id="jTextField32" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="SEFirstNameField" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel126" alignment="3" min="-2" pref="22" max="-2" attributes="0"/>
-                              <Component id="jTextField33" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="SEMiddleNameField" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel127" alignment="3" min="-2" pref="22" max="-2" attributes="0"/>
-                              <Component id="jTextField34" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="SELastNameField" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel129" alignment="3" min="-2" pref="22" max="-2" attributes="0"/>
-                              <Component id="jComboBox42" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="jComboBox43" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="jComboBox44" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="SEBirthMonthBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="SEBirthDateBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="SEBirthYearBox" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel132" alignment="3" min="-2" pref="22" max="-2" attributes="0"/>
-                              <Component id="jTextField36" alignment="3" min="-2" pref="22" max="-2" attributes="0"/>
+                              <Component id="SEAddressField" alignment="3" min="-2" pref="22" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel130" alignment="3" min="-2" pref="22" max="-2" attributes="0"/>
-                              <Component id="jComboBox45" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="SEGenderBox" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel134" alignment="3" min="-2" pref="22" max="-2" attributes="0"/>
-                              <Component id="jComboBox47" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="SECitizenshipBox" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel133" alignment="3" min="-2" pref="22" max="-2" attributes="0"/>
-                              <Component id="jTextField37" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="SEContactNumberField" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel135" alignment="3" min="-2" pref="22" max="-2" attributes="0"/>
-                              <Component id="jComboBox48" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="SEReligionBox" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel131" alignment="3" min="-2" pref="22" max="-2" attributes="0"/>
-                              <Component id="jComboBox46" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="SEMaritalStatusField" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace pref="44" max="32767" attributes="0"/>
                       </Group>
@@ -2336,7 +2336,7 @@
                 </DimensionLayout>
               </Layout>
               <SubComponents>
-                <Component class="javax.swing.JTextField" name="jTextField32">
+                <Component class="javax.swing.JTextField" name="SEFirstNameField">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -2371,7 +2371,7 @@
                     <Property name="text" type="java.lang.String" value="Middle Name"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JTextField" name="jTextField33">
+                <Component class="javax.swing.JTextField" name="SEMiddleNameField">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -2395,7 +2395,7 @@
                     <Property name="text" type="java.lang.String" value="Last Name"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JTextField" name="jTextField34">
+                <Component class="javax.swing.JTextField" name="SELastNameField">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -2419,7 +2419,7 @@
                     <Property name="text" type="java.lang.String" value="Date of Birth"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JComboBox" name="jComboBox42">
+                <Component class="javax.swing.JComboBox" name="SEBirthMonthBox">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -2453,7 +2453,7 @@
                     <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
                   </AuxValues>
                 </Component>
-                <Component class="javax.swing.JComboBox" name="jComboBox43">
+                <Component class="javax.swing.JComboBox" name="SEBirthDateBox">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -2505,7 +2505,7 @@
                     <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
                   </AuxValues>
                 </Component>
-                <Component class="javax.swing.JComboBox" name="jComboBox44">
+                <Component class="javax.swing.JComboBox" name="SEBirthYearBox">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -2666,7 +2666,7 @@
                     <Property name="text" type="java.lang.String" value="Gender"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JComboBox" name="jComboBox45">
+                <Component class="javax.swing.JComboBox" name="SEGenderBox">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -2701,7 +2701,7 @@
                     <Property name="text" type="java.lang.String" value="Marital Status"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JComboBox" name="jComboBox46">
+                <Component class="javax.swing.JComboBox" name="SEMaritalStatusField">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -2723,7 +2723,7 @@
                     </Property>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jComboBox46ActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="SEMaritalStatusFieldActionPerformed"/>
                   </Events>
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
@@ -2740,7 +2740,7 @@
                     <Property name="text" type="java.lang.String" value="Address"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JTextField" name="jTextField36">
+                <Component class="javax.swing.JTextField" name="SEAddressField">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -2764,7 +2764,7 @@
                     <Property name="text" type="java.lang.String" value="Contact Number"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JTextField" name="jTextField37">
+                <Component class="javax.swing.JTextField" name="SEContactNumberField">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -2776,6 +2776,9 @@
                       <Color blue="ff" green="ff" red="ff" type="rgb"/>
                     </Property>
                   </Properties>
+                  <Events>
+                    <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="SEContactNumberFieldKeyTyped"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JLabel" name="jLabel134">
                   <Properties>
@@ -2788,7 +2791,7 @@
                     <Property name="text" type="java.lang.String" value="Citzenship"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JComboBox" name="jComboBox47">
+                <Component class="javax.swing.JComboBox" name="SECitizenshipBox">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -2825,7 +2828,7 @@
                     <Property name="text" type="java.lang.String" value="Religion"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JComboBox" name="jComboBox48">
+                <Component class="javax.swing.JComboBox" name="SEReligionBox">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -2847,7 +2850,7 @@
                     </Property>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jComboBox48ActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="SEReligionBoxActionPerformed"/>
                   </Events>
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
@@ -2863,12 +2866,12 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JButton" name="jButton2">
+            <Component class="javax.swing.JButton" name="SEEnrollButton">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Enroll"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton2ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="SEEnrollButtonActionPerformed"/>
               </Events>
             </Component>
             <Container class="javax.swing.JPanel" name="jPanel3">
@@ -2890,12 +2893,12 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="jLabel136" min="-2" pref="95" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jTextField38" max="32767" attributes="0"/>
+                                  <Component id="SEFatherNameField" max="32767" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="jLabel128" min="-2" pref="95" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jTextField35" min="-2" pref="227" max="-2" attributes="0"/>
+                                  <Component id="SEMotherNameField" min="-2" pref="227" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace max="32767" attributes="0"/>
@@ -2903,12 +2906,12 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="jLabel138" min="-2" pref="95" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jTextField40" max="32767" attributes="0"/>
+                                  <Component id="SEFatherContactField" max="32767" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="jLabel137" min="-2" pref="95" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jTextField39" min="-2" pref="227" max="-2" attributes="0"/>
+                                  <Component id="SEMotherContactField" min="-2" pref="227" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace min="-2" pref="128" max="-2" attributes="0"/>
@@ -2923,23 +2926,23 @@
                               <Group type="102" attributes="0">
                                   <Group type="103" groupAlignment="3" attributes="0">
                                       <Component id="jLabel137" alignment="3" min="-2" pref="22" max="-2" attributes="0"/>
-                                      <Component id="jTextField39" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="SEMotherContactField" alignment="3" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="3" attributes="0">
                                       <Component id="jLabel138" alignment="3" min="-2" pref="22" max="-2" attributes="0"/>
-                                      <Component id="jTextField40" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="SEFatherContactField" alignment="3" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                               <Group type="102" attributes="0">
                                   <Group type="103" groupAlignment="3" attributes="0">
                                       <Component id="jLabel128" alignment="3" min="-2" pref="22" max="-2" attributes="0"/>
-                                      <Component id="jTextField35" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="SEMotherNameField" alignment="3" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="3" attributes="0">
                                       <Component id="jLabel136" alignment="3" min="-2" pref="22" max="-2" attributes="0"/>
-                                      <Component id="jTextField38" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="SEFatherNameField" alignment="3" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                           </Group>
@@ -2949,7 +2952,7 @@
                 </DimensionLayout>
               </Layout>
               <SubComponents>
-                <Component class="javax.swing.JTextField" name="jTextField35">
+                <Component class="javax.swing.JTextField" name="SEMotherNameField">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -2984,7 +2987,7 @@
                     <Property name="text" type="java.lang.String" value="Father&apos;s Name"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JTextField" name="jTextField38">
+                <Component class="javax.swing.JTextField" name="SEFatherNameField">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -3008,7 +3011,7 @@
                     <Property name="text" type="java.lang.String" value="Contact No"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JTextField" name="jTextField39">
+                <Component class="javax.swing.JTextField" name="SEMotherContactField">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -3020,6 +3023,9 @@
                       <Color blue="ff" green="ff" red="ff" type="rgb"/>
                     </Property>
                   </Properties>
+                  <Events>
+                    <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="SEMotherContactFieldKeyTyped"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JLabel" name="jLabel138">
                   <Properties>
@@ -3032,7 +3038,7 @@
                     <Property name="text" type="java.lang.String" value="Contact No"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JTextField" name="jTextField40">
+                <Component class="javax.swing.JTextField" name="SEFatherContactField">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -3044,6 +3050,9 @@
                       <Color blue="ff" green="ff" red="ff" type="rgb"/>
                     </Property>
                   </Properties>
+                  <Events>
+                    <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="SEFatherContactFieldKeyTyped"/>
+                  </Events>
                 </Component>
               </SubComponents>
             </Container>

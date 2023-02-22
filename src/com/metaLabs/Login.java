@@ -53,9 +53,11 @@ public class Login extends javax.swing.JFrame {
                 passwordField.setText("");
                 userNameField.requestFocus(true);
             } 
+            connection.close();
+            ps.close();
         } catch (SQLException e) {
             e.printStackTrace();
-        }
+        } 
 
     }
     
