@@ -4,6 +4,7 @@
  */
 package com.metaLabs;
 
+import com.metaLabs.JTextFieldLimit;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.intellijthemes.FlatArcIJTheme;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatSolarizedDarkContrastIJTheme;
@@ -26,105 +27,187 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Vector;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author user
  */
 public class EnrollmentEncoding extends javax.swing.JFrame {
-    
-    void Enroll_Student_Action(){
-        long studentId = 0;
+
+    void Enroll_Student_Action() {
         String studentFirstName = SEFirstNameField.getText();
         String studentMiddleName = SEMiddleNameField.getText();
-        String studentLastName =  SELastNameField.getText();
+        String studentLastName = SELastNameField.getText();
         String studentBirthDate = SEBirthDateBox.getSelectedItem().toString();
         String studentBirthMonth = SEBirthMonthBox.getSelectedItem().toString();
         String studentBirthYear = SEBirthYearBox.getSelectedItem().toString();
         String studentAddress = SEAddressField.getText();
         String studentGender = SEGenderBox.getSelectedItem().toString();
         String studentCitizenship = SECitizenshipBox.getSelectedItem().toString();
-        int studentContactNumber = Integer.parseInt(SEContactNumberField.getText());
         String studentMaritalStatus = SEMaritalStatusField.getSelectedItem().toString();
         String studentReligion = SEReligionBox.getSelectedItem().toString();
         String studentMotherName = SEMotherNameField.getText();
-        int studentMotherContact = Integer.parseInt(SEMotherContactField.getText());
         String studentFatherName = SEFatherNameField.getText();
-        int studentFatherContact = Integer.parseInt(SEFatherContactField.getText());
-        
+
+        if (studentFirstName.equals("") || studentMiddleName.equals("") || studentLastName.equals("")) {
+            JOptionPane.showMessageDialog(null, "Please enter the student's name!", "Student Enrollment", JOptionPane.ERROR_MESSAGE);
+        } else if (studentBirthDate.equals(" ") || studentBirthMonth.equals(" ") || studentBirthYear.equals(" ")) {
+            JOptionPane.showMessageDialog(null, "Please enter the student's birth year details!", "Student Enrollment", JOptionPane.ERROR_MESSAGE);
+        } else if (studentAddress.equals("")) {
+            JOptionPane.showMessageDialog(null, "Please enter the student's details!", "Student Enrollment", JOptionPane.ERROR_MESSAGE);
+        } else if (studentGender.equals("") || studentCitizenship.equals("") || studentMaritalStatus.equals("") || studentReligion.equals("")) {
+            JOptionPane.showMessageDialog(null, "Please enter the student's details!", "Student Enrollment", JOptionPane.ERROR_MESSAGE);
+        } else if (studentMotherName.equals("") || studentFatherName.equals("")) {
+            JOptionPane.showMessageDialog(null, "Please enter the student's parent details!", "Student Enrollment", JOptionPane.ERROR_MESSAGE);
+        } else if (SEContactNumberField.getText().equals("") || SEMotherContactField.getText().equals("") || SEFatherContactField.getText().equals("")) {
+            JOptionPane.showMessageDialog(null, "Please enter the contact details!", "Student Enrollment", JOptionPane.ERROR_MESSAGE);
+        } else {
+            long studentContactNumber = Long.parseLong(SEContactNumberField.getText());
+            long studentMotherContact = Long.parseLong(SEMotherContactField.getText());
+            long studentFatherContact = Long.parseLong(SEFatherContactField.getText());
+
+            try {
+                Connection connection = DriverManager.getConnection("jdbc:sqlite:/C:\\Users\\user\\OneDrive\\Documents\\NetBeansProjects\\MetaLabs\\src\\com\\database\\metalabsDatabase.db");
+                PreparedStatement PS = connection.prepareStatement("INSERT INTO `student_enrollment`(`studentFirstName`, `studentMiddleName`, `studentLastName`, `studentBirthDate`, `studentBirthMonth`, `studentBirthYear`, `studentAddress`, `studentGender`, `studentCitizenship`, `studentContactNumber`, `studentMarital`, `studentReligion`, `studentMotherName`, `studentMotherContact`, `studentFatherName`, `studentFatherContact`) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+
+                PS.setString(1, studentFirstName);
+                PS.setString(2, studentMiddleName);
+                PS.setString(3, studentLastName);
+                PS.setInt(4, Integer.parseInt(studentBirthDate));
+                PS.setString(5, studentBirthMonth);
+                PS.setInt(6, Integer.parseInt(studentBirthYear));
+                PS.setString(7, studentAddress);
+                PS.setString(8, studentGender);
+                PS.setString(9, studentCitizenship);
+                PS.setLong(10, studentContactNumber);
+                PS.setString(11, studentMaritalStatus);
+                PS.setString(12, studentReligion);
+                PS.setString(13, studentMotherName);
+                PS.setLong(14, studentMotherContact);
+                PS.setString(15, studentFatherName);
+                PS.setLong(16, studentFatherContact);
+
+                PS.executeUpdate();
+                JOptionPane.showMessageDialog(null, "Student Enrolled");
+
+                SEFirstNameField.setText("");
+                SEMiddleNameField.setText("");
+                SELastNameField.setText("");
+                SEBirthDateBox.setSelectedIndex(0);
+                SEBirthMonthBox.setSelectedIndex(0);
+                SEBirthYearBox.setSelectedIndex(0);
+                SEAddressField.setText("");
+                SEGenderBox.setSelectedIndex(0);
+                SECitizenshipBox.setSelectedIndex(0);
+                SEContactNumberField.setText("");
+                SEMaritalStatusField.setSelectedIndex(0);
+                SEReligionBox.setSelectedIndex(0);
+                SEMotherNameField.setText("");
+                SEMotherContactField.setText("");
+                SEFatherNameField.setText("");
+                SEFatherContactField.setText("");
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    void Add_Courses_Action() {
+        String courseSubjectCode = CESubjectCodeField.getText();
+        String courseSubject = CESubjectBox.getSelectedItem().toString();
+        double courseUnits = Double.parseDouble(CEUnitsField.getText());
+        String courseTime = CETimeDateBox.getSelectedItem().toString();
+        String courseRoom = CERoomBox.getSelectedItem().toString();
+
         try {
             Connection connection = DriverManager.getConnection("jdbc:sqlite:/C:\\Users\\user\\OneDrive\\Documents\\NetBeansProjects\\MetaLabs\\src\\com\\database\\metalabsDatabase.db");
-            PreparedStatement PS = connection.prepareStatement("INSERT INTO `student_enrollment`(`studentID`, `studentFirstName`, `studentMiddleName`, `studentLastName`, `studentBirthDate`, `studentBirthMonth`, `studentBirthYear`, `studentAddress`, `studentGender`, `studentCitizenship`, `studentContactNumber`, `studentMarital`, `studentReligion`, `studentMotherName`, `studentMotherContact`, `studentFatherName`, `studentFatherContact`) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            PreparedStatement ps = connection.prepareStatement("INSERT INTO `course_enrollment`(`courseCode`, `courseTitle`, `courseUnits`, `courseTime`, `courseRoom`) VALUES(?,?,?,?,?)");
             
-            PS.setLong(1, studentId);
-            PS.setString(2, studentFirstName);
-            PS.setString(3, studentMiddleName);
-            PS.setString(4, studentLastName);
-            PS.setInt(5, Integer.parseInt(studentBirthDate));
-            PS.setString(6, studentBirthMonth);
-            PS.setInt(7, Integer.parseInt(studentBirthYear));
-            PS.setString(8, studentAddress);
-            PS.setString(9, studentGender);
-            PS.setString(10, studentCitizenship);
-            PS.setInt(11, studentContactNumber);
-            PS.setString(12, studentMaritalStatus);
-            PS.setString(13, studentReligion);
-            PS.setString(14, studentMotherName);
-            PS.setInt(15, studentMotherContact);
-            PS.setString(16, studentFatherName);
-            PS.setInt(17, studentFatherContact);
+            ps.setString(1, courseSubjectCode);
+            ps.setString(2, courseSubject);
+            ps.setDouble(3, courseUnits);
+            ps.setString(4, courseTime);
+            ps.setString(5, courseRoom);
             
-            PS.executeUpdate();
-            JOptionPane.showMessageDialog(null, "Student Enrolled");
+            ps.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Course Added!");
+            Update_Courses_Table();
             
-            SEFirstNameField.setText("");
-            SEMiddleNameField.setText("");
-            SELastNameField.setText("");
-            SEBirthDateBox.setSelectedItem("");
-            SEBirthMonthBox.setSelectedItem("");
-            SEBirthYearBox.setSelectedItem("");
-            SEAddressField.setText("");
-            SEGenderBox.setSelectedItem("");
-            SECitizenshipBox.setSelectedItem("");
-            SEContactNumberField.setText("");
-            SEMaritalStatusField.setSelectedItem("");
-            SEReligionBox.setSelectedItem("");
-            SEMotherNameField.setText("");
-            SEMotherContactField.setText("");
-            SEFatherNameField.setText("");
-            SEFatherContactField.setText("");
-
+            CESubjectBox.setSelectedIndex(0);
+            CESubjectCodeField.setText("");
+            CEUnitsField.setText("");
+            CETimeDateBox.setSelectedIndex(0);
+            CERoomBox.setSelectedIndex(0);
+            
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
     }
     
-    void SidePanel_SetColor(JPanel bg, JLabel fg) {
-        bg.setBackground(new Color(201,251,252));
-        fg.setForeground(new Color(0,0,0));
-    }
-    void SidePanel_ResetColor(JPanel bg, JLabel fg) {
-        bg.setBackground(new Color(33,67,83));
-        fg.setForeground(new Color(255,255,255));
+    void Update_Courses_Table() {
+        int columnCount;
+        
+        try {
+            Connection connection = DriverManager.getConnection("jdbc:sqlite:/C:\\Users\\user\\OneDrive\\Documents\\NetBeansProjects\\MetaLabs\\src\\com\\database\\metalabsDatabase.db");
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM `course_enrollment`");
+            ResultSet rs = ps.executeQuery();
+            
+            ResultSetMetaData rsmd = rs.getMetaData();
+            columnCount = rsmd.getColumnCount();
+            DefaultTableModel tableModel = (DefaultTableModel) CECourseListTable.getModel();
+            tableModel.setRowCount(0);
+            
+            while (rs.next()) {
+                Vector vector = new Vector();
+
+                for (int i = 0; i <= columnCount; i++) {
+                    vector.add(rs.getString("courseCode"));
+                    vector.add(rs.getString("courseTitle"));
+                    vector.add(rs.getInt("courseUnits"));
+                    vector.add(rs.getString("courseTime"));
+                    vector.add(rs.getString("courseRoom"));
+                }
+                tableModel.addRow(vector);
+                tableModel.fireTableDataChanged();
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } 
+        
     }
 
-    void ChangeCard(Component Card){
+    void SidePanel_SetColor(JPanel bg, JLabel fg) {
+        bg.setBackground(new Color(201, 251, 252));
+        fg.setForeground(new Color(0, 0, 0));
+    }
+
+    void SidePanel_ResetColor(JPanel bg, JLabel fg) {
+        bg.setBackground(new Color(33, 67, 83));
+        fg.setForeground(new Color(255, 255, 255));
+    }
+
+    void ChangeCard(Component Card) {
         mainPanel.removeAll();
         mainPanel.add(Card);
         mainPanel.repaint();
         mainPanel.revalidate();
     }
-    
+
     /**
      * Creates new form EnrollmentEncoding
      */
-    
     public EnrollmentEncoding() {
         initComponents();
-        
+
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        
+
         mainPanel.removeAll();
         mainPanel.add(studentEnrollmentPanel);
         mainPanel.repaint();
@@ -227,24 +310,11 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel110 = new javax.swing.JLabel();
         jLabel111 = new javax.swing.JLabel();
         jComboBox34 = new javax.swing.JComboBox<>();
-        jLabel112 = new javax.swing.JLabel();
-        jComboBox35 = new javax.swing.JComboBox<>();
-        jButton23 = new javax.swing.JButton();
-        jButton24 = new javax.swing.JButton();
-        jButton25 = new javax.swing.JButton();
-        jLabel113 = new javax.swing.JLabel();
-        jTextField28 = new javax.swing.JTextField();
-        jLabel114 = new javax.swing.JLabel();
-        jTextField29 = new javax.swing.JTextField();
-        jLabel116 = new javax.swing.JLabel();
-        jComboBox36 = new javax.swing.JComboBox<>();
-        jComboBox37 = new javax.swing.JComboBox<>();
-        jLabel117 = new javax.swing.JLabel();
         jLabel115 = new javax.swing.JLabel();
         enrollButton2 = new javax.swing.JButton();
         printPreviewButton2 = new javax.swing.JButton();
         jScrollPane7 = new javax.swing.JScrollPane();
-        jTable7 = new javax.swing.JTable();
+        CECourseListTable = new javax.swing.JTable();
         bottomPanel = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -253,6 +323,20 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jTextField27 = new javax.swing.JTextField();
         jTextField30 = new javax.swing.JTextField();
         jLabel89 = new javax.swing.JLabel();
+        jPanel14 = new RoundedPanel(50, new Color(55,111,138));
+        jLabel112 = new javax.swing.JLabel();
+        CESubjectBox = new javax.swing.JComboBox<>();
+        jLabel113 = new javax.swing.JLabel();
+        CESubjectCodeField = new javax.swing.JTextField();
+        jLabel114 = new javax.swing.JLabel();
+        CEUnitsField = new javax.swing.JTextField();
+        jLabel116 = new javax.swing.JLabel();
+        CETimeDateBox = new javax.swing.JComboBox<>();
+        jLabel117 = new javax.swing.JLabel();
+        CERoomBox = new javax.swing.JComboBox<>();
+        CEAddButton = new javax.swing.JButton();
+        CECourseButton = new javax.swing.JButton();
+        CEDeleteButton = new javax.swing.JButton();
         studentEnrollmentPanel = new javax.swing.JPanel();
         bottomPanel1 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
@@ -348,6 +432,15 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         bottomPanel4 = new javax.swing.JPanel();
         jLabel24 = new javax.swing.JLabel();
         jLabel80 = new javax.swing.JLabel();
+        searchPanel3 = new RoundedPanel(50, new Color(55,111,138));
+        jLabel84 = new javax.swing.JLabel();
+        jTextField21 = new javax.swing.JTextField();
+        jTextField22 = new javax.swing.JTextField();
+        jLabel85 = new javax.swing.JLabel();
+        jLabel86 = new javax.swing.JLabel();
+        jTextField23 = new javax.swing.JTextField();
+        jTextField24 = new javax.swing.JTextField();
+        jLabel87 = new javax.swing.JLabel();
         searchPanel1 = new RoundedPanel(50, new Color(55,111,138));
         jLabel82 = new javax.swing.JLabel();
         jTextField8 = new javax.swing.JTextField();
@@ -410,6 +503,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         enrollmentNewButtonLabel.setFont(new java.awt.Font("Segoe UI Light", 1, 16)); // NOI18N
         enrollmentNewButtonLabel.setForeground(new java.awt.Color(255, 255, 255));
         enrollmentNewButtonLabel.setText("     ENROLLMENT");
+        enrollmentNewButtonLabel.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         enrollmentNewButtonLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 enrollmentNewButtonLabelMouseEntered(evt);
@@ -447,6 +541,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         masterlistNewButtonLabel.setFont(new java.awt.Font("Segoe UI Light", 1, 16)); // NOI18N
         masterlistNewButtonLabel.setForeground(new java.awt.Color(255, 255, 255));
         masterlistNewButtonLabel.setText("     MASTERLIST");
+        masterlistNewButtonLabel.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         masterlistNewButtonLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 masterlistNewButtonLabelMouseEntered(evt);
@@ -478,6 +573,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         courseNewButtonLabel.setFont(new java.awt.Font("Segoe UI Light", 1, 16)); // NOI18N
         courseNewButtonLabel.setForeground(new java.awt.Color(255, 255, 255));
         courseNewButtonLabel.setText("     COURSE");
+        courseNewButtonLabel.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         courseNewButtonLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 courseNewButtonLabelMouseEntered(evt);
@@ -512,6 +608,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         studentDetailsNewButtonLabel.setFont(new java.awt.Font("Segoe UI Light", 1, 16)); // NOI18N
         studentDetailsNewButtonLabel.setForeground(new java.awt.Color(255, 255, 255));
         studentDetailsNewButtonLabel.setText("     STUDENT DETAILS");
+        studentDetailsNewButtonLabel.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         studentDetailsNewButtonLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 studentDetailsNewButtonLabelMouseEntered(evt);
@@ -542,6 +639,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         adminOnlyButtonLabel.setFont(new java.awt.Font("Segoe UI Light", 1, 16)); // NOI18N
         adminOnlyButtonLabel.setForeground(new java.awt.Color(255, 255, 255));
         adminOnlyButtonLabel.setText("     REGISTER EMPLOYEE");
+        adminOnlyButtonLabel.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         adminOnlyButtonLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 adminOnlyButtonLabelMouseEntered(evt);
@@ -1014,7 +1112,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jComboBox30.setBackground(new java.awt.Color(98, 161, 192));
         jComboBox30.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
         jComboBox30.setForeground(new java.awt.Color(204, 255, 255));
-        jComboBox30.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Enter course", "PS - Professional Schools", "CLE - College of Legal Education", "CAE - College of Accounting Education", "CAFAE - College of Architecture and Fine Arts Education", "CASE - College of Arts and Sciences Education", "CBAE - College of Business Administration Education", "CCE - College of Computing Education", "CCJE - College of Criminal Justice Education", "CEE - College of Engineering Education", "CHE - College of Hospitality Education", "CHSE - College of Health Science Education", "CTE - College of Teacher Education", "TS - Technical School", "BED - Basic Education" }));
+        jComboBox30.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "PS - Professional Schools", "CLE - College of Legal Education", "CAE - College of Accounting Education", "CAFAE - College of Architecture and Fine Arts Education", "CASE - College of Arts and Sciences Education", "CBAE - College of Business Administration Education", "CCE - College of Computing Education", "CCJE - College of Criminal Justice Education", "CEE - College of Engineering Education", "CHE - College of Hospitality Education", "CHSE - College of Health Science Education", "CTE - College of Teacher Education", "TS - Technical School", "BED - Basic Education" }));
         jComboBox30.setFocusable(false);
         jComboBox30.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1035,7 +1133,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jComboBox32.setBackground(new java.awt.Color(98, 161, 192));
         jComboBox32.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
         jComboBox32.setForeground(new java.awt.Color(204, 255, 255));
-        jComboBox32.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Enter year level", "Year 1", "Year 2", "Year 3", "Year 4", "Year 5" }));
+        jComboBox32.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Year 1", "Year 2", "Year 3", "Year 4", "Year 5" }));
         jComboBox32.setFocusable(false);
 
         jLabel109.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
@@ -1045,7 +1143,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jComboBox33.setBackground(new java.awt.Color(98, 161, 192));
         jComboBox33.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
         jComboBox33.setForeground(new java.awt.Color(204, 255, 255));
-        jComboBox33.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox33.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "1ST Sem", "2ND Sem" }));
         jComboBox33.setFocusable(false);
 
         jLabel110.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
@@ -1059,83 +1157,16 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jComboBox34.setBackground(new java.awt.Color(98, 161, 192));
         jComboBox34.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
         jComboBox34.setForeground(new java.awt.Color(204, 255, 255));
-        jComboBox34.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox34.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "1ST Term", "2ND Term" }));
         jComboBox34.setFocusable(false);
-
-        jLabel112.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
-        jLabel112.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel112.setText("Course/Subject");
-
-        jComboBox35.setBackground(new java.awt.Color(98, 161, 192));
-        jComboBox35.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        jComboBox35.setForeground(new java.awt.Color(204, 255, 255));
-        jComboBox35.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        jComboBox35.setFocusable(false);
-
-        jButton23.setText("Update");
-        jButton23.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton23ActionPerformed(evt);
-            }
-        });
-
-        jButton24.setText("Delete");
-        jButton24.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton24ActionPerformed(evt);
-            }
-        });
-
-        jButton25.setText("Add");
-        jButton25.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton25ActionPerformed(evt);
-            }
-        });
-
-        jLabel113.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
-        jLabel113.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel113.setText("Course Code");
-
-        jTextField28.setBackground(new java.awt.Color(98, 161, 192));
-        jTextField28.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        jTextField28.setForeground(new java.awt.Color(204, 255, 255));
-
-        jLabel114.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
-        jLabel114.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel114.setText("Units");
-
-        jTextField29.setBackground(new java.awt.Color(98, 161, 192));
-        jTextField29.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        jTextField29.setForeground(new java.awt.Color(204, 255, 255));
-
-        jLabel116.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
-        jLabel116.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel116.setText("Time | Date");
-
-        jComboBox36.setBackground(new java.awt.Color(98, 161, 192));
-        jComboBox36.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        jComboBox36.setForeground(new java.awt.Color(204, 255, 255));
-        jComboBox36.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        jComboBox36.setFocusable(false);
-
-        jComboBox37.setBackground(new java.awt.Color(98, 161, 192));
-        jComboBox37.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        jComboBox37.setForeground(new java.awt.Color(204, 255, 255));
-        jComboBox37.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        jComboBox37.setFocusable(false);
-
-        jLabel117.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
-        jLabel117.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel117.setText("Room");
 
         javax.swing.GroupLayout jPanel13Layout = new javax.swing.GroupLayout(jPanel13);
         jPanel13.setLayout(jPanel13Layout);
         jPanel13Layout.setHorizontalGroup(
             jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel13Layout.createSequentialGroup()
-                .addGap(77, 77, 77)
-                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGap(40, 40, 40)
+                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel13Layout.createSequentialGroup()
                         .addComponent(jLabel108, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
@@ -1148,45 +1179,15 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                         .addComponent(jLabel110, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(jComboBox33, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel111, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
+                        .addComponent(jLabel111, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jComboBox34, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel13Layout.createSequentialGroup()
                         .addComponent(jLabel101, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(jComboBox30, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(68, 68, 68)
-                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel13Layout.createSequentialGroup()
-                        .addComponent(jLabel113, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jTextField28, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel13Layout.createSequentialGroup()
-                        .addComponent(jLabel114, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel13Layout.createSequentialGroup()
-                                .addComponent(jButton25, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jButton23, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton24, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jTextField29, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(jPanel13Layout.createSequentialGroup()
-                            .addComponent(jLabel116, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(18, 18, 18)
-                            .addComponent(jComboBox36, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel117, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jComboBox37, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel13Layout.createSequentialGroup()
-                            .addComponent(jLabel112, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(18, 18, 18)
-                            .addComponent(jComboBox35, javax.swing.GroupLayout.PREFERRED_SIZE, 337, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(29, Short.MAX_VALUE))
+                .addContainerGap(47, Short.MAX_VALUE))
         );
         jPanel13Layout.setVerticalGroup(
             jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1194,45 +1195,22 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addGap(20, 20, 20)
                 .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel101, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jComboBox30, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel112, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jComboBox35, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jComboBox30, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel108, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jComboBox31, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel113, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jTextField28, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel108, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jComboBox31, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel13Layout.createSequentialGroup()
-                        .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel114, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField29, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jComboBox37, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel117, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jComboBox36, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel116, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel13Layout.createSequentialGroup()
-                        .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel109, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jComboBox32, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel110, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jComboBox33, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel111, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jComboBox34, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 23, Short.MAX_VALUE)
-                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton23, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton25, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton24))
-                .addGap(15, 15, 15))
+                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel109, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jComboBox32, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel110, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jComboBox33, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel111, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jComboBox34, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(60, Short.MAX_VALUE))
         );
 
         jLabel115.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -1255,33 +1233,33 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             }
         });
 
-        jTable7.setModel(new javax.swing.table.DefaultTableModel(
+        CECourseListTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {"", "", "", null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {"", "", "", null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Course Code", "Descriptive Title", "Unit(s)", "Time | Date"
+                "Course Code", "Descriptive Title", "Unit(s)", "Time | Date", "Room"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane7.setViewportView(jTable7);
-        if (jTable7.getColumnModel().getColumnCount() > 0) {
-            jTable7.getColumnModel().getColumn(0).setMinWidth(120);
-            jTable7.getColumnModel().getColumn(0).setMaxWidth(120);
-            jTable7.getColumnModel().getColumn(2).setMinWidth(100);
-            jTable7.getColumnModel().getColumn(2).setMaxWidth(100);
-            jTable7.getColumnModel().getColumn(3).setMinWidth(150);
-            jTable7.getColumnModel().getColumn(3).setMaxWidth(150);
+        jScrollPane7.setViewportView(CECourseListTable);
+        if (CECourseListTable.getColumnModel().getColumnCount() > 0) {
+            CECourseListTable.getColumnModel().getColumn(0).setMinWidth(120);
+            CECourseListTable.getColumnModel().getColumn(0).setMaxWidth(120);
+            CECourseListTable.getColumnModel().getColumn(2).setMinWidth(100);
+            CECourseListTable.getColumnModel().getColumn(2).setMaxWidth(100);
+            CECourseListTable.getColumnModel().getColumn(3).setMinWidth(150);
+            CECourseListTable.getColumnModel().getColumn(3).setMaxWidth(150);
         }
 
         bottomPanel.setBackground(new java.awt.Color(8, 17, 22));
@@ -1312,12 +1290,13 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         jLabel88.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         jLabel88.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel88.setText("Student No");
+        jLabel88.setText("Student Name");
 
         jTextField27.setBackground(new java.awt.Color(98, 161, 192));
         jTextField27.setForeground(new java.awt.Color(255, 255, 255));
 
         jTextField30.setBackground(new java.awt.Color(98, 161, 192));
+        jTextField30.setDocument(new JTextFieldLimit(6));
         jTextField30.setForeground(new java.awt.Color(255, 255, 255));
 
         jLabel89.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
@@ -1353,6 +1332,142 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        jPanel14.setBackground(new java.awt.Color(31, 48, 56));
+        jPanel14.setPreferredSize(new java.awt.Dimension(1060, 221));
+
+        jLabel112.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
+        jLabel112.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel112.setText("Course/Subject");
+
+        CESubjectBox.setBackground(new java.awt.Color(98, 161, 192));
+        CESubjectBox.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
+        CESubjectBox.setForeground(new java.awt.Color(204, 255, 255));
+        CESubjectBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Understandin the Self", "Readings in Philippine History", "The Contemporary World", "Mathematics in the Modern World", "Purposive Communication", "Art Appreciation", "Science, Technology and Society", "Ethics", "Life and Works of Rizal", "G.E. Electives", "Introduction to Language Studies", "Cross Cultural Communication" }));
+        CESubjectBox.setFocusable(false);
+
+        jLabel113.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
+        jLabel113.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel113.setText("Course Code");
+
+        CESubjectCodeField.setBackground(new java.awt.Color(98, 161, 192));
+        CESubjectCodeField.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
+        CESubjectCodeField.setForeground(new java.awt.Color(204, 255, 255));
+
+        jLabel114.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
+        jLabel114.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel114.setText("Units");
+
+        CEUnitsField.setBackground(new java.awt.Color(98, 161, 192));
+        CEUnitsField.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
+        CEUnitsField.setForeground(new java.awt.Color(204, 255, 255));
+
+        jLabel116.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
+        jLabel116.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel116.setText("Time | Date");
+
+        CETimeDateBox.setBackground(new java.awt.Color(98, 161, 192));
+        CETimeDateBox.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
+        CETimeDateBox.setForeground(new java.awt.Color(204, 255, 255));
+        CETimeDateBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "700M-800M", "800M-900M", "900M-1000M", "1000M-1100M", "1100M-1200A", "1230A-130A", "130A-230A", "230A-330A", "330A-430A", "430A-530E", " " }));
+        CETimeDateBox.setFocusable(false);
+
+        jLabel117.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
+        jLabel117.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel117.setText("Room");
+
+        CERoomBox.setBackground(new java.awt.Color(98, 161, 192));
+        CERoomBox.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
+        CERoomBox.setForeground(new java.awt.Color(204, 255, 255));
+        CERoomBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "H1A", "H1B", "H1C", "H1D", "H2A", "H2B", "H2C", "H2D", "TEC101", "TEC102", "TEC103", "TEC201", "TEC202", "TEC203" }));
+        CERoomBox.setFocusable(false);
+
+        CEAddButton.setText("Add");
+        CEAddButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CEAddButtonActionPerformed(evt);
+            }
+        });
+
+        CECourseButton.setText("Update");
+        CECourseButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CECourseButtonActionPerformed(evt);
+            }
+        });
+
+        CEDeleteButton.setText("Delete");
+        CEDeleteButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CEDeleteButtonActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel14Layout = new javax.swing.GroupLayout(jPanel14);
+        jPanel14.setLayout(jPanel14Layout);
+        jPanel14Layout.setHorizontalGroup(
+            jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel14Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel14Layout.createSequentialGroup()
+                        .addComponent(jLabel113, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(CESubjectCodeField, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel14Layout.createSequentialGroup()
+                        .addComponent(jLabel114, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel14Layout.createSequentialGroup()
+                                .addComponent(CEAddButton, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(CECourseButton, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(CEDeleteButton, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(CEUnitsField, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(jPanel14Layout.createSequentialGroup()
+                            .addComponent(jLabel116, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(18, 18, 18)
+                            .addComponent(CETimeDateBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel117, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(CERoomBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel14Layout.createSequentialGroup()
+                            .addComponent(jLabel112, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(18, 18, 18)
+                            .addComponent(CESubjectBox, javax.swing.GroupLayout.PREFERRED_SIZE, 337, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(29, 29, 29))
+        );
+        jPanel14Layout.setVerticalGroup(
+            jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel14Layout.createSequentialGroup()
+                .addGap(17, 17, 17)
+                .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel112, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(CESubjectBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel113, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(CESubjectCodeField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel114, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(CEUnitsField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(CERoomBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel117, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(CETimeDateBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel116, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 23, Short.MAX_VALUE)
+                .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(CECourseButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(CEAddButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(CEDeleteButton))
+                .addGap(18, 18, 18))
+        );
+
         javax.swing.GroupLayout courseEnrollmentPanelLayout = new javax.swing.GroupLayout(courseEnrollmentPanel);
         courseEnrollmentPanel.setLayout(courseEnrollmentPanelLayout);
         courseEnrollmentPanelLayout.setHorizontalGroup(
@@ -1365,20 +1480,23 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                     .addComponent(bottomPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(courseEnrollmentPanelLayout.createSequentialGroup()
                         .addGap(149, 149, 149)
-                        .addGroup(courseEnrollmentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(courseEnrollmentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(courseEnrollmentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                 .addGroup(courseEnrollmentPanelLayout.createSequentialGroup()
                                     .addComponent(jLabel115, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGap(835, 835, 835))
-                                .addComponent(jPanel13, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 1067, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(searchPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(courseEnrollmentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                 .addGroup(courseEnrollmentPanelLayout.createSequentialGroup()
                                     .addComponent(enrollButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                     .addComponent(printPreviewButton2))
-                                .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 1067, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 1067, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(courseEnrollmentPanelLayout.createSequentialGroup()
+                                .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jPanel14, javax.swing.GroupLayout.DEFAULT_SIZE, 549, Short.MAX_VALUE)))))
+                .addContainerGap(194, Short.MAX_VALUE))
         );
         courseEnrollmentPanelLayout.setVerticalGroup(
             courseEnrollmentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1390,7 +1508,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addGap(21, 21, 21)
                 .addComponent(searchPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(courseEnrollmentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel14, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel115)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1464,7 +1584,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         SEBirthMonthBox.setBackground(new java.awt.Color(98, 161, 192));
         SEBirthMonthBox.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
         SEBirthMonthBox.setForeground(new java.awt.Color(255, 255, 255));
-        SEBirthMonthBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December", " " }));
+        SEBirthMonthBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" }));
 
         SEBirthDateBox.setBackground(new java.awt.Color(98, 161, 192));
         SEBirthDateBox.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
@@ -1483,7 +1603,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         SEGenderBox.setBackground(new java.awt.Color(98, 161, 192));
         SEGenderBox.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
         SEGenderBox.setForeground(new java.awt.Color(255, 255, 255));
-        SEGenderBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Male", "Female", " " }));
+        SEGenderBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Male", "Female" }));
 
         jLabel131.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         jLabel131.setForeground(new java.awt.Color(255, 255, 255));
@@ -1527,7 +1647,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         SECitizenshipBox.setBackground(new java.awt.Color(98, 161, 192));
         SECitizenshipBox.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
         SECitizenshipBox.setForeground(new java.awt.Color(255, 255, 255));
-        SECitizenshipBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Filipino", "Cebuano", "Japanese", "American ", " " }));
+        SECitizenshipBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Filipino", "Cebuano", "Japanese", "American" }));
 
         jLabel135.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         jLabel135.setForeground(new java.awt.Color(255, 255, 255));
@@ -1769,7 +1889,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jPanel15, javax.swing.GroupLayout.DEFAULT_SIZE, 1067, Short.MAX_VALUE)
                             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(209, Short.MAX_VALUE))
         );
         studentEnrollmentPanelLayout.setVerticalGroup(
             studentEnrollmentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1825,7 +1945,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 {null, null, null, null, null, null, null}
             },
             new String [] {
-                "Student ID", "Last Name", "First Name", "Middle Name", "Year Level", "Date of Birth", "Place of Birth"
+                "Student ID", "Last Name", "First Name", "Middle Name", "Year Level", "College", "Course Major"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -2339,6 +2459,85 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel80.setForeground(new java.awt.Color(255, 255, 255));
         jLabel80.setText("Register Employee");
 
+        searchPanel3.setBackground(new java.awt.Color(153, 0, 204));
+
+        jLabel84.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel84.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel84.setText("Student No");
+
+        jTextField21.setBackground(new java.awt.Color(98, 161, 192));
+        jTextField21.setForeground(new java.awt.Color(255, 255, 255));
+
+        jTextField22.setBackground(new java.awt.Color(98, 161, 192));
+        jTextField22.setForeground(new java.awt.Color(255, 255, 255));
+
+        jLabel85.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel85.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel85.setText("Year Level");
+
+        jLabel86.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel86.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel86.setText("Student No");
+
+        jTextField23.setBackground(new java.awt.Color(98, 161, 192));
+        jTextField23.setForeground(new java.awt.Color(255, 255, 255));
+
+        jTextField24.setBackground(new java.awt.Color(98, 161, 192));
+        jTextField24.setForeground(new java.awt.Color(255, 255, 255));
+
+        jLabel87.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel87.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel87.setText("Year Level");
+
+        javax.swing.GroupLayout searchPanel3Layout = new javax.swing.GroupLayout(searchPanel3);
+        searchPanel3.setLayout(searchPanel3Layout);
+        searchPanel3Layout.setHorizontalGroup(
+            searchPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(searchPanel3Layout.createSequentialGroup()
+                .addGap(75, 75, 75)
+                .addGroup(searchPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(searchPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabel86, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jTextField23, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(searchPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabel84, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jTextField21, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(104, 104, 104)
+                .addGroup(searchPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(searchPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabel87, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jTextField24, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(searchPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabel85, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jTextField22, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        searchPanel3Layout.setVerticalGroup(
+            searchPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(searchPanel3Layout.createSequentialGroup()
+                .addGap(25, 25, 25)
+                .addGroup(searchPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(searchPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jTextField22)
+                        .addComponent(jLabel85, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(searchPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jTextField21)
+                        .addComponent(jLabel84, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(18, 18, 18)
+                .addGroup(searchPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(searchPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jTextField24)
+                        .addComponent(jLabel87, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(searchPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jTextField23)
+                        .addComponent(jLabel86, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(71, Short.MAX_VALUE))
+        );
+
         searchPanel1.setBackground(new java.awt.Color(31, 48, 56));
 
         jLabel82.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
@@ -2368,12 +2567,12 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addComponent(jLabel83, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jTextField20, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(75, Short.MAX_VALUE))
+                .addContainerGap(87, Short.MAX_VALUE))
         );
         searchPanel1Layout.setVerticalGroup(
             searchPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, searchPanel1Layout.createSequentialGroup()
-                .addContainerGap(21, Short.MAX_VALUE)
+                .addContainerGap(33, Short.MAX_VALUE)
                 .addGroup(searchPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(searchPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addComponent(jTextField20)
@@ -2396,7 +2595,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                     .addComponent(bottomPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(registerEmployeePanelLayout.createSequentialGroup()
                         .addGap(146, 146, 146)
-                        .addComponent(searchPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(registerEmployeePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(searchPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(searchPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap(179, Short.MAX_VALUE))
         );
         registerEmployeePanelLayout.setVerticalGroup(
@@ -2408,7 +2609,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addComponent(bottomPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(57, 57, 57)
                 .addComponent(searchPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(766, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(searchPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(581, Short.MAX_VALUE))
         );
 
         mainPanel.add(registerEmployeePanel, "card7");
@@ -2429,7 +2632,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
     private void masterlistNewButtonLabelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_masterlistNewButtonLabelMouseEntered
         SidePanel_SetColor(masterlistNewButton, masterlistNewButtonLabel);
-        
+
     }//GEN-LAST:event_masterlistNewButtonLabelMouseEntered
 
     private void masterlistNewButtonLabelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_masterlistNewButtonLabelMouseExited
@@ -2437,7 +2640,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     }//GEN-LAST:event_masterlistNewButtonLabelMouseExited
 
     private void masterlistNewButtonLabelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_masterlistNewButtonLabelMousePressed
-        ChangeCard(masterlistPanel);        
+        ChangeCard(masterlistPanel);
     }//GEN-LAST:event_masterlistNewButtonLabelMousePressed
 
     private void enrollmentNewButtonLabelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_enrollmentNewButtonLabelMousePressed
@@ -2447,18 +2650,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private void jComboBox30ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox30ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jComboBox30ActionPerformed
-
-    private void jButton23ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton23ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton23ActionPerformed
-
-    private void jButton24ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton24ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton24ActionPerformed
-
-    private void jButton25ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton25ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton25ActionPerformed
 
     private void enrollButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_enrollButton2ActionPerformed
         // TODO add your handling code here:
@@ -2537,18 +2728,17 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     }//GEN-LAST:event_adminOnlyButtonLabelMousePressed
 
     private void logoutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutButtonActionPerformed
-        
         int q = JOptionPane.showConfirmDialog(null, "Are you sure?", "Logout", JOptionPane.YES_NO_OPTION);
-        
+
         if (q == JOptionPane.YES_OPTION) {
-           this.setVisible(false);
+            this.setVisible(false);
             Login login = new Login();
-            login.setVisible(true); 
+            login.setVisible(true);
         } else {
-            
+
         }
-        
-        
+
+
     }//GEN-LAST:event_logoutButtonActionPerformed
 
     private void SEContactNumberFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_SEContactNumberFieldKeyTyped
@@ -2575,6 +2765,18 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_SEFatherContactFieldKeyTyped
 
+    private void CEAddButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CEAddButtonActionPerformed
+        Add_Courses_Action();
+    }//GEN-LAST:event_CEAddButtonActionPerformed
+
+    private void CECourseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CECourseButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_CECourseButtonActionPerformed
+
+    private void CEDeleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CEDeleteButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_CEDeleteButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -2592,6 +2794,15 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton CEAddButton;
+    private javax.swing.JButton CECourseButton;
+    private javax.swing.JTable CECourseListTable;
+    private javax.swing.JButton CEDeleteButton;
+    private javax.swing.JComboBox<String> CERoomBox;
+    private javax.swing.JComboBox<String> CESubjectBox;
+    private javax.swing.JTextField CESubjectCodeField;
+    private javax.swing.JComboBox<String> CETimeDateBox;
+    private javax.swing.JTextField CEUnitsField;
     private javax.swing.JTextField SEAddressField;
     private javax.swing.JComboBox<String> SEBirthDateBox;
     private javax.swing.JComboBox<String> SEBirthMonthBox;
@@ -2625,9 +2836,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JPanel enrollmentNewButton;
     private javax.swing.JLabel enrollmentNewButtonLabel;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton23;
-    private javax.swing.JButton jButton24;
-    private javax.swing.JButton jButton25;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
@@ -2636,9 +2844,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> jComboBox32;
     private javax.swing.JComboBox<String> jComboBox33;
     private javax.swing.JComboBox<String> jComboBox34;
-    private javax.swing.JComboBox<String> jComboBox35;
-    private javax.swing.JComboBox<String> jComboBox36;
-    private javax.swing.JComboBox<String> jComboBox37;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel101;
@@ -2746,11 +2951,16 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel81;
     private javax.swing.JLabel jLabel82;
     private javax.swing.JLabel jLabel83;
+    private javax.swing.JLabel jLabel84;
+    private javax.swing.JLabel jLabel85;
+    private javax.swing.JLabel jLabel86;
+    private javax.swing.JLabel jLabel87;
     private javax.swing.JLabel jLabel88;
     private javax.swing.JLabel jLabel89;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel13;
+    private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -2760,7 +2970,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JTable jTable3;
-    private javax.swing.JTable jTable7;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField10;
     private javax.swing.JTextField jTextField11;
@@ -2774,9 +2983,11 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField19;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField20;
+    private javax.swing.JTextField jTextField21;
+    private javax.swing.JTextField jTextField22;
+    private javax.swing.JTextField jTextField23;
+    private javax.swing.JTextField jTextField24;
     private javax.swing.JTextField jTextField27;
-    private javax.swing.JTextField jTextField28;
-    private javax.swing.JTextField jTextField29;
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField30;
     private javax.swing.JTextField jTextField4;
@@ -2798,6 +3009,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JPanel searchPanel;
     private javax.swing.JPanel searchPanel1;
     private javax.swing.JPanel searchPanel2;
+    private javax.swing.JPanel searchPanel3;
     private javax.swing.JPanel sidePanel;
     private javax.swing.JPanel studentDetailsNewButton;
     private javax.swing.JLabel studentDetailsNewButtonLabel;
@@ -2806,30 +3018,35 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JPanel studentEnrollmentPanel;
     private javax.swing.JPanel topPanel;
     // End of variables declaration//GEN-END:variables
-    
-    class RoundedPanel extends JPanel
-    {
+
+    class RoundedPanel extends JPanel {
+
         private Color backgroundColor;
         private int cornerRadius = 15;
+
         public RoundedPanel(LayoutManager layout, int radius) {
             super(layout);
             cornerRadius = radius;
         }
+
         public RoundedPanel(LayoutManager layout, int radius, Color bgColor) {
             super(layout);
             cornerRadius = radius;
             backgroundColor = bgColor;
         }
+
         public RoundedPanel(int radius) {
             super();
             cornerRadius = radius;
-            
+
         }
+
         public RoundedPanel(int radius, Color bgColor) {
             super();
             cornerRadius = radius;
             backgroundColor = bgColor;
         }
+
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
@@ -2844,7 +3061,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             } else {
                 graphics.setColor(getBackground());
             }
-            graphics.fillRoundRect(0, 0, width-1, height-1, arcs.width, arcs.height); //paint background
+            graphics.fillRoundRect(0, 0, width - 1, height - 1, arcs.width, arcs.height); //paint background
             graphics.setColor(getForeground());
 //            graphics.drawRoundRect(0, 0, width-1, height-1, arcs.width, arcs.height); //paint border
 //             
