@@ -93,7 +93,8 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
                 PS.executeUpdate();
                 JOptionPane.showMessageDialog(null, "Student Enrolled");
-
+                Masterlist_Table();
+                
                 SEFirstNameField.setText("");
                 SEMiddleNameField.setText("");
                 SELastNameField.setText("");
@@ -180,6 +181,42 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         } 
+        
+    }
+    
+    void Masterlist_Table() {
+        int columnCount;
+        
+        try {
+            Connection connection = DriverManager.getConnection("jdbc:sqlite:/C:\\Users\\user\\OneDrive\\Documents\\NetBeansProjects\\MetaLabs\\src\\com\\database\\metalabsDatabase.db");
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM `student_enrollment`");
+            
+            ResultSet rs = ps.executeQuery();
+            ResultSetMetaData rsmd = rs.getMetaData();
+            columnCount = rsmd.getColumnCount();
+            DefaultTableModel tableModel = (DefaultTableModel) MLMasterlistTable.getModel();
+            tableModel.setRowCount(0);
+            
+            while (rs.next()) {
+                Vector vector = new Vector();
+
+                for (int i = 0; i <= columnCount; i++) {
+                    vector.add(rs.getInt("studentID"));
+                    vector.add(rs.getString("studentLastName"));
+                    vector.add(rs.getString("studentFirstName"));
+                    vector.add(rs.getString("studentMiddleName"));
+                    vector.add(null);
+                    vector.add(null);
+                    vector.add(null);
+                }
+                tableModel.addRow(vector);
+                tableModel.fireTableDataChanged();
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+ 
         
     }
 
@@ -380,7 +417,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel10 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTable3 = new javax.swing.JTable();
+        MLMasterlistTable = new javax.swing.JTable();
         jTextField12 = new javax.swing.JTextField();
         jButton6 = new javax.swing.JButton();
         studentDetailsPanel = new javax.swing.JPanel();
@@ -435,17 +472,23 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         searchPanel3 = new RoundedPanel(50, new Color(55,111,138));
         jLabel84 = new javax.swing.JLabel();
         jTextField21 = new javax.swing.JTextField();
-        jTextField22 = new javax.swing.JTextField();
-        jLabel85 = new javax.swing.JLabel();
         jLabel86 = new javax.swing.JLabel();
         jTextField23 = new javax.swing.JTextField();
-        jTextField24 = new javax.swing.JTextField();
         jLabel87 = new javax.swing.JLabel();
-        searchPanel1 = new RoundedPanel(50, new Color(55,111,138));
-        jLabel82 = new javax.swing.JLabel();
-        jTextField8 = new javax.swing.JTextField();
-        jTextField20 = new javax.swing.JTextField();
-        jLabel83 = new javax.swing.JLabel();
+        jTextField24 = new javax.swing.JTextField();
+        searchPanel4 = new RoundedPanel(50, new Color(55,111,138));
+        jLabel90 = new javax.swing.JLabel();
+        jTextField25 = new javax.swing.JTextField();
+        jTextField26 = new javax.swing.JTextField();
+        jLabel91 = new javax.swing.JLabel();
+        jLabel92 = new javax.swing.JLabel();
+        jTextField28 = new javax.swing.JTextField();
+        jTextField29 = new javax.swing.JTextField();
+        jLabel93 = new javax.swing.JLabel();
+        jLabel118 = new javax.swing.JLabel();
+        jLabel119 = new javax.swing.JLabel();
+        jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
@@ -1937,7 +1980,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel11.setForeground(new java.awt.Color(255, 255, 255));
         jLabel11.setText("Masterlist");
 
-        jTable3.setModel(new javax.swing.table.DefaultTableModel(
+        MLMasterlistTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null, null},
                 {null, null, null, null, null, null, null},
@@ -1956,20 +1999,20 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane3.setViewportView(jTable3);
-        if (jTable3.getColumnModel().getColumnCount() > 0) {
-            jTable3.getColumnModel().getColumn(0).setMinWidth(95);
-            jTable3.getColumnModel().getColumn(0).setMaxWidth(95);
-            jTable3.getColumnModel().getColumn(1).setMinWidth(150);
-            jTable3.getColumnModel().getColumn(1).setMaxWidth(150);
-            jTable3.getColumnModel().getColumn(2).setMinWidth(180);
-            jTable3.getColumnModel().getColumn(2).setMaxWidth(180);
-            jTable3.getColumnModel().getColumn(3).setMinWidth(150);
-            jTable3.getColumnModel().getColumn(3).setMaxWidth(150);
-            jTable3.getColumnModel().getColumn(4).setMinWidth(85);
-            jTable3.getColumnModel().getColumn(4).setMaxWidth(85);
-            jTable3.getColumnModel().getColumn(5).setMinWidth(85);
-            jTable3.getColumnModel().getColumn(5).setMaxWidth(85);
+        jScrollPane3.setViewportView(MLMasterlistTable);
+        if (MLMasterlistTable.getColumnModel().getColumnCount() > 0) {
+            MLMasterlistTable.getColumnModel().getColumn(0).setMinWidth(95);
+            MLMasterlistTable.getColumnModel().getColumn(0).setMaxWidth(95);
+            MLMasterlistTable.getColumnModel().getColumn(1).setMinWidth(150);
+            MLMasterlistTable.getColumnModel().getColumn(1).setMaxWidth(150);
+            MLMasterlistTable.getColumnModel().getColumn(2).setMinWidth(180);
+            MLMasterlistTable.getColumnModel().getColumn(2).setMaxWidth(180);
+            MLMasterlistTable.getColumnModel().getColumn(3).setMinWidth(150);
+            MLMasterlistTable.getColumnModel().getColumn(3).setMaxWidth(150);
+            MLMasterlistTable.getColumnModel().getColumn(4).setMinWidth(85);
+            MLMasterlistTable.getColumnModel().getColumn(4).setMaxWidth(85);
+            MLMasterlistTable.getColumnModel().getColumn(5).setMinWidth(85);
+            MLMasterlistTable.getColumnModel().getColumn(5).setMaxWidth(85);
         }
 
         jTextField12.addActionListener(new java.awt.event.ActionListener() {
@@ -2459,129 +2502,165 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel80.setForeground(new java.awt.Color(255, 255, 255));
         jLabel80.setText("Register Employee");
 
-        searchPanel3.setBackground(new java.awt.Color(153, 0, 204));
+        searchPanel3.setBackground(new java.awt.Color(31, 48, 56));
 
         jLabel84.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         jLabel84.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel84.setText("Student No");
+        jLabel84.setText("Username");
 
         jTextField21.setBackground(new java.awt.Color(98, 161, 192));
         jTextField21.setForeground(new java.awt.Color(255, 255, 255));
 
-        jTextField22.setBackground(new java.awt.Color(98, 161, 192));
-        jTextField22.setForeground(new java.awt.Color(255, 255, 255));
-
-        jLabel85.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
-        jLabel85.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel85.setText("Year Level");
-
         jLabel86.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         jLabel86.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel86.setText("Student No");
+        jLabel86.setText("Password");
 
         jTextField23.setBackground(new java.awt.Color(98, 161, 192));
         jTextField23.setForeground(new java.awt.Color(255, 255, 255));
-
-        jTextField24.setBackground(new java.awt.Color(98, 161, 192));
-        jTextField24.setForeground(new java.awt.Color(255, 255, 255));
+        jTextField23.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField23ActionPerformed(evt);
+            }
+        });
 
         jLabel87.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         jLabel87.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel87.setText("Year Level");
+        jLabel87.setText("Confirm Password");
+
+        jTextField24.setBackground(new java.awt.Color(98, 161, 192));
+        jTextField24.setForeground(new java.awt.Color(255, 255, 255));
 
         javax.swing.GroupLayout searchPanel3Layout = new javax.swing.GroupLayout(searchPanel3);
         searchPanel3.setLayout(searchPanel3Layout);
         searchPanel3Layout.setHorizontalGroup(
             searchPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(searchPanel3Layout.createSequentialGroup()
-                .addGap(75, 75, 75)
-                .addGroup(searchPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(searchPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel86, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jTextField23, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(searchPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel84, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jTextField21, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(104, 104, 104)
-                .addGroup(searchPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(searchPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel87, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jTextField24, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(searchPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel85, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jTextField22, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(34, 34, 34)
+                .addComponent(jLabel84, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jTextField21, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(21, 21, 21)
+                .addComponent(jLabel86, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTextField23, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(24, 24, 24)
+                .addComponent(jLabel87, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jTextField24, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(24, Short.MAX_VALUE))
         );
         searchPanel3Layout.setVerticalGroup(
             searchPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(searchPanel3Layout.createSequentialGroup()
                 .addGap(25, 25, 25)
                 .addGroup(searchPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(searchPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jTextField22)
-                        .addComponent(jLabel85, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(searchPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jTextField21)
-                        .addComponent(jLabel84, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(18, 18, 18)
-                .addGroup(searchPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(searchPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jTextField24)
+                    .addGroup(searchPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jTextField23, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel86, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(searchPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jTextField24, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel87, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(searchPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jTextField23)
-                        .addComponent(jLabel86, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(71, Short.MAX_VALUE))
+                    .addGroup(searchPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jTextField21, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel84, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(41, Short.MAX_VALUE))
         );
 
-        searchPanel1.setBackground(new java.awt.Color(31, 48, 56));
+        searchPanel4.setBackground(new java.awt.Color(31, 48, 56));
 
-        jLabel82.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
-        jLabel82.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel82.setText("Student No");
+        jLabel90.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel90.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel90.setText("First Name");
 
-        jTextField8.setBackground(new java.awt.Color(98, 161, 192));
-        jTextField8.setForeground(new java.awt.Color(255, 255, 255));
+        jTextField25.setBackground(new java.awt.Color(98, 161, 192));
+        jTextField25.setForeground(new java.awt.Color(255, 255, 255));
 
-        jTextField20.setBackground(new java.awt.Color(98, 161, 192));
-        jTextField20.setForeground(new java.awt.Color(255, 255, 255));
+        jTextField26.setBackground(new java.awt.Color(98, 161, 192));
+        jTextField26.setForeground(new java.awt.Color(255, 255, 255));
 
-        jLabel83.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
-        jLabel83.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel83.setText("Year Level");
+        jLabel91.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel91.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel91.setText("Last Name");
 
-        javax.swing.GroupLayout searchPanel1Layout = new javax.swing.GroupLayout(searchPanel1);
-        searchPanel1.setLayout(searchPanel1Layout);
-        searchPanel1Layout.setHorizontalGroup(
-            searchPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(searchPanel1Layout.createSequentialGroup()
-                .addGap(56, 56, 56)
-                .addComponent(jLabel82, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(127, 127, 127)
-                .addComponent(jLabel83, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jTextField20, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(87, Short.MAX_VALUE))
+        jLabel92.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel92.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel92.setText("Gender");
+
+        jTextField28.setBackground(new java.awt.Color(98, 161, 192));
+        jTextField28.setForeground(new java.awt.Color(255, 255, 255));
+
+        jTextField29.setBackground(new java.awt.Color(98, 161, 192));
+        jTextField29.setForeground(new java.awt.Color(255, 255, 255));
+
+        jLabel93.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel93.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel93.setText("Email");
+
+        javax.swing.GroupLayout searchPanel4Layout = new javax.swing.GroupLayout(searchPanel4);
+        searchPanel4.setLayout(searchPanel4Layout);
+        searchPanel4Layout.setHorizontalGroup(
+            searchPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(searchPanel4Layout.createSequentialGroup()
+                .addGap(75, 75, 75)
+                .addGroup(searchPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(searchPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel92, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jTextField28, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(searchPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel90, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jTextField25, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(104, 104, 104)
+                .addGroup(searchPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(searchPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel93, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jTextField29, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(searchPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel91, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jTextField26, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(91, Short.MAX_VALUE))
         );
-        searchPanel1Layout.setVerticalGroup(
-            searchPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, searchPanel1Layout.createSequentialGroup()
-                .addContainerGap(33, Short.MAX_VALUE)
-                .addGroup(searchPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(searchPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jTextField20)
-                        .addComponent(jLabel83, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(searchPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jTextField8)
-                        .addComponent(jLabel82, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addGap(15, 15, 15))
+        searchPanel4Layout.setVerticalGroup(
+            searchPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(searchPanel4Layout.createSequentialGroup()
+                .addGap(25, 25, 25)
+                .addGroup(searchPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(searchPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jTextField26)
+                        .addComponent(jLabel91, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(searchPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jTextField25)
+                        .addComponent(jLabel90, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(18, 18, 18)
+                .addGroup(searchPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(searchPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jTextField29)
+                        .addComponent(jLabel93, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(searchPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jTextField28)
+                        .addComponent(jLabel92, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(34, Short.MAX_VALUE))
         );
+
+        jLabel118.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel118.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel118.setText("PERSONAL INFORMATION");
+
+        jLabel119.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel119.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel119.setText("ACCOUNT INFORMATION");
+
+        jButton2.setText("Register");
+
+        jButton3.setText("Cancel");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout registerEmployeePanelLayout = new javax.swing.GroupLayout(registerEmployeePanel);
         registerEmployeePanel.setLayout(registerEmployeePanelLayout);
@@ -2594,11 +2673,22 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                         .addComponent(jLabel80, javax.swing.GroupLayout.PREFERRED_SIZE, 364, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(bottomPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(registerEmployeePanelLayout.createSequentialGroup()
-                        .addGap(146, 146, 146)
-                        .addGroup(registerEmployeePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(searchPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(searchPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addGap(156, 156, 156)
+                        .addGroup(registerEmployeePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(registerEmployeePanelLayout.createSequentialGroup()
+                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(registerEmployeePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(searchPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel118)
+                                .addComponent(jLabel119)))))
                 .addContainerGap(179, Short.MAX_VALUE))
+            .addGroup(registerEmployeePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(registerEmployeePanelLayout.createSequentialGroup()
+                    .addGap(156, 156, 156)
+                    .addComponent(searchPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(488, Short.MAX_VALUE)))
         );
         registerEmployeePanelLayout.setVerticalGroup(
             registerEmployeePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2607,11 +2697,22 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addComponent(jLabel80)
                 .addGap(18, 18, 18)
                 .addComponent(bottomPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(57, 57, 57)
-                .addComponent(searchPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(75, 75, 75)
+                .addComponent(jLabel118)
+                .addGap(188, 188, 188)
+                .addComponent(jLabel119)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(searchPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(581, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(registerEmployeePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton2)
+                    .addComponent(jButton3))
+                .addContainerGap(444, Short.MAX_VALUE))
+            .addGroup(registerEmployeePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(registerEmployeePanelLayout.createSequentialGroup()
+                    .addGap(240, 240, 240)
+                    .addComponent(searchPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(659, Short.MAX_VALUE)))
         );
 
         mainPanel.add(registerEmployeePanel, "card7");
@@ -2777,6 +2878,14 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_CEDeleteButtonActionPerformed
 
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jTextField23ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField23ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField23ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -2803,6 +2912,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JTextField CESubjectCodeField;
     private javax.swing.JComboBox<String> CETimeDateBox;
     private javax.swing.JTextField CEUnitsField;
+    private javax.swing.JTable MLMasterlistTable;
     private javax.swing.JTextField SEAddressField;
     private javax.swing.JComboBox<String> SEBirthDateBox;
     private javax.swing.JComboBox<String> SEBirthMonthBox;
@@ -2836,6 +2946,8 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JPanel enrollmentNewButton;
     private javax.swing.JLabel enrollmentNewButtonLabel;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
@@ -2859,6 +2971,8 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel115;
     private javax.swing.JLabel jLabel116;
     private javax.swing.JLabel jLabel117;
+    private javax.swing.JLabel jLabel118;
+    private javax.swing.JLabel jLabel119;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel125;
     private javax.swing.JLabel jLabel126;
@@ -2949,15 +3063,16 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel80;
     private javax.swing.JLabel jLabel81;
-    private javax.swing.JLabel jLabel82;
-    private javax.swing.JLabel jLabel83;
     private javax.swing.JLabel jLabel84;
-    private javax.swing.JLabel jLabel85;
     private javax.swing.JLabel jLabel86;
     private javax.swing.JLabel jLabel87;
     private javax.swing.JLabel jLabel88;
     private javax.swing.JLabel jLabel89;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JLabel jLabel90;
+    private javax.swing.JLabel jLabel91;
+    private javax.swing.JLabel jLabel92;
+    private javax.swing.JLabel jLabel93;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
@@ -2969,7 +3084,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel8;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane7;
-    private javax.swing.JTable jTable3;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField10;
     private javax.swing.JTextField jTextField11;
@@ -2982,19 +3096,20 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField18;
     private javax.swing.JTextField jTextField19;
     private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField20;
     private javax.swing.JTextField jTextField21;
-    private javax.swing.JTextField jTextField22;
     private javax.swing.JTextField jTextField23;
     private javax.swing.JTextField jTextField24;
+    private javax.swing.JTextField jTextField25;
+    private javax.swing.JTextField jTextField26;
     private javax.swing.JTextField jTextField27;
+    private javax.swing.JTextField jTextField28;
+    private javax.swing.JTextField jTextField29;
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField30;
     private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField jTextField5;
     private javax.swing.JTextField jTextField6;
     private javax.swing.JTextField jTextField7;
-    private javax.swing.JTextField jTextField8;
     private javax.swing.JTextField jTextField9;
     private javax.swing.JButton logoutButton;
     private javax.swing.JPanel mainPanel;
@@ -3007,9 +3122,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JButton printPreviewButton2;
     private javax.swing.JPanel registerEmployeePanel;
     private javax.swing.JPanel searchPanel;
-    private javax.swing.JPanel searchPanel1;
     private javax.swing.JPanel searchPanel2;
     private javax.swing.JPanel searchPanel3;
+    private javax.swing.JPanel searchPanel4;
     private javax.swing.JPanel sidePanel;
     private javax.swing.JPanel studentDetailsNewButton;
     private javax.swing.JLabel studentDetailsNewButtonLabel;

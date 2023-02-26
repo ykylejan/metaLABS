@@ -86,6 +86,7 @@ public class Login extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
@@ -102,6 +103,7 @@ public class Login extends javax.swing.JFrame {
         });
 
         loginButton.setBackground(new java.awt.Color(0, 204, 255));
+        loginButton.setForeground(new java.awt.Color(51, 51, 51));
         loginButton.setText("Login");
         loginButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         loginButton.setFocusable(false);
@@ -118,12 +120,15 @@ public class Login extends javax.swing.JFrame {
         });
 
         jLabel1.setBackground(new java.awt.Color(0, 0, 0));
+        jLabel1.setForeground(new java.awt.Color(51, 51, 51));
         jLabel1.setText("Username");
 
         jLabel2.setBackground(new java.awt.Color(0, 0, 0));
+        jLabel2.setForeground(new java.awt.Color(51, 51, 51));
         jLabel2.setText("Password");
 
         showPasswordCheckbox.setBackground(new java.awt.Color(255, 255, 255));
+        showPasswordCheckbox.setForeground(new java.awt.Color(51, 51, 51));
         showPasswordCheckbox.setText("Show Password");
         showPasswordCheckbox.setFocusable(false);
         showPasswordCheckbox.addActionListener(new java.awt.event.ActionListener() {
