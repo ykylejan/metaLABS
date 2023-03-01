@@ -38,6 +38,8 @@ import javax.swing.table.DefaultTableModel;
  */
 public class EnrollmentEncoding extends javax.swing.JFrame {
 
+    String dbURL = "jdbc:sqlite:/C:\\Users\\user\\OneDrive\\Documents\\NetBeansProjects\\MetaLabs\\src\\com\\database\\metalabsDatabase.db";
+
     void Enroll_Student_Action() {
         String studentFirstName = SEFirstNameField.getText();
         String studentMiddleName = SEMiddleNameField.getText();
@@ -71,7 +73,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             long studentFatherContact = Long.parseLong(SEFatherContactField.getText());
 
             try {
-                Connection connection = DriverManager.getConnection("jdbc:sqlite:/C:\\Users\\user\\OneDrive\\Documents\\NetBeansProjects\\MetaLabs\\src\\com\\database\\metalabsDatabase.db");
+                Connection connection = DriverManager.getConnection(dbURL);
                 PreparedStatement PS = connection.prepareStatement("INSERT INTO `student_enrollment`(`studentFirstName`, `studentMiddleName`, `studentLastName`, `studentBirthDate`, `studentBirthMonth`, `studentBirthYear`, `studentAddress`, `studentGender`, `studentCitizenship`, `studentContactNumber`, `studentMarital`, `studentReligion`, `studentMotherName`, `studentMotherContact`, `studentFatherName`, `studentFatherContact`) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
                 PS.setString(1, studentFirstName);
@@ -94,7 +96,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 PS.executeUpdate();
                 JOptionPane.showMessageDialog(null, "Student Enrolled");
                 Masterlist_Table();
-                
+
                 SEFirstNameField.setText("");
                 SEMiddleNameField.setText("");
                 SELastNameField.setText("");
@@ -119,51 +121,106 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         }
     }
 
+    void Enroll_Course_Action() {
+        long studentId = Long.parseLong(CEStudentIDField.getText());
+        String studentName = CEStudentNameField.getText();
+        String studentCollegeDep = CECollegeDepBox.getSelectedItem().toString();
+        String studentCourseMajor = CECourseMajorBox.getSelectedItem().toString();
+        String studentYearLevel = CEStudentYearLevelBox.getSelectedItem().toString();
+        
+        if (studentCollegeDep.contains("CAE"))
+            studentCollegeDep = "CAE";
+        else if (studentCollegeDep.contains("CAFAE"))
+            studentCollegeDep = "CAFAE";
+        else if (studentCollegeDep.contains("CCE"))
+            studentCollegeDep = "CCE";
+        else if (studentCollegeDep.contains("CCJE"))
+            studentCollegeDep = "CCJE";
+        else if (studentCollegeDep.contains("CEE"))
+            studentCollegeDep = "CEE";
+        else if (studentCollegeDep.contains("CHE"))
+            studentCollegeDep = "CHE";
+        else if (studentCollegeDep.contains("CHSE"))
+            studentCollegeDep = "CHSE";
+        else if (studentCollegeDep.contains("TS"))
+            studentCollegeDep = "TS";
+        else
+            studentCollegeDep = null;
+        
+        try {
+            Connection connection = DriverManager.getConnection(dbURL);
+            PreparedStatement ps = connection.prepareStatement("UPDATE student_enrollment SET studentCollegeDep = ?, studentCourseMajor = ?, studentYearLevel = ?  WHERE studentID = ?");
+
+            ps.setString(1, studentCollegeDep);
+            ps.setString(2, studentCourseMajor);
+            ps.setString(3, studentYearLevel);
+            ps.setLong(4, studentId);
+            
+            ps.executeUpdate();
+            
+            JOptionPane.showMessageDialog(null, "Course Enrolled");
+            Masterlist_Table();
+            
+            CEStudentIDField.setText("");
+            CEStudentNameField.setText("");
+            CECollegeDepBox.setSelectedIndex(0);
+            CECourseMajorBox.setSelectedIndex(0);
+            CEStudentYearLevelBox.setSelectedIndex(0);
+            CESemesterBox.setSelectedIndex(0);
+            CETermBox.setSelectedIndex(0);
+            
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     void Add_Courses_Action() {
         String courseSubjectCode = CESubjectCodeField.getText();
         String courseSubject = CESubjectBox.getSelectedItem().toString();
         double courseUnits = Double.parseDouble(CEUnitsField.getText());
         String courseTime = CETimeDateBox.getSelectedItem().toString();
         String courseRoom = CERoomBox.getSelectedItem().toString();
-
+        
         try {
-            Connection connection = DriverManager.getConnection("jdbc:sqlite:/C:\\Users\\user\\OneDrive\\Documents\\NetBeansProjects\\MetaLabs\\src\\com\\database\\metalabsDatabase.db");
+            Connection connection = DriverManager.getConnection(dbURL);
             PreparedStatement ps = connection.prepareStatement("INSERT INTO `course_enrollment`(`courseCode`, `courseTitle`, `courseUnits`, `courseTime`, `courseRoom`) VALUES(?,?,?,?,?)");
-            
+
             ps.setString(1, courseSubjectCode);
             ps.setString(2, courseSubject);
             ps.setDouble(3, courseUnits);
             ps.setString(4, courseTime);
             ps.setString(5, courseRoom);
-            
+
             ps.executeUpdate();
             JOptionPane.showMessageDialog(null, "Course Added!");
             Update_Courses_Table();
-            
+
             CESubjectBox.setSelectedIndex(0);
             CESubjectCodeField.setText("");
             CEUnitsField.setText("");
             CETimeDateBox.setSelectedIndex(0);
             CERoomBox.setSelectedIndex(0);
             
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-    
+
     void Update_Courses_Table() {
         int columnCount;
-        
+
         try {
-            Connection connection = DriverManager.getConnection("jdbc:sqlite:/C:\\Users\\user\\OneDrive\\Documents\\NetBeansProjects\\MetaLabs\\src\\com\\database\\metalabsDatabase.db");
+            Connection connection = DriverManager.getConnection(dbURL);
             PreparedStatement ps = connection.prepareStatement("SELECT * FROM `course_enrollment`");
             ResultSet rs = ps.executeQuery();
-            
+
             ResultSetMetaData rsmd = rs.getMetaData();
             columnCount = rsmd.getColumnCount();
             DefaultTableModel tableModel = (DefaultTableModel) CECourseListTable.getModel();
             tableModel.setRowCount(0);
-            
+
             while (rs.next()) {
                 Vector vector = new Vector();
 
@@ -177,48 +234,114 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 tableModel.addRow(vector);
                 tableModel.fireTableDataChanged();
             }
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } 
-        
-    }
-    
-    void Masterlist_Table() {
-        int columnCount;
-        
-        try {
-            Connection connection = DriverManager.getConnection("jdbc:sqlite:/C:\\Users\\user\\OneDrive\\Documents\\NetBeansProjects\\MetaLabs\\src\\com\\database\\metalabsDatabase.db");
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM `student_enrollment`");
-            
-            ResultSet rs = ps.executeQuery();
-            ResultSetMetaData rsmd = rs.getMetaData();
-            columnCount = rsmd.getColumnCount();
-            DefaultTableModel tableModel = (DefaultTableModel) MLMasterlistTable.getModel();
-            tableModel.setRowCount(0);
-            
-            while (rs.next()) {
-                Vector vector = new Vector();
 
-                for (int i = 0; i <= columnCount; i++) {
-                    vector.add(rs.getInt("studentID"));
-                    vector.add(rs.getString("studentLastName"));
-                    vector.add(rs.getString("studentFirstName"));
-                    vector.add(rs.getString("studentMiddleName"));
-                    vector.add(null);
-                    vector.add(null);
-                    vector.add(null);
-                }
-                tableModel.addRow(vector);
-                tableModel.fireTableDataChanged();
-            }
-            
         } catch (SQLException e) {
             e.printStackTrace();
         }
- 
-        
+
     }
+
+    void Masterlist_Table() {
+
+        try {
+            Connection connection = DriverManager.getConnection(dbURL);
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM `student_enrollment`");
+            
+            ResultSet rs = ps.executeQuery();
+
+//            ResultSetMetaData rsmd = rs.getMetaData();
+//            columnCount = rsmd.getColumnCount();
+            
+            DefaultTableModel tableModel = (DefaultTableModel) MLMasterlistTable.getModel();
+            tableModel.setRowCount(0);
+
+            while (rs.next()) {
+                Vector vector = new Vector();
+                vector.add(rs.getInt("studentID"));
+                vector.add(rs.getString("studentLastName"));
+                vector.add(rs.getString("studentFirstName"));
+                vector.add(rs.getString("studentMiddleName"));
+                vector.add(rs.getString("studentYearLevel"));
+                vector.add(rs.getString("studentCollegeDep"));
+                vector.add(rs.getString("studentCourseMajor"));
+                
+                
+                tableModel.addRow(vector);
+                tableModel.fireTableDataChanged();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    void Change_Major_Courses() {
+        if (CECollegeDepBox.getSelectedItem().equals("CAE - College of Accounting Education")) {
+            CECourseMajorBox.removeAllItems();
+            CECourseMajorBox.addItem("Bachelor of Science in Accountancy");
+            CECourseMajorBox.addItem("Bachelor of Science in Internal Auditing");
+            CECourseMajorBox.addItem("Bachelor of Science in Accounting Information System");
+            CECourseMajorBox.addItem("Bachelor of Science in Management Accounting");
+            CECourseMajorBox.setSelectedItem(null);
+        } else if (CECollegeDepBox.getSelectedItem().equals("CAFAE - College of Architecture and Fine Arts Education")) {
+            CECourseMajorBox.removeAllItems();
+            CECourseMajorBox.addItem("Bachelor of Science in Architecture");
+            CECourseMajorBox.addItem("Bachelor of Fine Arts and Design");
+            CECourseMajorBox.setSelectedItem(null);
+        } else if (CECollegeDepBox.getSelectedItem().equals("CCE - College of Computing Education")) {
+            CECourseMajorBox.removeAllItems();
+            CECourseMajorBox.addItem("Bachelor of Science in Information Technology");
+            CECourseMajorBox.addItem("Bachelor of Science in Computer Science");
+            CECourseMajorBox.addItem("Bachelor of Science in Information Systems");
+            CECourseMajorBox.addItem("Bachelor of Library and Information Science");
+            CECourseMajorBox.addItem("Bachelor of Science in Entertainment and Multimedia Computing – Digital Animation");
+            CECourseMajorBox.addItem("Bachelor of Science in Entertainment and Multimedia Computing – Game Development");
+            CECourseMajorBox.addItem("Bachelor of Arts in Multimedia Arts");
+            CECourseMajorBox.setSelectedItem(null);
+        } else if (CECollegeDepBox.getSelectedItem().equals("CCJE - College of Criminal Justice Education")) {
+            CECourseMajorBox.removeAllItems();
+            CECourseMajorBox.addItem("Bachelor of Science in Criminology");
+            CECourseMajorBox.addItem("Bachelor of Science in Industrial Security Management");
+            CECourseMajorBox.setSelectedItem(null);
+        } else if (CECollegeDepBox.getSelectedItem().equals("CEE - College of Engineering Education")) {
+            CECourseMajorBox.removeAllItems();
+            CECourseMajorBox.addItem("Bachelor of Science in Chemical Engineering");
+            CECourseMajorBox.addItem("Bachelor of Science in Mechanical Engineering");
+            CECourseMajorBox.addItem("Bachelor of Science in Electrical Engineering");
+            CECourseMajorBox.addItem("Bachelor of Science in Electronics Engineering");
+            CECourseMajorBox.addItem("Bachelor of Science in Computer Engineering");
+            CECourseMajorBox.addItem("Bachelor of Science in Civil Engineering Major in Structural");
+            CECourseMajorBox.addItem("Bachelor of Science in Civil Engineering Major in Water Resource");
+            CECourseMajorBox.addItem("Bachelor of Science in Civil Engineering Major in Transportation");
+            CECourseMajorBox.addItem("Bachelor of Science in Civil Engineering Major in Geotechnical");
+            CECourseMajorBox.setSelectedItem(null);
+        } else if (CECollegeDepBox.getSelectedItem().equals("CHE - College of Hospitality Education")) {
+            CECourseMajorBox.removeAllItems();
+            CECourseMajorBox.addItem("Bachelor of Science in Hospitality Management");
+            CECourseMajorBox.addItem("Bachelor of Science in Tourism Management");
+            CECourseMajorBox.setSelectedItem(null);
+        } else if (CECollegeDepBox.getSelectedItem().equals("CHSE - College of Health Science Education")) {
+            CECourseMajorBox.removeAllItems();
+            CECourseMajorBox.addItem("Bachelor of Science in Nursing");
+            CECourseMajorBox.addItem("Bachelor of Science in Pharmacy");
+            CECourseMajorBox.addItem("Bachelor of Science in Medical Technology/Medical Laboratory Science");
+            CECourseMajorBox.addItem("Bachelor of Science in Nutrition and Dietetics");
+            CECourseMajorBox.setSelectedItem(null);
+        } else if (CECollegeDepBox.getSelectedItem().equals("TS - Technical School")) {
+            CECourseMajorBox.removeAllItems();
+            CECourseMajorBox.addItem("Automotive Servicing");
+            CECourseMajorBox.addItem("Electronic Product Assembly and Servicing");
+            CECourseMajorBox.addItem("Electrical Installation Maintenance");
+            CECourseMajorBox.addItem("Caregiving");
+            CECourseMajorBox.setSelectedItem(null);
+        } else {
+            CECourseMajorBox.removeAllItems();
+            CECourseMajorBox.setSelectedItem(null);
+        }
+    }
+    
+    
 
     void SidePanel_SetColor(JPanel bg, JLabel fg) {
         bg.setBackground(new Color(201, 251, 252));
@@ -338,18 +461,18 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         courseEnrollmentPanel = new javax.swing.JPanel();
         jPanel13 = new RoundedPanel(50, new Color(55,111,138));
         jLabel101 = new javax.swing.JLabel();
-        jComboBox30 = new javax.swing.JComboBox<>();
-        jComboBox31 = new javax.swing.JComboBox<>();
+        CECollegeDepBox = new javax.swing.JComboBox<>();
+        CECourseMajorBox = new javax.swing.JComboBox<>();
         jLabel108 = new javax.swing.JLabel();
-        jComboBox32 = new javax.swing.JComboBox<>();
+        CEStudentYearLevelBox = new javax.swing.JComboBox<>();
         jLabel109 = new javax.swing.JLabel();
-        jComboBox33 = new javax.swing.JComboBox<>();
+        CESemesterBox = new javax.swing.JComboBox<>();
         jLabel110 = new javax.swing.JLabel();
         jLabel111 = new javax.swing.JLabel();
-        jComboBox34 = new javax.swing.JComboBox<>();
+        CETermBox = new javax.swing.JComboBox<>();
         jLabel115 = new javax.swing.JLabel();
-        enrollButton2 = new javax.swing.JButton();
-        printPreviewButton2 = new javax.swing.JButton();
+        CEEnrollButton = new javax.swing.JButton();
+        CEPrintPreviewButton = new javax.swing.JButton();
         jScrollPane7 = new javax.swing.JScrollPane();
         CECourseListTable = new javax.swing.JTable();
         bottomPanel = new javax.swing.JPanel();
@@ -357,8 +480,8 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         searchPanel2 = new RoundedPanel(30, new Color(55,111,138));
         jLabel88 = new javax.swing.JLabel();
-        jTextField27 = new javax.swing.JTextField();
-        jTextField30 = new javax.swing.JTextField();
+        CEStudentNameField = new javax.swing.JTextField();
+        CEStudentIDField = new javax.swing.JTextField();
         jLabel89 = new javax.swing.JLabel();
         jPanel14 = new RoundedPanel(50, new Color(55,111,138));
         jLabel112 = new javax.swing.JLabel();
@@ -1152,42 +1275,47 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel101.setForeground(new java.awt.Color(255, 255, 255));
         jLabel101.setText("College Department");
 
-        jComboBox30.setBackground(new java.awt.Color(98, 161, 192));
-        jComboBox30.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        jComboBox30.setForeground(new java.awt.Color(204, 255, 255));
-        jComboBox30.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "PS - Professional Schools", "CLE - College of Legal Education", "CAE - College of Accounting Education", "CAFAE - College of Architecture and Fine Arts Education", "CASE - College of Arts and Sciences Education", "CBAE - College of Business Administration Education", "CCE - College of Computing Education", "CCJE - College of Criminal Justice Education", "CEE - College of Engineering Education", "CHE - College of Hospitality Education", "CHSE - College of Health Science Education", "CTE - College of Teacher Education", "TS - Technical School", "BED - Basic Education" }));
-        jComboBox30.setFocusable(false);
-        jComboBox30.addActionListener(new java.awt.event.ActionListener() {
+        CECollegeDepBox.setBackground(new java.awt.Color(98, 161, 192));
+        CECollegeDepBox.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
+        CECollegeDepBox.setForeground(new java.awt.Color(204, 255, 255));
+        CECollegeDepBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "CAE - College of Accounting Education", "CAFAE - College of Architecture and Fine Arts Education", "CCE - College of Computing Education", "CCJE - College of Criminal Justice Education", "CEE - College of Engineering Education", "CHE - College of Hospitality Education", "CHSE - College of Health Science Education", "TS - Technical School" }));
+        CECollegeDepBox.setFocusable(false);
+        CECollegeDepBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox30ActionPerformed(evt);
+                CECollegeDepBoxActionPerformed(evt);
             }
         });
 
-        jComboBox31.setBackground(new java.awt.Color(98, 161, 192));
-        jComboBox31.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        jComboBox31.setForeground(new java.awt.Color(204, 255, 255));
-        jComboBox31.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        jComboBox31.setFocusable(false);
+        CECourseMajorBox.setBackground(new java.awt.Color(98, 161, 192));
+        CECourseMajorBox.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
+        CECourseMajorBox.setForeground(new java.awt.Color(204, 255, 255));
+        CECourseMajorBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " " }));
+        CECourseMajorBox.setFocusable(false);
+        CECourseMajorBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CECourseMajorBoxActionPerformed(evt);
+            }
+        });
 
         jLabel108.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         jLabel108.setForeground(new java.awt.Color(255, 255, 255));
         jLabel108.setText("Course Major");
 
-        jComboBox32.setBackground(new java.awt.Color(98, 161, 192));
-        jComboBox32.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        jComboBox32.setForeground(new java.awt.Color(204, 255, 255));
-        jComboBox32.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Year 1", "Year 2", "Year 3", "Year 4", "Year 5" }));
-        jComboBox32.setFocusable(false);
+        CEStudentYearLevelBox.setBackground(new java.awt.Color(98, 161, 192));
+        CEStudentYearLevelBox.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
+        CEStudentYearLevelBox.setForeground(new java.awt.Color(204, 255, 255));
+        CEStudentYearLevelBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Year 1", "Year 2", "Year 3", "Year 4", "Year 5" }));
+        CEStudentYearLevelBox.setFocusable(false);
 
         jLabel109.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         jLabel109.setForeground(new java.awt.Color(255, 255, 255));
         jLabel109.setText("Year Level");
 
-        jComboBox33.setBackground(new java.awt.Color(98, 161, 192));
-        jComboBox33.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        jComboBox33.setForeground(new java.awt.Color(204, 255, 255));
-        jComboBox33.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "1ST Sem", "2ND Sem" }));
-        jComboBox33.setFocusable(false);
+        CESemesterBox.setBackground(new java.awt.Color(98, 161, 192));
+        CESemesterBox.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
+        CESemesterBox.setForeground(new java.awt.Color(204, 255, 255));
+        CESemesterBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "1ST Sem", "2ND Sem" }));
+        CESemesterBox.setFocusable(false);
 
         jLabel110.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         jLabel110.setForeground(new java.awt.Color(255, 255, 255));
@@ -1197,11 +1325,11 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel111.setForeground(new java.awt.Color(255, 255, 255));
         jLabel111.setText("Term");
 
-        jComboBox34.setBackground(new java.awt.Color(98, 161, 192));
-        jComboBox34.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        jComboBox34.setForeground(new java.awt.Color(204, 255, 255));
-        jComboBox34.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "1ST Term", "2ND Term" }));
-        jComboBox34.setFocusable(false);
+        CETermBox.setBackground(new java.awt.Color(98, 161, 192));
+        CETermBox.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
+        CETermBox.setForeground(new java.awt.Color(204, 255, 255));
+        CETermBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "1ST Term", "2ND Term" }));
+        CETermBox.setFocusable(false);
 
         javax.swing.GroupLayout jPanel13Layout = new javax.swing.GroupLayout(jPanel13);
         jPanel13.setLayout(jPanel13Layout);
@@ -1213,23 +1341,23 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                     .addGroup(jPanel13Layout.createSequentialGroup()
                         .addComponent(jLabel108, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jComboBox31, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(CECourseMajorBox, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel13Layout.createSequentialGroup()
                         .addComponent(jLabel109, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jComboBox32, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(CEStudentYearLevelBox, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel13Layout.createSequentialGroup()
                         .addComponent(jLabel110, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jComboBox33, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(CESemesterBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(jLabel111, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jComboBox34, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(CETermBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel13Layout.createSequentialGroup()
                         .addComponent(jLabel101, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jComboBox30, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(CECollegeDepBox, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(47, Short.MAX_VALUE))
         );
         jPanel13Layout.setVerticalGroup(
@@ -1238,21 +1366,21 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addGap(20, 20, 20)
                 .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel101, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jComboBox30, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(CECollegeDepBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel108, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jComboBox31, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(CECourseMajorBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel109, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jComboBox32, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(CEStudentYearLevelBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel110, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jComboBox33, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(CESemesterBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel111, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jComboBox34, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(CETermBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(60, Short.MAX_VALUE))
         );
 
@@ -1260,19 +1388,19 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel115.setForeground(new java.awt.Color(255, 255, 255));
         jLabel115.setText("COURSE(S) LIST AND SCHEDULE ");
 
-        enrollButton2.setText("Enroll");
-        enrollButton2.setFocusable(false);
-        enrollButton2.addActionListener(new java.awt.event.ActionListener() {
+        CEEnrollButton.setText("Enroll");
+        CEEnrollButton.setFocusable(false);
+        CEEnrollButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                enrollButton2ActionPerformed(evt);
+                CEEnrollButtonActionPerformed(evt);
             }
         });
 
-        printPreviewButton2.setText("Print Preview");
-        printPreviewButton2.setFocusable(false);
-        printPreviewButton2.addActionListener(new java.awt.event.ActionListener() {
+        CEPrintPreviewButton.setText("Print Preview");
+        CEPrintPreviewButton.setFocusable(false);
+        CEPrintPreviewButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                printPreviewButton2ActionPerformed(evt);
+                CEPrintPreviewButtonActionPerformed(evt);
             }
         });
 
@@ -1335,12 +1463,12 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel88.setForeground(new java.awt.Color(255, 255, 255));
         jLabel88.setText("Student Name");
 
-        jTextField27.setBackground(new java.awt.Color(98, 161, 192));
-        jTextField27.setForeground(new java.awt.Color(255, 255, 255));
+        CEStudentNameField.setBackground(new java.awt.Color(98, 161, 192));
+        CEStudentNameField.setForeground(new java.awt.Color(255, 255, 255));
 
-        jTextField30.setBackground(new java.awt.Color(98, 161, 192));
-        jTextField30.setDocument(new JTextFieldLimit(6));
-        jTextField30.setForeground(new java.awt.Color(255, 255, 255));
+        CEStudentIDField.setBackground(new java.awt.Color(98, 161, 192));
+        CEStudentIDField.setDocument(new JTextFieldLimit(6));
+        CEStudentIDField.setForeground(new java.awt.Color(255, 255, 255));
 
         jLabel89.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         jLabel89.setForeground(new java.awt.Color(255, 255, 255));
@@ -1354,11 +1482,11 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addGap(65, 65, 65)
                 .addComponent(jLabel88, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jTextField27, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(CEStudentNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(127, 127, 127)
                 .addComponent(jLabel89, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jTextField30, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(CEStudentIDField, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(79, Short.MAX_VALUE))
         );
         searchPanel2Layout.setVerticalGroup(
@@ -1367,10 +1495,10 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addContainerGap(12, Short.MAX_VALUE)
                 .addGroup(searchPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(searchPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jTextField30)
+                        .addComponent(CEStudentIDField)
                         .addComponent(jLabel89, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(searchPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jTextField27)
+                        .addComponent(CEStudentNameField)
                         .addComponent(jLabel88, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -1411,7 +1539,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         CETimeDateBox.setBackground(new java.awt.Color(98, 161, 192));
         CETimeDateBox.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
         CETimeDateBox.setForeground(new java.awt.Color(204, 255, 255));
-        CETimeDateBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "700M-800M", "800M-900M", "900M-1000M", "1000M-1100M", "1100M-1200A", "1230A-130A", "130A-230A", "230A-330A", "330A-430A", "430A-530E", " " }));
+        CETimeDateBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "700M-800M", "800M-900M", "900M-1000M", "1000M-1100M", "1100M-1200A", "1230A-130A", "130A-230A", "230A-330A", "330A-430A", "430A-530E" }));
         CETimeDateBox.setFocusable(false);
 
         jLabel117.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
@@ -1531,9 +1659,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                                 .addComponent(searchPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(courseEnrollmentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                 .addGroup(courseEnrollmentPanelLayout.createSequentialGroup()
-                                    .addComponent(enrollButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(CEEnrollButton, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                    .addComponent(printPreviewButton2))
+                                    .addComponent(CEPrintPreviewButton))
                                 .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 1067, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(courseEnrollmentPanelLayout.createSequentialGroup()
                                 .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1560,8 +1688,8 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(courseEnrollmentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(enrollButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(printPreviewButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(CEEnrollButton, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(CEPrintPreviewButton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -2748,17 +2876,17 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         ChangeCard(studentEnrollmentPanel);
     }//GEN-LAST:event_enrollmentNewButtonLabelMousePressed
 
-    private void jComboBox30ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox30ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox30ActionPerformed
+    private void CECollegeDepBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CECollegeDepBoxActionPerformed
+        Change_Major_Courses();
+    }//GEN-LAST:event_CECollegeDepBoxActionPerformed
 
-    private void enrollButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_enrollButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_enrollButton2ActionPerformed
+    private void CEEnrollButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CEEnrollButtonActionPerformed
+        Enroll_Course_Action();
+    }//GEN-LAST:event_CEEnrollButtonActionPerformed
 
-    private void printPreviewButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_printPreviewButton2ActionPerformed
+    private void CEPrintPreviewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CEPrintPreviewButtonActionPerformed
         ChangeCard(printFormPanel);
-    }//GEN-LAST:event_printPreviewButton2ActionPerformed
+    }//GEN-LAST:event_CEPrintPreviewButtonActionPerformed
 
     private void courseNewButtonLabelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_courseNewButtonLabelMouseEntered
         SidePanel_SetColor(courseNewButton, courseNewButtonLabel);
@@ -2886,6 +3014,10 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField23ActionPerformed
 
+    private void CECourseMajorBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CECourseMajorBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_CECourseMajorBoxActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -2904,12 +3036,21 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton CEAddButton;
+    private javax.swing.JComboBox<String> CECollegeDepBox;
     private javax.swing.JButton CECourseButton;
     private javax.swing.JTable CECourseListTable;
+    private javax.swing.JComboBox<String> CECourseMajorBox;
     private javax.swing.JButton CEDeleteButton;
+    private javax.swing.JButton CEEnrollButton;
+    private javax.swing.JButton CEPrintPreviewButton;
     private javax.swing.JComboBox<String> CERoomBox;
+    private javax.swing.JComboBox<String> CESemesterBox;
+    private javax.swing.JTextField CEStudentIDField;
+    private javax.swing.JTextField CEStudentNameField;
+    private javax.swing.JComboBox<String> CEStudentYearLevelBox;
     private javax.swing.JComboBox<String> CESubjectBox;
     private javax.swing.JTextField CESubjectCodeField;
+    private javax.swing.JComboBox<String> CETermBox;
     private javax.swing.JComboBox<String> CETimeDateBox;
     private javax.swing.JTextField CEUnitsField;
     private javax.swing.JTable MLMasterlistTable;
@@ -2942,7 +3083,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JPanel courseEnrollmentPanel;
     private javax.swing.JPanel courseNewButton;
     private javax.swing.JLabel courseNewButtonLabel;
-    private javax.swing.JButton enrollButton2;
     private javax.swing.JPanel enrollmentNewButton;
     private javax.swing.JLabel enrollmentNewButtonLabel;
     private javax.swing.JButton jButton1;
@@ -2951,11 +3091,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
-    private javax.swing.JComboBox<String> jComboBox30;
-    private javax.swing.JComboBox<String> jComboBox31;
-    private javax.swing.JComboBox<String> jComboBox32;
-    private javax.swing.JComboBox<String> jComboBox33;
-    private javax.swing.JComboBox<String> jComboBox34;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel101;
@@ -3101,11 +3236,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField24;
     private javax.swing.JTextField jTextField25;
     private javax.swing.JTextField jTextField26;
-    private javax.swing.JTextField jTextField27;
     private javax.swing.JTextField jTextField28;
     private javax.swing.JTextField jTextField29;
     private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField30;
     private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField jTextField5;
     private javax.swing.JTextField jTextField6;
@@ -3119,7 +3252,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JPanel parentsInfoPanel;
     private javax.swing.JPanel personalInfoPanel;
     private javax.swing.JPanel printFormPanel;
-    private javax.swing.JButton printPreviewButton2;
     private javax.swing.JPanel registerEmployeePanel;
     private javax.swing.JPanel searchPanel;
     private javax.swing.JPanel searchPanel2;

@@ -1310,9 +1310,9 @@
                                   </Group>
                                   <Group type="103" alignment="0" groupAlignment="1" attributes="0">
                                       <Group type="102" attributes="0">
-                                          <Component id="enrollButton2" min="-2" pref="98" max="-2" attributes="0"/>
+                                          <Component id="CEEnrollButton" min="-2" pref="98" max="-2" attributes="0"/>
                                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                          <Component id="printPreviewButton2" min="-2" max="-2" attributes="0"/>
+                                          <Component id="CEPrintPreviewButton" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                       <Component id="jScrollPane7" min="-2" pref="1067" max="-2" attributes="0"/>
                                   </Group>
@@ -1348,8 +1348,8 @@
                       <Component id="jScrollPane7" min="-2" pref="236" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="enrollButton2" alignment="3" min="-2" pref="29" max="-2" attributes="0"/>
-                          <Component id="printPreviewButton2" alignment="3" min="-2" pref="28" max="-2" attributes="0"/>
+                          <Component id="CEEnrollButton" alignment="3" min="-2" pref="29" max="-2" attributes="0"/>
+                          <Component id="CEPrintPreviewButton" alignment="3" min="-2" pref="28" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="32767" attributes="0"/>
                   </Group>
@@ -1379,26 +1379,26 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="jLabel108" min="-2" pref="125" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="jComboBox31" min="-2" pref="270" max="-2" attributes="0"/>
+                                  <Component id="CECourseMajorBox" min="-2" pref="270" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="jLabel109" min="-2" pref="125" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="jComboBox32" min="-2" pref="270" max="-2" attributes="0"/>
+                                  <Component id="CEStudentYearLevelBox" min="-2" pref="270" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="jLabel110" min="-2" pref="125" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="jComboBox33" min="-2" max="-2" attributes="0"/>
+                                  <Component id="CESemesterBox" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
                                   <Component id="jLabel111" min="-2" pref="61" max="-2" attributes="0"/>
                                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                  <Component id="jComboBox34" min="-2" max="-2" attributes="0"/>
+                                  <Component id="CETermBox" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="jLabel101" min="-2" pref="125" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="jComboBox30" min="-2" pref="270" max="-2" attributes="0"/>
+                                  <Component id="CECollegeDepBox" min="-2" pref="270" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace pref="47" max="32767" attributes="0"/>
@@ -1411,24 +1411,24 @@
                           <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel101" alignment="3" min="-2" pref="22" max="-2" attributes="0"/>
-                              <Component id="jComboBox30" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="CECollegeDepBox" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel108" alignment="3" min="-2" pref="22" max="-2" attributes="0"/>
-                              <Component id="jComboBox31" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="CECourseMajorBox" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel109" alignment="3" min="-2" pref="22" max="-2" attributes="0"/>
-                              <Component id="jComboBox32" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="CEStudentYearLevelBox" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel110" alignment="3" min="-2" pref="22" max="-2" attributes="0"/>
-                              <Component id="jComboBox33" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="CESemesterBox" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel111" alignment="3" min="-2" pref="22" max="-2" attributes="0"/>
-                              <Component id="jComboBox34" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="CETermBox" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace pref="60" max="32767" attributes="0"/>
                       </Group>
@@ -1447,7 +1447,7 @@
                     <Property name="text" type="java.lang.String" value="College Department"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JComboBox" name="jComboBox30">
+                <Component class="javax.swing.JComboBox" name="CECollegeDepBox">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -1459,34 +1459,28 @@
                       <Color blue="ff" green="ff" red="cc" type="rgb"/>
                     </Property>
                     <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                      <StringArray count="15">
+                      <StringArray count="9">
                         <StringItem index="0" value=" "/>
-                        <StringItem index="1" value="PS - Professional Schools"/>
-                        <StringItem index="2" value="CLE - College of Legal Education"/>
-                        <StringItem index="3" value="CAE - College of Accounting Education"/>
-                        <StringItem index="4" value="CAFAE - College of Architecture and Fine Arts Education"/>
-                        <StringItem index="5" value="CASE - College of Arts and Sciences Education"/>
-                        <StringItem index="6" value="CBAE - College of Business Administration Education"/>
-                        <StringItem index="7" value="CCE - College of Computing Education"/>
-                        <StringItem index="8" value="CCJE - College of Criminal Justice Education"/>
-                        <StringItem index="9" value="CEE - College of Engineering Education"/>
-                        <StringItem index="10" value="CHE - College of Hospitality Education"/>
-                        <StringItem index="11" value="CHSE - College of Health Science Education"/>
-                        <StringItem index="12" value="CTE - College of Teacher Education"/>
-                        <StringItem index="13" value="TS - Technical School"/>
-                        <StringItem index="14" value="BED - Basic Education"/>
+                        <StringItem index="1" value="CAE - College of Accounting Education"/>
+                        <StringItem index="2" value="CAFAE - College of Architecture and Fine Arts Education"/>
+                        <StringItem index="3" value="CCE - College of Computing Education"/>
+                        <StringItem index="4" value="CCJE - College of Criminal Justice Education"/>
+                        <StringItem index="5" value="CEE - College of Engineering Education"/>
+                        <StringItem index="6" value="CHE - College of Hospitality Education"/>
+                        <StringItem index="7" value="CHSE - College of Health Science Education"/>
+                        <StringItem index="8" value="TS - Technical School"/>
                       </StringArray>
                     </Property>
                     <Property name="focusable" type="boolean" value="false"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jComboBox30ActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="CECollegeDepBoxActionPerformed"/>
                   </Events>
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
                   </AuxValues>
                 </Component>
-                <Component class="javax.swing.JComboBox" name="jComboBox31">
+                <Component class="javax.swing.JComboBox" name="CECourseMajorBox">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -1498,15 +1492,15 @@
                       <Color blue="ff" green="ff" red="cc" type="rgb"/>
                     </Property>
                     <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                      <StringArray count="4">
-                        <StringItem index="0" value="Item 1"/>
-                        <StringItem index="1" value="Item 2"/>
-                        <StringItem index="2" value="Item 3"/>
-                        <StringItem index="3" value="Item 4"/>
+                      <StringArray count="1">
+                        <StringItem index="0" value=" "/>
                       </StringArray>
                     </Property>
                     <Property name="focusable" type="boolean" value="false"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="CECourseMajorBoxActionPerformed"/>
+                  </Events>
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
                   </AuxValues>
@@ -1522,7 +1516,7 @@
                     <Property name="text" type="java.lang.String" value="Course Major"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JComboBox" name="jComboBox32">
+                <Component class="javax.swing.JComboBox" name="CEStudentYearLevelBox">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -1560,7 +1554,7 @@
                     <Property name="text" type="java.lang.String" value="Year Level"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JComboBox" name="jComboBox33">
+                <Component class="javax.swing.JComboBox" name="CESemesterBox">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -1606,7 +1600,7 @@
                     <Property name="text" type="java.lang.String" value="Term"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JComboBox" name="jComboBox34">
+                <Component class="javax.swing.JComboBox" name="CETermBox">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -1643,22 +1637,22 @@
                 <Property name="text" type="java.lang.String" value="COURSE(S) LIST AND SCHEDULE "/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JButton" name="enrollButton2">
+            <Component class="javax.swing.JButton" name="CEEnrollButton">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Enroll"/>
                 <Property name="focusable" type="boolean" value="false"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="enrollButton2ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="CEEnrollButtonActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JButton" name="printPreviewButton2">
+            <Component class="javax.swing.JButton" name="CEPrintPreviewButton">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Print Preview"/>
                 <Property name="focusable" type="boolean" value="false"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="printPreviewButton2ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="CEPrintPreviewButtonActionPerformed"/>
               </Events>
             </Component>
             <Container class="javax.swing.JScrollPane" name="jScrollPane7">
@@ -1790,11 +1784,11 @@
                           <EmptySpace min="-2" pref="65" max="-2" attributes="0"/>
                           <Component id="jLabel88" min="-2" pref="129" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="jTextField27" min="-2" pref="257" max="-2" attributes="0"/>
+                          <Component id="CEStudentNameField" min="-2" pref="257" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="127" max="-2" attributes="0"/>
                           <Component id="jLabel89" min="-2" pref="129" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="jTextField30" min="-2" pref="257" max="-2" attributes="0"/>
+                          <Component id="CEStudentIDField" min="-2" pref="257" max="-2" attributes="0"/>
                           <EmptySpace pref="79" max="32767" attributes="0"/>
                       </Group>
                   </Group>
@@ -1805,11 +1799,11 @@
                           <EmptySpace pref="12" max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="103" alignment="0" groupAlignment="0" max="-2" attributes="0">
-                                  <Component id="jTextField30" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="CEStudentIDField" alignment="0" max="32767" attributes="0"/>
                                   <Component id="jLabel89" alignment="0" min="-2" pref="22" max="-2" attributes="0"/>
                               </Group>
                               <Group type="103" alignment="0" groupAlignment="0" max="-2" attributes="0">
-                                  <Component id="jTextField27" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="CEStudentNameField" alignment="0" max="32767" attributes="0"/>
                                   <Component id="jLabel88" alignment="0" max="32767" attributes="0"/>
                               </Group>
                           </Group>
@@ -1830,7 +1824,7 @@
                     <Property name="text" type="java.lang.String" value="Student Name"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JTextField" name="jTextField27">
+                <Component class="javax.swing.JTextField" name="CEStudentNameField">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -1840,7 +1834,7 @@
                     </Property>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JTextField" name="jTextField30">
+                <Component class="javax.swing.JTextField" name="CEStudentIDField">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -2078,7 +2072,7 @@
                       <Color blue="ff" green="ff" red="cc" type="rgb"/>
                     </Property>
                     <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                      <StringArray count="12">
+                      <StringArray count="11">
                         <StringItem index="0" value=" "/>
                         <StringItem index="1" value="700M-800M"/>
                         <StringItem index="2" value="800M-900M"/>
@@ -2090,7 +2084,6 @@
                         <StringItem index="8" value="230A-330A"/>
                         <StringItem index="9" value="330A-430A"/>
                         <StringItem index="10" value="430A-530E"/>
-                        <StringItem index="11" value=" "/>
                       </StringArray>
                     </Property>
                     <Property name="focusable" type="boolean" value="false"/>
