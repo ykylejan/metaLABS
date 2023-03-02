@@ -55,6 +55,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         String studentMotherName = SEMotherNameField.getText();
         String studentFatherName = SEFatherNameField.getText();
 
+        int studentYearNum = Integer.parseInt(studentBirthYear);
+        int studentAge = 2023 - studentYearNum;
+
         if (studentFirstName.equals("") || studentMiddleName.equals("") || studentLastName.equals("")) {
             JOptionPane.showMessageDialog(null, "Please enter the student's name!", "Student Enrollment", JOptionPane.ERROR_MESSAGE);
         } else if (studentBirthDate.equals(" ") || studentBirthMonth.equals(" ") || studentBirthYear.equals(" ")) {
@@ -74,7 +77,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
             try {
                 Connection connection = DriverManager.getConnection(dbURL);
-                PreparedStatement PS = connection.prepareStatement("INSERT INTO `student_enrollment`(`studentFirstName`, `studentMiddleName`, `studentLastName`, `studentBirthDate`, `studentBirthMonth`, `studentBirthYear`, `studentAddress`, `studentGender`, `studentCitizenship`, `studentContactNumber`, `studentMarital`, `studentReligion`, `studentMotherName`, `studentMotherContact`, `studentFatherName`, `studentFatherContact`) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                PreparedStatement PS = connection.prepareStatement("INSERT INTO `student_enrollment`(`studentFirstName`, `studentMiddleName`, `studentLastName`, `studentBirthDate`, `studentBirthMonth`, `studentBirthYear`, `studentAge`, `studentAddress`, `studentGender`, `studentCitizenship`, `studentContactNumber`, `studentMarital`, `studentReligion`, `studentMotherName`, `studentMotherContact`, `studentFatherName`, `studentFatherContact`) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
                 PS.setString(1, studentFirstName);
                 PS.setString(2, studentMiddleName);
@@ -82,16 +85,17 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 PS.setInt(4, Integer.parseInt(studentBirthDate));
                 PS.setString(5, studentBirthMonth);
                 PS.setInt(6, Integer.parseInt(studentBirthYear));
-                PS.setString(7, studentAddress);
-                PS.setString(8, studentGender);
-                PS.setString(9, studentCitizenship);
-                PS.setLong(10, studentContactNumber);
-                PS.setString(11, studentMaritalStatus);
-                PS.setString(12, studentReligion);
-                PS.setString(13, studentMotherName);
-                PS.setLong(14, studentMotherContact);
-                PS.setString(15, studentFatherName);
-                PS.setLong(16, studentFatherContact);
+                PS.setInt(7, studentAge);
+                PS.setString(8, studentAddress);
+                PS.setString(9, studentGender);
+                PS.setString(10, studentCitizenship);
+                PS.setLong(11, studentContactNumber);
+                PS.setString(12, studentMaritalStatus);
+                PS.setString(13, studentReligion);
+                PS.setString(14, studentMotherName);
+                PS.setLong(15, studentMotherContact);
+                PS.setString(16, studentFatherName);
+                PS.setLong(17, studentFatherContact);
 
                 PS.executeUpdate();
                 JOptionPane.showMessageDialog(null, "Student Enrolled");
@@ -127,26 +131,27 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         String studentCollegeDep = CECollegeDepBox.getSelectedItem().toString();
         String studentCourseMajor = CECourseMajorBox.getSelectedItem().toString();
         String studentYearLevel = CEStudentYearLevelBox.getSelectedItem().toString();
-        
-        if (studentCollegeDep.contains("CAE"))
+
+        if (studentCollegeDep.contains("CAE")) {
             studentCollegeDep = "CAE";
-        else if (studentCollegeDep.contains("CAFAE"))
+        } else if (studentCollegeDep.contains("CAFAE")) {
             studentCollegeDep = "CAFAE";
-        else if (studentCollegeDep.contains("CCE"))
+        } else if (studentCollegeDep.contains("CCE")) {
             studentCollegeDep = "CCE";
-        else if (studentCollegeDep.contains("CCJE"))
+        } else if (studentCollegeDep.contains("CCJE")) {
             studentCollegeDep = "CCJE";
-        else if (studentCollegeDep.contains("CEE"))
+        } else if (studentCollegeDep.contains("CEE")) {
             studentCollegeDep = "CEE";
-        else if (studentCollegeDep.contains("CHE"))
+        } else if (studentCollegeDep.contains("CHE")) {
             studentCollegeDep = "CHE";
-        else if (studentCollegeDep.contains("CHSE"))
+        } else if (studentCollegeDep.contains("CHSE")) {
             studentCollegeDep = "CHSE";
-        else if (studentCollegeDep.contains("TS"))
+        } else if (studentCollegeDep.contains("TS")) {
             studentCollegeDep = "TS";
-        else
+        } else {
             studentCollegeDep = null;
-        
+        }
+
         try {
             Connection connection = DriverManager.getConnection(dbURL);
             PreparedStatement ps = connection.prepareStatement("UPDATE student_enrollment SET studentCollegeDep = ?, studentCourseMajor = ?, studentYearLevel = ?  WHERE studentID = ?");
@@ -155,12 +160,12 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             ps.setString(2, studentCourseMajor);
             ps.setString(3, studentYearLevel);
             ps.setLong(4, studentId);
-            
+
             ps.executeUpdate();
-            
+
             JOptionPane.showMessageDialog(null, "Course Enrolled");
             Masterlist_Table();
-            
+
             CEStudentIDField.setText("");
             CEStudentNameField.setText("");
             CECollegeDepBox.setSelectedIndex(0);
@@ -168,8 +173,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             CEStudentYearLevelBox.setSelectedIndex(0);
             CESemesterBox.setSelectedIndex(0);
             CETermBox.setSelectedIndex(0);
-            
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -181,7 +185,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         double courseUnits = Double.parseDouble(CEUnitsField.getText());
         String courseTime = CETimeDateBox.getSelectedItem().toString();
         String courseRoom = CERoomBox.getSelectedItem().toString();
-        
+
         try {
             Connection connection = DriverManager.getConnection(dbURL);
             PreparedStatement ps = connection.prepareStatement("INSERT INTO `course_enrollment`(`courseCode`, `courseTitle`, `courseUnits`, `courseTime`, `courseRoom`) VALUES(?,?,?,?,?)");
@@ -201,11 +205,79 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             CEUnitsField.setText("");
             CETimeDateBox.setSelectedIndex(0);
             CERoomBox.setSelectedIndex(0);
-            
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    void Update_Courses_Action() {
+        DefaultTableModel tablemodel = (DefaultTableModel) CECourseListTable.getModel();
+        int selectedIndex = CECourseListTable.getSelectedRow();
+
+//        String courseCode = CESubjectCodeField.getText();
+        String courseCode = tablemodel.getValueAt(selectedIndex, 0).toString();
+
+        String courseSubject = CESubjectBox.getSelectedItem().toString();
+        String units = CEUnitsField.getText();
+        String time = CETimeDateBox.getSelectedItem().toString();
+        String room = CERoomBox.getSelectedItem().toString();
+
+        try {
+            Connection connection = DriverManager.getConnection(dbURL);
+            PreparedStatement ps = connection.prepareStatement("UPDATE `course_enrollment` SET `courseTitle`=?, `courseUnits`=?, `courseTime`=?, `courseRoom`=? WHERE `courseCode` = ?");
+            ps.setString(1, courseSubject);
+            ps.setString(2, units);
+            ps.setString(3, time);
+            ps.setString(4, room);
+            ps.setString(5, courseCode);
+
+            ps.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Subject Entry Updated");
+            Update_Courses_Table();
+
+            CESubjectBox.setSelectedIndex(0);
+            CESubjectCodeField.setText("");
+            CEUnitsField.setText("");
+            CETimeDateBox.setSelectedIndex(0);
+            CERoomBox.setSelectedIndex(0);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    void Delete_Courses_Action() {
+        DefaultTableModel model = (DefaultTableModel) CECourseListTable.getModel();
+        int selectedIndex = CECourseListTable.getSelectedRow();
+
+        try {
+            String courseCode = model.getValueAt(selectedIndex, 0).toString();
+
+            int dialogResult = JOptionPane.showConfirmDialog(null, "Do you want to delete this subject entry?", "Course Enrollment", JOptionPane.YES_NO_OPTION);
+
+            if (dialogResult == JOptionPane.YES_OPTION) {
+                Connection connection = DriverManager.getConnection(dbURL);
+                PreparedStatement ps = connection.prepareStatement("DELETE FROM `course_enrollment` WHERE `courseCode` = ?");
+
+                ps.setString(1, courseCode);
+
+                ps.executeUpdate();
+                JOptionPane.showMessageDialog(null, "Subject Entry Deleted");
+                Update_Courses_Table();
+
+                CESubjectBox.setSelectedIndex(0);
+                CESubjectCodeField.setText("");
+                CEUnitsField.setText("");
+                CETimeDateBox.setSelectedIndex(0);
+                CERoomBox.setSelectedIndex(0);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 
     void Update_Courses_Table() {
@@ -246,12 +318,11 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         try {
             Connection connection = DriverManager.getConnection(dbURL);
             PreparedStatement ps = connection.prepareStatement("SELECT * FROM `student_enrollment`");
-            
+
             ResultSet rs = ps.executeQuery();
 
 //            ResultSetMetaData rsmd = rs.getMetaData();
 //            columnCount = rsmd.getColumnCount();
-            
             DefaultTableModel tableModel = (DefaultTableModel) MLMasterlistTable.getModel();
             tableModel.setRowCount(0);
 
@@ -264,8 +335,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 vector.add(rs.getString("studentYearLevel"));
                 vector.add(rs.getString("studentCollegeDep"));
                 vector.add(rs.getString("studentCourseMajor"));
-                
-                
+
                 tableModel.addRow(vector);
                 tableModel.fireTableDataChanged();
             }
@@ -274,6 +344,83 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             e.printStackTrace();
         }
 
+    }
+
+    void Student_Details_Info_Action() {
+//        long studentID = Long.parseLong(SDStudentIDField.getText());
+        String studentID = SDStudentIDField.getText();
+
+//        String studentLastName = SDLastNameField.getText();
+//        String studentFirstName = SDFirstNameField.getText();
+//        String studentMiddleName = SDMiddleNameField.getText();
+//        String studentAge = SDAgeField.getText();
+//        String studentAddress = SDAddressField.getText();
+//        long studentContact = Long.parseLong(SDStudentContactField.getText());
+//        String studentGender = SDGenderField.getText();
+//        String studentMarital = SDMaritalStatusField.getText();
+//        String studentCitizenship = SDCitizenshipField.getText();
+//        String studentReligion = SDReligionField.getText();
+//
+//        String motherName = SDMotherNameField.getText();
+//        long motherContact = Long.parseLong(SDMotherContactField.getText());
+//        String fatherName = SDFatherNameField.getText();
+//        long fatherContact = Long.parseLong(SDFatherContactField.getText());
+//        String sdID = Long.toString(studentID);
+        try {
+            Connection connection = DriverManager.getConnection(dbURL);
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM `student_enrollment` WHERE `studentID` = ?");
+            ps.setString(1, studentID);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                SDFirstNameField.setText(rs.getString(2));
+                SDLastNameField.setText(rs.getString(4));
+                SDMiddleNameField.setText(rs.getString(3));
+                SDAgeField.setText(Integer.toString(rs.getInt(8)));
+                SDAddressField.setText(rs.getString(9));
+                SDStudentContactField.setText(Long.toString(rs.getLong(12)));
+                SDGenderField.setText(rs.getString(10));
+                SDMaritalStatusField.setText(rs.getString(13));
+                SDCitizenshipField.setText(rs.getString(11));
+                SDReligionField.setText(rs.getString(14));
+
+                SDMotherNameField.setText(rs.getString(15));
+                SDMotherContactField.setText(Long.toString(rs.getLong(16)));
+                SDFatherNameField.setText(rs.getString(17));
+                SDFatherContactField.setText(Long.toString(rs.getLong(18)));
+
+//                SDFirstNameField.setText(rs.getString(2));
+//                SDLastNameField.setText(rs.getString(4));
+//                SDMiddleNameField.setText(rs.getString(3));
+//                SDAgeField.setText(rs.getString(8));
+//                SDAddressField.setText(rs.getString(9));
+//                SDStudentContactField.setText(rs.getString(12));
+//                SDGenderField.setText(rs.getString(10));
+//                SDMaritalStatusField.setText(rs.getString(13));
+//                SDCitizenshipField.setText(rs.getString(11));
+//                SDReligionField.setText(rs.getString(14));
+//
+//                SDMotherNameField.setText(rs.getString(15));
+//                SDMotherContactField.setText(rs.getString(16));
+//                SDFatherNameField.setText(rs.getString(17));
+//                SDFatherContactField.setText(rs.getString(18));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void OnClick_Table_Action() {
+        DefaultTableModel tableModel = (DefaultTableModel) CECourseListTable.getModel();
+
+        int selectedIndex = CECourseListTable.getSelectedRow();
+
+        CESubjectCodeField.setText(tableModel.getValueAt(selectedIndex, 0).toString());
+        CESubjectBox.setSelectedItem(tableModel.getValueAt(selectedIndex, 1).toString());
+        CEUnitsField.setText(tableModel.getValueAt(selectedIndex, 2).toString());
+        CETimeDateBox.setSelectedItem(tableModel.getValueAt(selectedIndex, 3).toString());
+        CERoomBox.setSelectedItem(tableModel.getValueAt(selectedIndex, 4).toString());
     }
 
     void Change_Major_Courses() {
@@ -340,8 +487,49 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             CECourseMajorBox.setSelectedItem(null);
         }
     }
-    
-    
+
+    void Course_Set_Text_Action() {
+        if (CESubjectBox.getSelectedItem().equals("Understanding the Self")) {
+            CESubjectCodeField.setText("GE 1");
+            CEUnitsField.setText("3");
+        } else if (CESubjectBox.getSelectedItem().equals("Readings in Philippine History")) {
+            CESubjectCodeField.setText("GE 2");
+            CEUnitsField.setText("3");
+        } else if (CESubjectBox.getSelectedItem().equals("The Contemporary World")) {
+            CESubjectCodeField.setText("GE 3");
+            CEUnitsField.setText("3");
+        } else if (CESubjectBox.getSelectedItem().equals("Mathematics in the Modern World")) {
+            CESubjectCodeField.setText("GE 4");
+            CEUnitsField.setText("3");
+        } else if (CESubjectBox.getSelectedItem().equals("Purposive Communication")) {
+            CESubjectCodeField.setText("GE 5");
+            CEUnitsField.setText("6");
+        } else if (CESubjectBox.getSelectedItem().equals("Art Appreciation")) {
+            CESubjectCodeField.setText("GE 6");
+            CEUnitsField.setText("3");
+        } else if (CESubjectBox.getSelectedItem().equals("Science, Technology and Society")) {
+            CESubjectCodeField.setText("GE 7");
+            CEUnitsField.setText("3");
+        } else if (CESubjectBox.getSelectedItem().equals("Ethics")) {
+            CESubjectCodeField.setText("GE 8");
+            CEUnitsField.setText("2");
+        } else if (CESubjectBox.getSelectedItem().equals("Life and Works of Rizal")) {
+            CESubjectCodeField.setText("GE 9");
+            CEUnitsField.setText("3");
+        } else if (CESubjectBox.getSelectedItem().equals("G.E. Electives")) {
+            CESubjectCodeField.setText("GE 10");
+            CEUnitsField.setText("3");
+        } else if (CESubjectBox.getSelectedItem().equals("Introduction to Language Studies")) {
+            CESubjectCodeField.setText("GE 11");
+            CEUnitsField.setText("3");
+        } else if (CESubjectBox.getSelectedItem().equals("Cross Cultural Communication")) {
+            CESubjectCodeField.setText("GE 12");
+            CEUnitsField.setText("6");
+        } else {
+            CESubjectCodeField.setText("");
+            CEUnitsField.setText("");
+        }
+    }
 
     void SidePanel_SetColor(JPanel bg, JLabel fg) {
         bg.setBackground(new Color(201, 251, 252));
@@ -549,43 +737,44 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel13 = new javax.swing.JLabel();
         searchPanel = new RoundedPanel(50, new Color(55,111,138));
         jLabel16 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
+        SDStudentIDField = new javax.swing.JTextField();
+        SDStudentYearLevelField = new javax.swing.JTextField();
         jLabel17 = new javax.swing.JLabel();
+        SDSearchButton = new javax.swing.JButton();
         studentDetailsTabbedPane = new javax.swing.JTabbedPane();
         personalInfoPanel = new RoundedPanel(50, new Color(55,111,138));
-        jTextField3 = new javax.swing.JTextField();
+        SDLastNameField = new javax.swing.JTextField();
         jLabel18 = new javax.swing.JLabel();
         jLabel19 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
-        jTextField5 = new javax.swing.JTextField();
+        SDFirstNameField = new javax.swing.JTextField();
+        SDMiddleNameField = new javax.swing.JTextField();
         jLabel21 = new javax.swing.JLabel();
         jLabel22 = new javax.swing.JLabel();
-        jTextField6 = new javax.swing.JTextField();
+        SDAgeField = new javax.swing.JTextField();
         jLabel23 = new javax.swing.JLabel();
-        jTextField7 = new javax.swing.JTextField();
+        SDAddressField = new javax.swing.JTextField();
         jLabel70 = new javax.swing.JLabel();
-        jTextField9 = new javax.swing.JTextField();
-        jTextField10 = new javax.swing.JTextField();
+        SDGenderField = new javax.swing.JTextField();
+        SDMaritalStatusField = new javax.swing.JTextField();
         jLabel71 = new javax.swing.JLabel();
         jLabel72 = new javax.swing.JLabel();
-        jTextField11 = new javax.swing.JTextField();
+        SDCitizenshipField = new javax.swing.JTextField();
         jLabel73 = new javax.swing.JLabel();
-        jTextField13 = new javax.swing.JTextField();
-        jTextField14 = new javax.swing.JTextField();
+        SDReligionField = new javax.swing.JTextField();
+        SDStudentContactField = new javax.swing.JTextField();
         jLabel74 = new javax.swing.JLabel();
         parentsInfoPanel = new RoundedPanel(50, new Color(55,111,138));
         jLabel75 = new javax.swing.JLabel();
-        jTextField15 = new javax.swing.JTextField();
+        SDMotherNameField = new javax.swing.JTextField();
         jLabel76 = new javax.swing.JLabel();
-        jTextField16 = new javax.swing.JTextField();
+        SDMotherContactField = new javax.swing.JTextField();
         jLabel77 = new javax.swing.JLabel();
-        jTextField17 = new javax.swing.JTextField();
+        SDFatherNameField = new javax.swing.JTextField();
         jLabel78 = new javax.swing.JLabel();
-        jTextField18 = new javax.swing.JTextField();
+        SDFatherContactField = new javax.swing.JTextField();
         addtionalInfoPanel = new RoundedPanel(50, new Color(55,111,138));
         jLabel79 = new javax.swing.JLabel();
-        jTextField19 = new javax.swing.JTextField();
+        SDRemarksField = new javax.swing.JTextField();
         jButton5 = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
         registerEmployeePanel = new javax.swing.JPanel();
@@ -1423,6 +1612,11 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        CECourseListTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                CECourseListTableMouseClicked(evt);
+            }
+        });
         jScrollPane7.setViewportView(CECourseListTable);
         if (CECourseListTable.getColumnModel().getColumnCount() > 0) {
             CECourseListTable.getColumnModel().getColumn(0).setMinWidth(120);
@@ -1513,8 +1707,13 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         CESubjectBox.setBackground(new java.awt.Color(98, 161, 192));
         CESubjectBox.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
         CESubjectBox.setForeground(new java.awt.Color(204, 255, 255));
-        CESubjectBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Understandin the Self", "Readings in Philippine History", "The Contemporary World", "Mathematics in the Modern World", "Purposive Communication", "Art Appreciation", "Science, Technology and Society", "Ethics", "Life and Works of Rizal", "G.E. Electives", "Introduction to Language Studies", "Cross Cultural Communication" }));
+        CESubjectBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Understanding the Self", "Readings in Philippine History", "The Contemporary World", "Mathematics in the Modern World", "Purposive Communication", "Art Appreciation", "Science, Technology and Society", "Ethics", "Life and Works of Rizal", "G.E. Electives", "Introduction to Language Studies", "Cross Cultural Communication" }));
         CESubjectBox.setFocusable(false);
+        CESubjectBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CESubjectBoxActionPerformed(evt);
+            }
+        });
 
         jLabel113.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         jLabel113.setForeground(new java.awt.Color(255, 255, 255));
@@ -2226,15 +2425,22 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel16.setForeground(new java.awt.Color(255, 255, 255));
         jLabel16.setText("Student No");
 
-        jTextField1.setBackground(new java.awt.Color(98, 161, 192));
-        jTextField1.setForeground(new java.awt.Color(255, 255, 255));
+        SDStudentIDField.setBackground(new java.awt.Color(98, 161, 192));
+        SDStudentIDField.setForeground(new java.awt.Color(255, 255, 255));
 
-        jTextField2.setBackground(new java.awt.Color(98, 161, 192));
-        jTextField2.setForeground(new java.awt.Color(255, 255, 255));
+        SDStudentYearLevelField.setBackground(new java.awt.Color(98, 161, 192));
+        SDStudentYearLevelField.setForeground(new java.awt.Color(255, 255, 255));
 
         jLabel17.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         jLabel17.setForeground(new java.awt.Color(255, 255, 255));
         jLabel17.setText("Year Level");
+
+        SDSearchButton.setText("Search");
+        SDSearchButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SDSearchButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout searchPanelLayout = new javax.swing.GroupLayout(searchPanel);
         searchPanel.setLayout(searchPanelLayout);
@@ -2244,11 +2450,13 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addGap(56, 56, 56)
                 .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(127, 127, 127)
+                .addComponent(SDStudentIDField, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(SDSearchButton)
+                .addGap(106, 106, 106)
                 .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(SDStudentYearLevelField, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         searchPanelLayout.setVerticalGroup(
@@ -2257,10 +2465,12 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addContainerGap(21, Short.MAX_VALUE)
                 .addGroup(searchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(searchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jTextField2)
+                        .addComponent(SDStudentYearLevelField)
                         .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(searchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jTextField1)
+                        .addGroup(searchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(SDStudentIDField)
+                            .addComponent(SDSearchButton))
                         .addComponent(jLabel16, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGap(15, 15, 15))
         );
@@ -2270,8 +2480,8 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         personalInfoPanel.setBackground(new java.awt.Color(31, 48, 56));
 
-        jTextField3.setBackground(new java.awt.Color(98, 161, 192));
-        jTextField3.setForeground(new java.awt.Color(255, 255, 255));
+        SDLastNameField.setBackground(new java.awt.Color(98, 161, 192));
+        SDLastNameField.setForeground(new java.awt.Color(255, 255, 255));
 
         jLabel18.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         jLabel18.setForeground(new java.awt.Color(255, 255, 255));
@@ -2281,11 +2491,11 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel19.setForeground(new java.awt.Color(255, 255, 255));
         jLabel19.setText("First Name");
 
-        jTextField4.setBackground(new java.awt.Color(98, 161, 192));
-        jTextField4.setForeground(new java.awt.Color(255, 255, 255));
+        SDFirstNameField.setBackground(new java.awt.Color(98, 161, 192));
+        SDFirstNameField.setForeground(new java.awt.Color(255, 255, 255));
 
-        jTextField5.setBackground(new java.awt.Color(98, 161, 192));
-        jTextField5.setForeground(new java.awt.Color(255, 255, 255));
+        SDMiddleNameField.setBackground(new java.awt.Color(98, 161, 192));
+        SDMiddleNameField.setForeground(new java.awt.Color(255, 255, 255));
 
         jLabel21.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         jLabel21.setForeground(new java.awt.Color(255, 255, 255));
@@ -2295,18 +2505,18 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel22.setForeground(new java.awt.Color(255, 255, 255));
         jLabel22.setText("Age");
 
-        jTextField6.setBackground(new java.awt.Color(98, 161, 192));
-        jTextField6.setForeground(new java.awt.Color(255, 255, 255));
+        SDAgeField.setBackground(new java.awt.Color(98, 161, 192));
+        SDAgeField.setForeground(new java.awt.Color(255, 255, 255));
 
         jLabel23.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         jLabel23.setForeground(new java.awt.Color(255, 255, 255));
         jLabel23.setText("Address");
 
-        jTextField7.setBackground(new java.awt.Color(98, 161, 192));
-        jTextField7.setForeground(new java.awt.Color(255, 255, 255));
-        jTextField7.addActionListener(new java.awt.event.ActionListener() {
+        SDAddressField.setBackground(new java.awt.Color(98, 161, 192));
+        SDAddressField.setForeground(new java.awt.Color(255, 255, 255));
+        SDAddressField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField7ActionPerformed(evt);
+                SDAddressFieldActionPerformed(evt);
             }
         });
 
@@ -2314,11 +2524,11 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel70.setForeground(new java.awt.Color(255, 255, 255));
         jLabel70.setText("Gender");
 
-        jTextField9.setBackground(new java.awt.Color(98, 161, 192));
-        jTextField9.setForeground(new java.awt.Color(255, 255, 255));
+        SDGenderField.setBackground(new java.awt.Color(98, 161, 192));
+        SDGenderField.setForeground(new java.awt.Color(255, 255, 255));
 
-        jTextField10.setBackground(new java.awt.Color(98, 161, 192));
-        jTextField10.setForeground(new java.awt.Color(255, 255, 255));
+        SDMaritalStatusField.setBackground(new java.awt.Color(98, 161, 192));
+        SDMaritalStatusField.setForeground(new java.awt.Color(255, 255, 255));
 
         jLabel71.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         jLabel71.setForeground(new java.awt.Color(255, 255, 255));
@@ -2328,18 +2538,18 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel72.setForeground(new java.awt.Color(255, 255, 255));
         jLabel72.setText("Citizenship");
 
-        jTextField11.setBackground(new java.awt.Color(98, 161, 192));
-        jTextField11.setForeground(new java.awt.Color(255, 255, 255));
+        SDCitizenshipField.setBackground(new java.awt.Color(98, 161, 192));
+        SDCitizenshipField.setForeground(new java.awt.Color(255, 255, 255));
 
         jLabel73.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         jLabel73.setForeground(new java.awt.Color(255, 255, 255));
         jLabel73.setText("Religion");
 
-        jTextField13.setBackground(new java.awt.Color(98, 161, 192));
-        jTextField13.setForeground(new java.awt.Color(255, 255, 255));
+        SDReligionField.setBackground(new java.awt.Color(98, 161, 192));
+        SDReligionField.setForeground(new java.awt.Color(255, 255, 255));
 
-        jTextField14.setBackground(new java.awt.Color(98, 161, 192));
-        jTextField14.setForeground(new java.awt.Color(255, 255, 255));
+        SDStudentContactField.setBackground(new java.awt.Color(98, 161, 192));
+        SDStudentContactField.setForeground(new java.awt.Color(255, 255, 255));
 
         jLabel74.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         jLabel74.setForeground(new java.awt.Color(255, 255, 255));
@@ -2355,47 +2565,47 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                     .addGroup(personalInfoPanelLayout.createSequentialGroup()
                         .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jTextField5))
+                        .addComponent(SDMiddleNameField))
                     .addGroup(personalInfoPanelLayout.createSequentialGroup()
                         .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jTextField4))
+                        .addComponent(SDFirstNameField))
                     .addGroup(personalInfoPanelLayout.createSequentialGroup()
                         .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(SDLastNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(personalInfoPanelLayout.createSequentialGroup()
                         .addGroup(personalInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel22, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel23, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(personalInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(SDAddressField, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(SDAgeField, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(144, 144, 144)
                 .addGroup(personalInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(personalInfoPanelLayout.createSequentialGroup()
                         .addComponent(jLabel74, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jTextField14))
+                        .addComponent(SDStudentContactField))
                     .addGroup(personalInfoPanelLayout.createSequentialGroup()
                         .addGroup(personalInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(personalInfoPanelLayout.createSequentialGroup()
                                 .addComponent(jLabel71, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(jTextField10))
+                                .addComponent(SDMaritalStatusField))
                             .addGroup(personalInfoPanelLayout.createSequentialGroup()
                                 .addComponent(jLabel70, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(jTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(SDGenderField, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, personalInfoPanelLayout.createSequentialGroup()
                                 .addComponent(jLabel72, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(jTextField11))
+                                .addComponent(SDCitizenshipField))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, personalInfoPanelLayout.createSequentialGroup()
                                 .addComponent(jLabel73, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(jTextField13, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(SDReligionField, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 24, Short.MAX_VALUE)))
                 .addGap(127, 127, 127))
         );
@@ -2404,45 +2614,45 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             .addGroup(personalInfoPanelLayout.createSequentialGroup()
                 .addGap(44, 44, 44)
                 .addGroup(personalInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField3)
+                    .addComponent(SDLastNameField)
                     .addComponent(jLabel18, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jTextField14)
+                    .addComponent(SDStudentContactField)
                     .addComponent(jLabel74, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(personalInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(personalInfoPanelLayout.createSequentialGroup()
                         .addGroup(personalInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField4)
+                            .addComponent(SDFirstNameField)
                             .addComponent(jLabel19, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(personalInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField5)
+                            .addComponent(SDMiddleNameField)
                             .addComponent(jLabel21, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(personalInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField6)
+                            .addComponent(SDAgeField)
                             .addComponent(jLabel22, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(personalInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(personalInfoPanelLayout.createSequentialGroup()
                                 .addComponent(jLabel23, javax.swing.GroupLayout.DEFAULT_SIZE, 19, Short.MAX_VALUE)
                                 .addGap(37, 37, 37))
-                            .addComponent(jTextField7)))
+                            .addComponent(SDAddressField)))
                     .addGroup(personalInfoPanelLayout.createSequentialGroup()
                         .addGroup(personalInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField9)
+                            .addComponent(SDGenderField)
                             .addComponent(jLabel70, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(personalInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField10)
+                            .addComponent(SDMaritalStatusField)
                             .addComponent(jLabel71, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(personalInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField11)
+                            .addComponent(SDCitizenshipField)
                             .addComponent(jLabel72, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(personalInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField13)
+                            .addComponent(SDReligionField)
                             .addComponent(jLabel73, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addGap(52, 52, 52))
         );
@@ -2455,29 +2665,29 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel75.setForeground(new java.awt.Color(255, 255, 255));
         jLabel75.setText("Mother's Name");
 
-        jTextField15.setBackground(new java.awt.Color(98, 161, 192));
-        jTextField15.setForeground(new java.awt.Color(255, 255, 255));
+        SDMotherNameField.setBackground(new java.awt.Color(98, 161, 192));
+        SDMotherNameField.setForeground(new java.awt.Color(255, 255, 255));
 
         jLabel76.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         jLabel76.setForeground(new java.awt.Color(255, 255, 255));
         jLabel76.setText("Contact No");
 
-        jTextField16.setBackground(new java.awt.Color(98, 161, 192));
-        jTextField16.setForeground(new java.awt.Color(255, 255, 255));
+        SDMotherContactField.setBackground(new java.awt.Color(98, 161, 192));
+        SDMotherContactField.setForeground(new java.awt.Color(255, 255, 255));
 
         jLabel77.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         jLabel77.setForeground(new java.awt.Color(255, 255, 255));
         jLabel77.setText("Father's Name");
 
-        jTextField17.setBackground(new java.awt.Color(98, 161, 192));
-        jTextField17.setForeground(new java.awt.Color(255, 255, 255));
+        SDFatherNameField.setBackground(new java.awt.Color(98, 161, 192));
+        SDFatherNameField.setForeground(new java.awt.Color(255, 255, 255));
 
         jLabel78.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         jLabel78.setForeground(new java.awt.Color(255, 255, 255));
         jLabel78.setText("Contact No");
 
-        jTextField18.setBackground(new java.awt.Color(98, 161, 192));
-        jTextField18.setForeground(new java.awt.Color(255, 255, 255));
+        SDFatherContactField.setBackground(new java.awt.Color(98, 161, 192));
+        SDFatherContactField.setForeground(new java.awt.Color(255, 255, 255));
 
         javax.swing.GroupLayout parentsInfoPanelLayout = new javax.swing.GroupLayout(parentsInfoPanel);
         parentsInfoPanel.setLayout(parentsInfoPanelLayout);
@@ -2489,21 +2699,21 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                     .addGroup(parentsInfoPanelLayout.createSequentialGroup()
                         .addComponent(jLabel77, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jTextField17, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(SDFatherNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(parentsInfoPanelLayout.createSequentialGroup()
                         .addComponent(jLabel75, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jTextField15, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(SDMotherNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(123, 123, 123)
                 .addGroup(parentsInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(parentsInfoPanelLayout.createSequentialGroup()
                         .addComponent(jLabel78, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jTextField18))
+                        .addComponent(SDFatherContactField))
                     .addGroup(parentsInfoPanelLayout.createSequentialGroup()
                         .addComponent(jLabel76, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jTextField16, javax.swing.GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE)))
+                        .addComponent(SDMotherContactField, javax.swing.GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE)))
                 .addGap(139, 139, 139))
         );
         parentsInfoPanelLayout.setVerticalGroup(
@@ -2511,15 +2721,15 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             .addGroup(parentsInfoPanelLayout.createSequentialGroup()
                 .addGap(59, 59, 59)
                 .addGroup(parentsInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField15)
+                    .addComponent(SDMotherNameField)
                     .addComponent(jLabel75, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jTextField16)
+                    .addComponent(SDMotherContactField)
                     .addComponent(jLabel76, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addGroup(parentsInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField17)
+                    .addComponent(SDFatherNameField)
                     .addComponent(jLabel77, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jTextField18)
+                    .addComponent(SDFatherContactField)
                     .addComponent(jLabel78, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(167, 167, 167))
         );
@@ -2532,8 +2742,8 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel79.setForeground(new java.awt.Color(255, 255, 255));
         jLabel79.setText("Remarks");
 
-        jTextField19.setBackground(new java.awt.Color(98, 161, 192));
-        jTextField19.setForeground(new java.awt.Color(255, 255, 255));
+        SDRemarksField.setBackground(new java.awt.Color(98, 161, 192));
+        SDRemarksField.setForeground(new java.awt.Color(255, 255, 255));
 
         javax.swing.GroupLayout addtionalInfoPanelLayout = new javax.swing.GroupLayout(addtionalInfoPanel);
         addtionalInfoPanel.setLayout(addtionalInfoPanelLayout);
@@ -2543,7 +2753,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addContainerGap(112, Short.MAX_VALUE)
                 .addGroup(addtionalInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel79, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField19, javax.swing.GroupLayout.PREFERRED_SIZE, 832, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(SDRemarksField, javax.swing.GroupLayout.PREFERRED_SIZE, 832, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(110, 110, 110))
         );
         addtionalInfoPanelLayout.setVerticalGroup(
@@ -2552,7 +2762,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addGap(39, 39, 39)
                 .addComponent(jLabel79, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField19, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(SDRemarksField, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(82, 82, 82))
         );
 
@@ -2936,9 +3146,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         ChangeCard(studentDetailsPanel);
     }//GEN-LAST:event_studentDetailsNewButtonLabelMousePressed
 
-    private void jTextField7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField7ActionPerformed
+    private void SDAddressFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SDAddressFieldActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField7ActionPerformed
+    }//GEN-LAST:event_SDAddressFieldActionPerformed
 
     private void masterlistNewButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_masterlistNewButtonMousePressed
         // TODO add your handling code here:
@@ -2999,11 +3209,11 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     }//GEN-LAST:event_CEAddButtonActionPerformed
 
     private void CECourseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CECourseButtonActionPerformed
-        // TODO add your handling code here:
+        Update_Courses_Action();
     }//GEN-LAST:event_CECourseButtonActionPerformed
 
     private void CEDeleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CEDeleteButtonActionPerformed
-        // TODO add your handling code here:
+        Delete_Courses_Action();
     }//GEN-LAST:event_CEDeleteButtonActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
@@ -3017,6 +3227,18 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private void CECourseMajorBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CECourseMajorBoxActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_CECourseMajorBoxActionPerformed
+
+    private void CESubjectBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CESubjectBoxActionPerformed
+        Course_Set_Text_Action();
+    }//GEN-LAST:event_CESubjectBoxActionPerformed
+
+    private void SDSearchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SDSearchButtonActionPerformed
+        Student_Details_Info_Action();
+    }//GEN-LAST:event_SDSearchButtonActionPerformed
+
+    private void CECourseListTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_CECourseListTableMouseClicked
+        OnClick_Table_Action();
+    }//GEN-LAST:event_CECourseListTableMouseClicked
 
     /**
      * @param args the command line arguments
@@ -3054,6 +3276,24 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> CETimeDateBox;
     private javax.swing.JTextField CEUnitsField;
     private javax.swing.JTable MLMasterlistTable;
+    private javax.swing.JTextField SDAddressField;
+    private javax.swing.JTextField SDAgeField;
+    private javax.swing.JTextField SDCitizenshipField;
+    private javax.swing.JTextField SDFatherContactField;
+    private javax.swing.JTextField SDFatherNameField;
+    private javax.swing.JTextField SDFirstNameField;
+    private javax.swing.JTextField SDGenderField;
+    private javax.swing.JTextField SDLastNameField;
+    private javax.swing.JTextField SDMaritalStatusField;
+    private javax.swing.JTextField SDMiddleNameField;
+    private javax.swing.JTextField SDMotherContactField;
+    private javax.swing.JTextField SDMotherNameField;
+    private javax.swing.JTextField SDReligionField;
+    private javax.swing.JTextField SDRemarksField;
+    private javax.swing.JButton SDSearchButton;
+    private javax.swing.JTextField SDStudentContactField;
+    private javax.swing.JTextField SDStudentIDField;
+    private javax.swing.JTextField SDStudentYearLevelField;
     private javax.swing.JTextField SEAddressField;
     private javax.swing.JComboBox<String> SEBirthDateBox;
     private javax.swing.JComboBox<String> SEBirthMonthBox;
@@ -3219,18 +3459,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel8;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane7;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField10;
-    private javax.swing.JTextField jTextField11;
     private javax.swing.JTextField jTextField12;
-    private javax.swing.JTextField jTextField13;
-    private javax.swing.JTextField jTextField14;
-    private javax.swing.JTextField jTextField15;
-    private javax.swing.JTextField jTextField16;
-    private javax.swing.JTextField jTextField17;
-    private javax.swing.JTextField jTextField18;
-    private javax.swing.JTextField jTextField19;
-    private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField21;
     private javax.swing.JTextField jTextField23;
     private javax.swing.JTextField jTextField24;
@@ -3238,12 +3467,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField26;
     private javax.swing.JTextField jTextField28;
     private javax.swing.JTextField jTextField29;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
-    private javax.swing.JTextField jTextField5;
-    private javax.swing.JTextField jTextField6;
-    private javax.swing.JTextField jTextField7;
-    private javax.swing.JTextField jTextField9;
     private javax.swing.JButton logoutButton;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JPanel masterlistNewButton;

@@ -1716,6 +1716,9 @@
                       <TableHeader reorderingAllowed="true" resizingAllowed="true"/>
                     </Property>
                   </Properties>
+                  <Events>
+                    <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="CECourseListTableMouseClicked"/>
+                  </Events>
                 </Component>
               </SubComponents>
             </Container>
@@ -1981,7 +1984,7 @@
                     <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
                       <StringArray count="13">
                         <StringItem index="0" value=" "/>
-                        <StringItem index="1" value="Understandin the Self"/>
+                        <StringItem index="1" value="Understanding the Self"/>
                         <StringItem index="2" value="Readings in Philippine History"/>
                         <StringItem index="3" value="The Contemporary World"/>
                         <StringItem index="4" value="Mathematics in the Modern World"/>
@@ -1997,6 +2000,9 @@
                     </Property>
                     <Property name="focusable" type="boolean" value="false"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="CESubjectBoxActionPerformed"/>
+                  </Events>
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
                   </AuxValues>
@@ -3444,11 +3450,13 @@
                           <EmptySpace min="-2" pref="56" max="-2" attributes="0"/>
                           <Component id="jLabel16" min="-2" pref="129" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="jTextField1" min="-2" pref="257" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" pref="127" max="-2" attributes="0"/>
+                          <Component id="SDStudentIDField" min="-2" pref="185" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Component id="SDSearchButton" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="106" max="-2" attributes="0"/>
                           <Component id="jLabel17" min="-2" pref="129" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="jTextField2" min="-2" pref="257" max="-2" attributes="0"/>
+                          <Component id="SDStudentYearLevelField" min="-2" pref="257" max="-2" attributes="0"/>
                           <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
@@ -3459,11 +3467,14 @@
                           <EmptySpace pref="21" max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                  <Component id="jTextField2" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="SDStudentYearLevelField" alignment="0" max="32767" attributes="0"/>
                                   <Component id="jLabel17" alignment="0" min="-2" pref="22" max="-2" attributes="0"/>
                               </Group>
                               <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                  <Component id="jTextField1" max="32767" attributes="0"/>
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="SDStudentIDField" alignment="3" max="32767" attributes="0"/>
+                                      <Component id="SDSearchButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
                                   <Component id="jLabel16" max="32767" attributes="0"/>
                               </Group>
                           </Group>
@@ -3484,7 +3495,7 @@
                     <Property name="text" type="java.lang.String" value="Student No"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JTextField" name="jTextField1">
+                <Component class="javax.swing.JTextField" name="SDStudentIDField">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -3494,7 +3505,7 @@
                     </Property>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JTextField" name="jTextField2">
+                <Component class="javax.swing.JTextField" name="SDStudentYearLevelField">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -3514,6 +3525,14 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="Year Level"/>
                   </Properties>
+                </Component>
+                <Component class="javax.swing.JButton" name="SDSearchButton">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Search"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="SDSearchButtonActionPerformed"/>
+                  </Events>
                 </Component>
               </SubComponents>
             </Container>
@@ -3555,17 +3574,17 @@
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="jLabel21" min="-2" pref="129" max="-2" attributes="0"/>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="jTextField5" max="32767" attributes="0"/>
+                                      <Component id="SDMiddleNameField" max="32767" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="jLabel19" min="-2" pref="129" max="-2" attributes="0"/>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="jTextField4" max="32767" attributes="0"/>
+                                      <Component id="SDFirstNameField" max="32767" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="jLabel18" min="-2" pref="129" max="-2" attributes="0"/>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="jTextField3" min="-2" pref="214" max="-2" attributes="0"/>
+                                      <Component id="SDLastNameField" min="-2" pref="214" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
                                       <Group type="103" groupAlignment="0" attributes="0">
@@ -3574,8 +3593,8 @@
                                       </Group>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="jTextField7" min="-2" pref="214" max="-2" attributes="0"/>
-                                          <Component id="jTextField6" min="-2" pref="117" max="-2" attributes="0"/>
+                                          <Component id="SDAddressField" min="-2" pref="214" max="-2" attributes="0"/>
+                                          <Component id="SDAgeField" min="-2" pref="117" max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
                               </Group>
@@ -3584,29 +3603,29 @@
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="jLabel74" min="-2" pref="129" max="-2" attributes="0"/>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="jTextField14" max="32767" attributes="0"/>
+                                      <Component id="SDStudentContactField" max="32767" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
                                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                           <Group type="102" alignment="0" attributes="0">
                                               <Component id="jLabel71" min="-2" pref="129" max="-2" attributes="0"/>
                                               <EmptySpace type="separate" max="-2" attributes="0"/>
-                                              <Component id="jTextField10" max="32767" attributes="0"/>
+                                              <Component id="SDMaritalStatusField" max="32767" attributes="0"/>
                                           </Group>
                                           <Group type="102" alignment="0" attributes="0">
                                               <Component id="jLabel70" min="-2" pref="129" max="-2" attributes="0"/>
                                               <EmptySpace type="separate" max="-2" attributes="0"/>
-                                              <Component id="jTextField9" min="-2" pref="135" max="-2" attributes="0"/>
+                                              <Component id="SDGenderField" min="-2" pref="135" max="-2" attributes="0"/>
                                           </Group>
                                           <Group type="102" alignment="1" attributes="0">
                                               <Component id="jLabel72" min="-2" pref="129" max="-2" attributes="0"/>
                                               <EmptySpace type="separate" max="-2" attributes="0"/>
-                                              <Component id="jTextField11" max="32767" attributes="0"/>
+                                              <Component id="SDCitizenshipField" max="32767" attributes="0"/>
                                           </Group>
                                           <Group type="102" alignment="1" attributes="0">
                                               <Component id="jLabel73" min="-2" pref="129" max="-2" attributes="0"/>
                                               <EmptySpace type="separate" max="-2" attributes="0"/>
-                                              <Component id="jTextField13" min="-2" pref="135" max="-2" attributes="0"/>
+                                              <Component id="SDReligionField" min="-2" pref="135" max="-2" attributes="0"/>
                                           </Group>
                                       </Group>
                                       <EmptySpace min="0" pref="24" max="32767" attributes="0"/>
@@ -3621,26 +3640,26 @@
                           <Group type="102" attributes="0">
                               <EmptySpace min="-2" pref="44" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="jTextField3" alignment="3" max="32767" attributes="0"/>
+                                  <Component id="SDLastNameField" alignment="3" max="32767" attributes="0"/>
                                   <Component id="jLabel18" alignment="3" max="32767" attributes="0"/>
-                                  <Component id="jTextField14" alignment="3" max="32767" attributes="0"/>
+                                  <Component id="SDStudentContactField" alignment="3" max="32767" attributes="0"/>
                                   <Component id="jLabel74" alignment="3" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" attributes="0">
                                       <Group type="103" groupAlignment="3" attributes="0">
-                                          <Component id="jTextField4" alignment="3" max="32767" attributes="0"/>
+                                          <Component id="SDFirstNameField" alignment="3" max="32767" attributes="0"/>
                                           <Component id="jLabel19" alignment="3" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="3" attributes="0">
-                                          <Component id="jTextField5" alignment="3" max="32767" attributes="0"/>
+                                          <Component id="SDMiddleNameField" alignment="3" max="32767" attributes="0"/>
                                           <Component id="jLabel21" alignment="3" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="3" attributes="0">
-                                          <Component id="jTextField6" alignment="3" max="32767" attributes="0"/>
+                                          <Component id="SDAgeField" alignment="3" max="32767" attributes="0"/>
                                           <Component id="jLabel22" alignment="3" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
@@ -3649,27 +3668,27 @@
                                               <Component id="jLabel23" pref="19" max="32767" attributes="0"/>
                                               <EmptySpace min="-2" pref="37" max="-2" attributes="0"/>
                                           </Group>
-                                          <Component id="jTextField7" max="32767" attributes="0"/>
+                                          <Component id="SDAddressField" max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
                                   <Group type="102" attributes="0">
                                       <Group type="103" groupAlignment="3" attributes="0">
-                                          <Component id="jTextField9" alignment="3" max="32767" attributes="0"/>
+                                          <Component id="SDGenderField" alignment="3" max="32767" attributes="0"/>
                                           <Component id="jLabel70" alignment="3" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="3" attributes="0">
-                                          <Component id="jTextField10" alignment="3" max="32767" attributes="0"/>
+                                          <Component id="SDMaritalStatusField" alignment="3" max="32767" attributes="0"/>
                                           <Component id="jLabel71" alignment="3" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="3" attributes="0">
-                                          <Component id="jTextField11" alignment="3" max="32767" attributes="0"/>
+                                          <Component id="SDCitizenshipField" alignment="3" max="32767" attributes="0"/>
                                           <Component id="jLabel72" alignment="3" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="3" attributes="0">
-                                          <Component id="jTextField13" alignment="3" max="32767" attributes="0"/>
+                                          <Component id="SDReligionField" alignment="3" max="32767" attributes="0"/>
                                           <Component id="jLabel73" alignment="3" max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
@@ -3680,7 +3699,7 @@
                     </DimensionLayout>
                   </Layout>
                   <SubComponents>
-                    <Component class="javax.swing.JTextField" name="jTextField3">
+                    <Component class="javax.swing.JTextField" name="SDLastNameField">
                       <Properties>
                         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                           <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -3712,7 +3731,7 @@
                         <Property name="text" type="java.lang.String" value="First Name"/>
                       </Properties>
                     </Component>
-                    <Component class="javax.swing.JTextField" name="jTextField4">
+                    <Component class="javax.swing.JTextField" name="SDFirstNameField">
                       <Properties>
                         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                           <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -3722,7 +3741,7 @@
                         </Property>
                       </Properties>
                     </Component>
-                    <Component class="javax.swing.JTextField" name="jTextField5">
+                    <Component class="javax.swing.JTextField" name="SDMiddleNameField">
                       <Properties>
                         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                           <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -3754,7 +3773,7 @@
                         <Property name="text" type="java.lang.String" value="Age"/>
                       </Properties>
                     </Component>
-                    <Component class="javax.swing.JTextField" name="jTextField6">
+                    <Component class="javax.swing.JTextField" name="SDAgeField">
                       <Properties>
                         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                           <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -3775,7 +3794,7 @@
                         <Property name="text" type="java.lang.String" value="Address"/>
                       </Properties>
                     </Component>
-                    <Component class="javax.swing.JTextField" name="jTextField7">
+                    <Component class="javax.swing.JTextField" name="SDAddressField">
                       <Properties>
                         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                           <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -3785,7 +3804,7 @@
                         </Property>
                       </Properties>
                       <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField7ActionPerformed"/>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="SDAddressFieldActionPerformed"/>
                       </Events>
                     </Component>
                     <Component class="javax.swing.JLabel" name="jLabel70">
@@ -3799,7 +3818,7 @@
                         <Property name="text" type="java.lang.String" value="Gender"/>
                       </Properties>
                     </Component>
-                    <Component class="javax.swing.JTextField" name="jTextField9">
+                    <Component class="javax.swing.JTextField" name="SDGenderField">
                       <Properties>
                         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                           <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -3809,7 +3828,7 @@
                         </Property>
                       </Properties>
                     </Component>
-                    <Component class="javax.swing.JTextField" name="jTextField10">
+                    <Component class="javax.swing.JTextField" name="SDMaritalStatusField">
                       <Properties>
                         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                           <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -3841,7 +3860,7 @@
                         <Property name="text" type="java.lang.String" value="Citizenship"/>
                       </Properties>
                     </Component>
-                    <Component class="javax.swing.JTextField" name="jTextField11">
+                    <Component class="javax.swing.JTextField" name="SDCitizenshipField">
                       <Properties>
                         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                           <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -3862,7 +3881,7 @@
                         <Property name="text" type="java.lang.String" value="Religion"/>
                       </Properties>
                     </Component>
-                    <Component class="javax.swing.JTextField" name="jTextField13">
+                    <Component class="javax.swing.JTextField" name="SDReligionField">
                       <Properties>
                         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                           <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -3872,7 +3891,7 @@
                         </Property>
                       </Properties>
                     </Component>
-                    <Component class="javax.swing.JTextField" name="jTextField14">
+                    <Component class="javax.swing.JTextField" name="SDStudentContactField">
                       <Properties>
                         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                           <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -3921,12 +3940,12 @@
                                   <Group type="102" attributes="0">
                                       <Component id="jLabel77" min="-2" pref="129" max="-2" attributes="0"/>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="jTextField17" min="-2" pref="214" max="-2" attributes="0"/>
+                                      <Component id="SDFatherNameField" min="-2" pref="214" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" attributes="0">
                                       <Component id="jLabel75" min="-2" pref="129" max="-2" attributes="0"/>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="jTextField15" min="-2" pref="214" max="-2" attributes="0"/>
+                                      <Component id="SDMotherNameField" min="-2" pref="214" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                               <EmptySpace min="-2" pref="123" max="-2" attributes="0"/>
@@ -3934,12 +3953,12 @@
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="jLabel78" min="-2" pref="129" max="-2" attributes="0"/>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="jTextField18" max="32767" attributes="0"/>
+                                      <Component id="SDFatherContactField" max="32767" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="jLabel76" min="-2" pref="129" max="-2" attributes="0"/>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="jTextField16" pref="159" max="32767" attributes="0"/>
+                                      <Component id="SDMotherContactField" pref="159" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                               <EmptySpace min="-2" pref="139" max="-2" attributes="0"/>
@@ -3951,16 +3970,16 @@
                           <Group type="102" attributes="0">
                               <EmptySpace min="-2" pref="59" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="jTextField15" alignment="3" max="32767" attributes="0"/>
+                                  <Component id="SDMotherNameField" alignment="3" max="32767" attributes="0"/>
                                   <Component id="jLabel75" alignment="3" max="32767" attributes="0"/>
-                                  <Component id="jTextField16" alignment="3" max="32767" attributes="0"/>
+                                  <Component id="SDMotherContactField" alignment="3" max="32767" attributes="0"/>
                                   <Component id="jLabel76" alignment="3" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="jTextField17" alignment="3" max="32767" attributes="0"/>
+                                  <Component id="SDFatherNameField" alignment="3" max="32767" attributes="0"/>
                                   <Component id="jLabel77" alignment="3" max="32767" attributes="0"/>
-                                  <Component id="jTextField18" alignment="3" max="32767" attributes="0"/>
+                                  <Component id="SDFatherContactField" alignment="3" max="32767" attributes="0"/>
                                   <Component id="jLabel78" alignment="3" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace min="-2" pref="167" max="-2" attributes="0"/>
@@ -3980,7 +3999,7 @@
                         <Property name="text" type="java.lang.String" value="Mother&apos;s Name"/>
                       </Properties>
                     </Component>
-                    <Component class="javax.swing.JTextField" name="jTextField15">
+                    <Component class="javax.swing.JTextField" name="SDMotherNameField">
                       <Properties>
                         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                           <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -4001,7 +4020,7 @@
                         <Property name="text" type="java.lang.String" value="Contact No"/>
                       </Properties>
                     </Component>
-                    <Component class="javax.swing.JTextField" name="jTextField16">
+                    <Component class="javax.swing.JTextField" name="SDMotherContactField">
                       <Properties>
                         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                           <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -4022,7 +4041,7 @@
                         <Property name="text" type="java.lang.String" value="Father&apos;s Name"/>
                       </Properties>
                     </Component>
-                    <Component class="javax.swing.JTextField" name="jTextField17">
+                    <Component class="javax.swing.JTextField" name="SDFatherNameField">
                       <Properties>
                         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                           <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -4043,7 +4062,7 @@
                         <Property name="text" type="java.lang.String" value="Contact No"/>
                       </Properties>
                     </Component>
-                    <Component class="javax.swing.JTextField" name="jTextField18">
+                    <Component class="javax.swing.JTextField" name="SDFatherContactField">
                       <Properties>
                         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                           <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -4079,7 +4098,7 @@
                               <EmptySpace pref="112" max="32767" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="jLabel79" min="-2" pref="129" max="-2" attributes="0"/>
-                                  <Component id="jTextField19" min="-2" pref="832" max="-2" attributes="0"/>
+                                  <Component id="SDRemarksField" min="-2" pref="832" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace min="-2" pref="110" max="-2" attributes="0"/>
                           </Group>
@@ -4091,7 +4110,7 @@
                               <EmptySpace min="-2" pref="39" max="-2" attributes="0"/>
                               <Component id="jLabel79" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jTextField19" min="-2" pref="145" max="-2" attributes="0"/>
+                              <Component id="SDRemarksField" min="-2" pref="145" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="82" max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -4109,7 +4128,7 @@
                         <Property name="text" type="java.lang.String" value="Remarks"/>
                       </Properties>
                     </Component>
-                    <Component class="javax.swing.JTextField" name="jTextField19">
+                    <Component class="javax.swing.JTextField" name="SDRemarksField">
                       <Properties>
                         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                           <Color blue="c0" green="a1" red="62" type="rgb"/>
