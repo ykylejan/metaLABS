@@ -47,9 +47,15 @@ import javax.swing.table.TableRowSorter;
  * @author user
  */
 public class EnrollmentEncoding extends javax.swing.JFrame {
-    
+
     String dbURL = "jdbc:sqlite:/C:\\Users\\user\\OneDrive\\Documents\\NetBeansProjects\\MetaLabs\\src\\com\\database\\metalabsDatabase.db";
-    
+
+    private ArrayList<JLabel> courseCodeLabels = new ArrayList<>();
+    private ArrayList<JLabel> subjectLabels = new ArrayList<>();
+    private ArrayList<JLabel> unitsLabels = new ArrayList<>();
+    private ArrayList<JLabel> roomLabels = new ArrayList<>();
+    private ArrayList<JLabel> timeLabels = new ArrayList<>();
+
     void Enroll_Student_Action() {
         String studentFirstName = SEFirstNameField.getText();
         String studentMiddleName = SEMiddleNameField.getText();
@@ -64,11 +70,11 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         String studentReligion = SEReligionBox.getSelectedItem().toString();
         String studentMotherName = SEMotherNameField.getText();
         String studentFatherName = SEFatherNameField.getText();
-        
+
         int studentYearNum = Integer.parseInt(studentBirthYear);
         int studentAge = 2023 - studentYearNum;
         int id;
-        
+
         if (studentFirstName.equals("") || studentMiddleName.equals("") || studentLastName.equals("")) {
             JOptionPane.showMessageDialog(null, "Please enter the student's name!", "Student Enrollment", JOptionPane.ERROR_MESSAGE);
         } else if (studentBirthDate.equals(" ") || studentBirthMonth.equals(" ") || studentBirthYear.equals(" ")) {
@@ -85,14 +91,14 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             long studentContactNumber = Long.parseLong(SEContactNumberField.getText());
             long studentMotherContact = Long.parseLong(SEMotherContactField.getText());
             long studentFatherContact = Long.parseLong(SEFatherContactField.getText());
-            
+
             try {
                 Connection connection = DriverManager.getConnection(dbURL);
                 PreparedStatement PS = connection.prepareStatement("INSERT INTO `student_enrollment`(`studentFirstName`, `studentMiddleName`, "
                         + "`studentLastName`, `studentBirthDate`, `studentBirthMonth`, `studentBirthYear`, `studentAge`, `studentAddress`, "
                         + "`studentGender`, `studentCitizenship`, `studentContactNumber`, `studentMarital`, `studentReligion`, `studentMotherName`, "
                         + "`studentMotherContact`, `studentFatherName`, `studentFatherContact`) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-                
+
                 PS.setString(1, studentFirstName);
                 PS.setString(2, studentMiddleName);
                 PS.setString(3, studentLastName);
@@ -110,12 +116,12 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 PS.setLong(15, studentMotherContact);
                 PS.setString(16, studentFatherName);
                 PS.setLong(17, studentFatherContact);
-                
+
                 PS.executeUpdate();
-                
+
                 JOptionPane.showMessageDialog(null, "Student Enrolled");
                 Masterlist_Table();
-                
+
                 SEFirstNameField.setText("");
                 SEMiddleNameField.setText("");
                 SELastNameField.setText("");
@@ -153,7 +159,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             }
         }
     }
-    
+
     void Enroll_Course_Action() {
         long studentId = Long.parseLong(CEStudentIDField.getText());
         String studentName = CEStudentNameField.getText();
@@ -162,7 +168,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         String studentYearLevel = CEYearLevelBox.getSelectedItem().toString();
         String studentSemester = CESemesterBox.getSelectedItem().toString();
         String studentTerm = CETermBox.getSelectedItem().toString();
-        
+
         if (studentCollegeDep.contains("CAE")) {
             studentCollegeDep = "CAE";
         } else if (studentCollegeDep.contains("CAFAE")) {
@@ -182,50 +188,48 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         } else {
             studentCollegeDep = null;
         }
-        
+
         try {
             Connection connection = DriverManager.getConnection(dbURL);
             PreparedStatement ps = connection.prepareStatement("UPDATE student_enrollment SET studentCollegeDep = ?, studentCourseMajor = ?, studentYearLevel = ?, studentSemester = ?, studentTerm = ?  WHERE studentID = ?");
-            
+
             ps.setString(1, studentCollegeDep);
             ps.setString(2, studentCourseMajor);
             ps.setString(3, studentYearLevel);
             ps.setString(4, studentSemester);
             ps.setString(5, studentTerm);
-            
+
             ps.setLong(6, studentId);
-            
+
             ps.executeUpdate();
-            
+
             JOptionPane.showMessageDialog(null, "Course Enrolled");
             Masterlist_Table();
-            
+
             CEStudentIDField.setText("");
             CEStudentNameField.setText("");
             CECollegeDepBox.setSelectedIndex(0);
-            CECourseMajorBox.setSelectedIndex(0);
-//            CEYearLevelBox.setSelectedIndex(0);
-//            CESemesterBox.setSelectedIndex(0);
-//            CETermBox.setSelectedIndex(0);
-            CEYearLevelBox.setSelectedItem("");
-            CESemesterBox.setSelectedItem("");
-            CETermBox.setSelectedItem("");
-            
+//            CECourseMajorBox.setSelectedIndex(0);
+
+            CEYearLevelBox.setSelectedIndex(0);
+            CESemesterBox.setSelectedIndex(0);
+            CETermBox.setSelectedIndex(0);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-    
+
     void Add_Courses_Action() {
         int studentId = Integer.parseInt(CEStudentIDField.getText());
         int id;
-        
+
         String courseSubjectCode = CESubjectCodeField.getText();
         String courseSubject = CESubjectBox.getSelectedItem().toString();
         double courseUnits = Double.parseDouble(CEUnitsField.getText());
         String courseTime = CETimeDateBox.getSelectedItem().toString();
         String courseRoom = CERoomBox.getSelectedItem().toString();
-        
+
         try {
             Connection connection = DriverManager.getConnection(dbURL);
 //            PreparedStatement ps = connection.prepareStatement("UPDATE student_course_enrolled SET courseCode = ?, courseTitle = ?, courseUnits = ?, courseTime = ?, courseRoom = ? WHERE studentID = ?");
@@ -244,17 +248,17 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             ps.setDouble(4, courseUnits);
             ps.setString(5, courseTime);
             ps.setString(6, courseRoom);
-            
+
             ps.executeUpdate();
             JOptionPane.showMessageDialog(null, "Course Added!");
             Update_Courses_Table();
-            
+
             CESubjectBox.setSelectedIndex(0);
             CESubjectCodeField.setText("");
             CEUnitsField.setText("");
             CETimeDateBox.setSelectedIndex(0);
             CERoomBox.setSelectedIndex(0);
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -278,7 +282,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 //            e.printStackTrace();
 //        }
     }
-    
+
     void Update_Courses_Action() {
         DefaultTableModel tablemodel = (DefaultTableModel) CECourseListTable.getModel();
         int selectedIndex = CECourseListTable.getSelectedRow();
@@ -286,12 +290,12 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 //        String courseCode = CESubjectCodeField.getText();
         String courseCode = tablemodel.getValueAt(selectedIndex, 0).toString();
         String studentId = CEStudentIDField.getText();
-        
+
         String courseSubject = CESubjectBox.getSelectedItem().toString();
         String units = CEUnitsField.getText();
         String time = CETimeDateBox.getSelectedItem().toString();
         String room = CERoomBox.getSelectedItem().toString();
-        
+
         try {
             Connection connection = DriverManager.getConnection(dbURL);
 //            PreparedStatement ps = connection.prepareStatement("UPDATE `course_enrollment` SET `courseTitle`=?, `courseUnits`=?, `courseTime`=?, `courseRoom`=? WHERE `courseCode` = ?");
@@ -306,75 +310,75 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             ps.setString(1, courseSubject);
             ps.setString(2, time);
             ps.setString(3, room);
-            
+
             ps.setInt(4, Integer.parseInt(studentId));
             ps.setString(5, courseCode);
-            
+
             ps.executeUpdate();
             JOptionPane.showMessageDialog(null, "Subject Entry Updated");
             Update_Courses_Table();
-            
+
             CESubjectBox.setSelectedIndex(0);
             CESubjectCodeField.setText("");
             CEUnitsField.setText("");
             CETimeDateBox.setSelectedIndex(0);
             CERoomBox.setSelectedIndex(0);
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
     }
-    
+
     void Delete_Courses_Action() {
         DefaultTableModel model = (DefaultTableModel) CECourseListTable.getModel();
         int selectedIndex = CECourseListTable.getSelectedRow();
-        
+
         String studentId = CEStudentIDField.getText();
         try {
             String courseCode = model.getValueAt(selectedIndex, 0).toString();
-            
+
             int dialogResult = JOptionPane.showConfirmDialog(null, "Do you want to delete this subject entry?", "Course Enrollment", JOptionPane.YES_NO_OPTION);
-            
+
             if (dialogResult == JOptionPane.YES_OPTION) {
                 Connection connection = DriverManager.getConnection(dbURL);
 //                PreparedStatement ps = connection.prepareStatement("DELETE FROM `course_enrollment` WHERE `courseCode` = ?");
                 PreparedStatement ps = connection.prepareStatement("DELETE FROM student_course_enrolled WHERE studentID = ? AND courseCode = ?");
-                
+
                 ps.setInt(1, Integer.parseInt(studentId));
                 ps.setString(2, courseCode);
-                
+
                 ps.executeUpdate();
                 JOptionPane.showMessageDialog(null, "Subject Entry Deleted");
                 Update_Courses_Table();
-                
+
                 CESubjectBox.setSelectedIndex(0);
                 CESubjectCodeField.setText("");
                 CEUnitsField.setText("");
                 CETimeDateBox.setSelectedIndex(0);
                 CERoomBox.setSelectedIndex(0);
             }
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
     }
-    
+
     void Update_Courses_Table() {
         String studentID = CEStudentIDField.getText();
-        
+
         try {
             Connection connection = DriverManager.getConnection(dbURL);
             PreparedStatement ps = connection.prepareStatement("SELECT * FROM student_course_enrolled WHERE studentID = ?");
 //            PreparedStatement ps = connection.prepareStatement("SELECT c,courseCode, c.courseTitle, c.courseUnits, c.courseTime, c.courseRoom FROM student_course_enrolled c JOIN student_enrollment s ON s.studentID = c.studentID");
             ps.setString(1, studentID);
-            
+
             ResultSet rs = ps.executeQuery();
-            
+
             DefaultTableModel tableModel = (DefaultTableModel) CECourseListTable.getModel();
             tableModel.setRowCount(0);
-            
+
             while (rs.next()) {
                 Vector vector = new Vector();
                 vector.add(rs.getString("courseCode"));
@@ -382,29 +386,29 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 vector.add(rs.getString("courseUnits"));
                 vector.add(rs.getString("courseTime"));
                 vector.add(rs.getString("courseRoom"));
-                
+
                 tableModel.addRow(vector);
                 tableModel.fireTableDataChanged();
             }
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
     }
-    
+
     void Masterlist_Table() {
         try {
             Connection connection = DriverManager.getConnection(dbURL);
             PreparedStatement ps = connection.prepareStatement("SELECT * FROM `student_enrollment`");
-            
+
             ResultSet rs = ps.executeQuery();
 
 //            ResultSetMetaData rsmd = rs.getMetaData();
 //            columnCount = rsmd.getColumnCount();
             DefaultTableModel tableModel = (DefaultTableModel) MLMasterlistTable.getModel();
             tableModel.setRowCount(0);
-            
+
             while (rs.next()) {
                 Vector vector = new Vector();
                 vector.add(rs.getInt("studentID"));
@@ -414,17 +418,17 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 vector.add(rs.getString("studentYearLevel"));
                 vector.add(rs.getString("studentCollegeDep"));
                 vector.add(rs.getString("studentCourseMajor"));
-                
+
                 tableModel.addRow(vector);
                 tableModel.fireTableDataChanged();
             }
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
     }
-    
+
     void Masterlist_Table_Search() {
         String searchTerm = MLSearchField.getText();
         DefaultTableModel model = (DefaultTableModel) MLMasterlistTable.getModel();
@@ -432,18 +436,18 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         MLMasterlistTable.setRowSorter(sorter);
         sorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchTerm));
     }
-    
+
     void Student_Details_Info_Action() {
 //        long studentID = Long.parseLong(SDStudentIDField.getText());
         String studentID = SDStudentIDField.getText();
-        
+
         try {
             Connection connection = DriverManager.getConnection(dbURL);
             PreparedStatement ps = connection.prepareStatement("SELECT * FROM `student_enrollment` WHERE `studentID` = ?");
             ps.setString(1, studentID);
-            
+
             ResultSet rs = ps.executeQuery();
-            
+
             while (rs.next()) {
                 SDFirstNameField.setText(rs.getString(2));
                 SDLastNameField.setText(rs.getString(4));
@@ -455,7 +459,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 SDMaritalStatusField.setText(rs.getString(13));
                 SDCitizenshipField.setText(rs.getString(11));
                 SDReligionField.setText(rs.getString(14));
-                
+
                 SDMotherNameField.setText(rs.getString(15));
                 SDMotherContactField.setText(Long.toString(rs.getLong(16)));
                 SDFatherNameField.setText(rs.getString(17));
@@ -465,11 +469,11 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }
-    
+
     void Student_Details_Update_Action() {
 //        String studentID = SDStudentIDField.getText();
         int studentID = Integer.parseInt(SDStudentIDField.getText());
-        
+
         String studentLastName = SDLastNameField.getText();
         String studentFirstName = SDFirstNameField.getText();
         String studentMiddleName = SDMiddleNameField.getText();
@@ -481,16 +485,16 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         String studentMarital = SDMaritalStatusField.getText();
         String studentCitizenship = SDCitizenshipField.getText();
         String studentReligion = SDReligionField.getText();
-        
+
         String motherName = SDMotherNameField.getText();
         long motherContact = Long.parseLong(SDMotherContactField.getText());
         String fatherName = SDFatherNameField.getText();
         long fatherContact = Long.parseLong(SDFatherContactField.getText());
-        
+
         try {
             Connection connection = DriverManager.getConnection(dbURL);
             PreparedStatement ps = connection.prepareStatement("UPDATE `student_enrollment` SET `studentFirstName`=?, `studentMiddleName`=?, `studentLastName`=?, `studentAge`=?, `studentAddress`=?, `studentContactNumber`=?, `studentGender`=?, `studentMarital`=?, `studentCitizenship`=?, `studentReligion`=?, `studentMotherName`=?, `studentMotherContact`=?, `studentFatherName`=?, `studentFatherContact`=? WHERE `studentID` = ?");
-            
+
             ps.setString(1, studentFirstName);
             ps.setString(2, studentMiddleName);
             ps.setString(3, studentLastName);
@@ -506,35 +510,35 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             ps.setString(13, fatherName);
             ps.setLong(14, fatherContact);
             ps.setInt(15, studentID);
-            
+
             ps.executeUpdate();
             JOptionPane.showMessageDialog(null, "Student Details Updated");
             Masterlist_Table();
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
     }
-    
+
     void Student_Details_Delete_Action() {
         int studentID = Integer.parseInt(SDStudentIDField.getText());
-        
+
         try {
             int dialogRes = JOptionPane.showConfirmDialog(null, "Do you want to un-enroll this student?", "Student Details", JOptionPane.YES_NO_OPTION);
-            
+
             if (dialogRes == JOptionPane.YES_OPTION) {
                 Connection connection = DriverManager.getConnection(dbURL);
                 PreparedStatement ps = connection.prepareStatement("DELETE FROM `student_enrollment` WHERE `studentID` = ?");
-                
+
                 ps.setInt(1, studentID);
-                
+
                 ps.executeUpdate();
                 JOptionPane.showMessageDialog(null, "Student Dropped");
                 Masterlist_Table();
-                
+
                 SDStudentIDField.setText("");
-                
+
                 SDFirstNameField.setText("");
                 SDMiddleNameField.setText("");
                 SDLastNameField.setText("");
@@ -545,86 +549,80 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 SDMaritalStatusField.setText("");
                 SDCitizenshipField.setText("");
                 SDReligionField.setText("");
-                
+
                 SDMotherNameField.setText("");
                 SDMotherContactField.setText("");
                 SDFatherNameField.setText("");
                 SDFatherContactField.setText("");
-                
+
             }
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-    
+
     void Print_Form_Action() {
         String studentId = CEStudentIDField.getText();
-        
-        ArrayList<JLabel> courseCodeLabels = new ArrayList<>();
-        ArrayList<JLabel> subjectLabels = new ArrayList<>();
-        ArrayList<JLabel> unitsLabels = new ArrayList<>();
-        ArrayList<JLabel> roomLabels = new ArrayList<>();
-        ArrayList<JLabel> timeLabels = new ArrayList<>();
-        
+
         courseCodeLabels.add(PFCourseCodeLabel1);
         subjectLabels.add(PFSubjectLabel1);
         unitsLabels.add(PFUnitsLabel1);
         roomLabels.add(PFRoomLabel1);
         timeLabels.add(PFTimeLabel1);
-        
+
         courseCodeLabels.add(PFCourseCodeLabel2);
         subjectLabels.add(PFSubjectLabel2);
         unitsLabels.add(PFUnitsLabel2);
         roomLabels.add(PFRoomLabel2);
         timeLabels.add(PFTimeLabel2);
-        
+
         courseCodeLabels.add(PFCourseCodeLabel3);
         subjectLabels.add(PFSubjectLabel3);
         unitsLabels.add(PFUnitsLabel3);
         roomLabels.add(PFRoomLabel3);
         timeLabels.add(PFTimeLabel3);
-        
+
         courseCodeLabels.add(PFCourseCodeLabel4);
         subjectLabels.add(PFSubjectLabel4);
         unitsLabels.add(PFUnitsLabel4);
         roomLabels.add(PFRoomLabel4);
         timeLabels.add(PFTimeLabel4);
-        
+
         courseCodeLabels.add(PFCourseCodeLabel5);
         subjectLabels.add(PFSubjectLabel5);
         unitsLabels.add(PFUnitsLabel5);
         roomLabels.add(PFRoomLabel5);
         timeLabels.add(PFTimeLabel5);
-        
+
         courseCodeLabels.add(PFCourseCodeLabel6);
         subjectLabels.add(PFSubjectLabel6);
         unitsLabels.add(PFUnitsLabel6);
         roomLabels.add(PFRoomLabel6);
         timeLabels.add(PFTimeLabel6);
-        
+
         courseCodeLabels.add(PFCourseCodeLabel7);
         subjectLabels.add(PFSubjectLabel7);
         unitsLabels.add(PFUnitsLabel7);
         roomLabels.add(PFRoomLabel7);
         timeLabels.add(PFTimeLabel7);
-        
+
         courseCodeLabels.add(PFCourseCodeLabel8);
         subjectLabels.add(PFSubjectLabel8);
         unitsLabels.add(PFUnitsLabel8);
         roomLabels.add(PFRoomLabel8);
         timeLabels.add(PFTimeLabel8);
-        
+
         try {
             Connection connection = DriverManager.getConnection(dbURL);
             PreparedStatement ps = connection.prepareStatement("SELECT * FROM student_enrollment WHERE studentID = ?");
             PreparedStatement ps1 = connection.prepareStatement("SELECT * FROM student_course_enrolled WHERE studentID = ?");
             ps.setString(1, studentId);
             ps1.setString(1, studentId);
-            
+
             ResultSet rs = ps.executeQuery();
             ResultSet rs1 = ps1.executeQuery();
-            
+
             if (rs.next()) {
                 PFStudentIDLabel.setText(rs.getString("studentID")); // or int
                 PFStudentNameLabel.setText(rs.getString("studentFirstName") + " " + rs.getString("studentMiddleName") + " " + rs.getString("studentLastName"));
@@ -634,74 +632,129 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 PFSemesterLabel.setText(rs.getString("studentSemester"));
                 PFTermLabel.setText(rs.getString("studentTerm"));
             }
-            
+
             int i = 0;
+            
             while (rs1.next() && i < courseCodeLabels.size()) {
                 courseCodeLabels.get(i).setText(rs1.getString("courseCode"));
                 subjectLabels.get(i).setText(rs1.getString("courseTitle"));
                 unitsLabels.get(i).setText(rs1.getString("courseUnits"));
                 roomLabels.get(i).setText(rs1.getString("courseRoom"));
                 timeLabels.get(i).setText(rs1.getString("courseTime"));
-                
+
                 i++;
             }
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
     }
     
+    void Back_Button_Action() {
+        courseCodeLabels.clear();
+        subjectLabels.clear();
+        unitsLabels.clear();
+        roomLabels.clear();
+        timeLabels.clear();
+        
+        PFCourseCodeLabel1.setText("");
+        PFCourseCodeLabel2.setText("");
+        PFCourseCodeLabel3.setText("");
+        PFCourseCodeLabel4.setText("");
+        PFCourseCodeLabel5.setText("");
+        PFCourseCodeLabel6.setText("");
+        PFCourseCodeLabel7.setText("");
+        PFCourseCodeLabel8.setText("");
+        
+        PFSubjectLabel1.setText("");
+        PFSubjectLabel2.setText("");
+        PFSubjectLabel3.setText("");
+        PFSubjectLabel4.setText("");
+        PFSubjectLabel5.setText("");
+        PFSubjectLabel6.setText("");
+        PFSubjectLabel7.setText("");
+        PFSubjectLabel8.setText("");
+        
+        PFUnitsLabel1.setText("");
+        PFUnitsLabel2.setText("");
+        PFUnitsLabel3.setText("");
+        PFUnitsLabel4.setText("");
+        PFUnitsLabel5.setText("");
+        PFUnitsLabel6.setText("");
+        PFUnitsLabel7.setText("");
+        PFUnitsLabel8.setText("");
+        
+        PFRoomLabel1.setText("");
+        PFRoomLabel2.setText("");
+        PFRoomLabel3.setText("");
+        PFRoomLabel4.setText("");
+        PFRoomLabel5.setText("");
+        PFRoomLabel6.setText("");
+        PFRoomLabel7.setText("");
+        PFRoomLabel8.setText("");
+        
+        PFTimeLabel1.setText("");
+        PFTimeLabel2.setText("");
+        PFTimeLabel3.setText("");
+        PFTimeLabel4.setText("");
+        PFTimeLabel5.setText("");
+        PFTimeLabel6.setText("");
+        PFTimeLabel7.setText("");
+        PFTimeLabel8.setText("");
+
+    }
+
     void Print_Form_Save(JPanel panel) {
         PrinterJob printerJob = PrinterJob.getPrinterJob();
         printerJob.setJobName("Print Record");
-        
+
         printerJob.setPrintable(new Printable() {
             @Override
             public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
                 if (pageIndex > 0) {
                     return Printable.NO_SUCH_PAGE;
                 }
-                Graphics2D graphics2D = (Graphics2D)graphics;
-                graphics2D.translate(pageFormat.getImageableX()*2, pageFormat.getImageableY()*2);
+                Graphics2D graphics2D = (Graphics2D) graphics;
+                graphics2D.translate(pageFormat.getImageableX() * 2, pageFormat.getImageableY() * 2);
                 graphics2D.scale(0.6, 0.6);
-                
+
                 panel.paint(graphics2D);
-                
+
                 return Printable.PAGE_EXISTS;
             }
         });
         boolean returningResult = printerJob.printDialog();
-        
+
         if (returningResult) {
-             try {
+            try {
                 printerJob.print();
             } catch (PrinterException e) {
                 JOptionPane.showMessageDialog(this, "Print Error: " + e.getMessage());
             }
         }
     }
-    
+
     void Date_Today() {
         LocalDate dateObj = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String date = dateObj.format(formatter);
-        
+
         CEDatePrintedLabel.setText(date);
     }
-    
+
     void OnClick_Table_Action() {
         DefaultTableModel tableModel = (DefaultTableModel) CECourseListTable.getModel();
-        
+
         int selectedIndex = CECourseListTable.getSelectedRow();
-        
+
         CESubjectCodeField.setText(tableModel.getValueAt(selectedIndex, 0).toString());
         CESubjectBox.setSelectedItem(tableModel.getValueAt(selectedIndex, 1).toString());
         CEUnitsField.setText(tableModel.getValueAt(selectedIndex, 2).toString());
         CETimeDateBox.setSelectedItem(tableModel.getValueAt(selectedIndex, 3).toString());
         CERoomBox.setSelectedItem(tableModel.getValueAt(selectedIndex, 4).toString());
     }
-    
+
     void Change_Major_Courses() {
         if (CECollegeDepBox.getSelectedItem().equals("CAE - College of Accounting Education")) {
             CECourseMajorBox.removeAllItems();
@@ -766,7 +819,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             CECourseMajorBox.setSelectedItem(null);
         }
     }
-    
+
     void Course_Set_Text_Action() {
         if (CESubjectBox.getSelectedItem().equals("Understanding the Self")) {
             CESubjectCodeField.setText("GE 1");
@@ -809,17 +862,17 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             CEUnitsField.setText("");
         }
     }
-    
+
     void SidePanel_SetColor(JPanel bg, JLabel fg) {
         bg.setBackground(new Color(201, 251, 252));
         fg.setForeground(new Color(0, 0, 0));
     }
-    
+
     void SidePanel_ResetColor(JPanel bg, JLabel fg) {
         bg.setBackground(new Color(33, 67, 83));
         fg.setForeground(new Color(255, 255, 255));
     }
-    
+
     void ChangeCard(Component Card) {
         mainPanel.removeAll();
         mainPanel.add(Card);
@@ -832,17 +885,17 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
      */
     public EnrollmentEncoding() {
         initComponents();
-        
+
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        
+
         mainPanel.removeAll();
         mainPanel.add(studentEnrollmentPanel);
         mainPanel.repaint();
         mainPanel.revalidate();
-        
+
         Masterlist_Table();
         Update_Courses_Table();
-        
+
     }
 
     /**
@@ -947,6 +1000,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel68 = new javax.swing.JLabel();
         CEDatePrintedLabel = new javax.swing.JLabel();
         PFPrintPanelButton = new javax.swing.JButton();
+        PFBackButton = new javax.swing.JButton();
         courseEnrollmentPanel = new javax.swing.JPanel();
         jPanel13 = new RoundedPanel(50, new Color(55,111,138));
         jLabel101 = new javax.swing.JLabel();
@@ -1233,6 +1287,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         courseNewButtonLabel.setText("     COURSE");
         courseNewButtonLabel.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         courseNewButtonLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                courseNewButtonLabelMouseClicked(evt);
+            }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 courseNewButtonLabelMouseEntered(evt);
             }
@@ -1854,15 +1911,25 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             }
         });
 
+        PFBackButton.setText("Back");
+        PFBackButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PFBackButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout printFormPanelLayout = new javax.swing.GroupLayout(printFormPanel);
         printFormPanel.setLayout(printFormPanelLayout);
         printFormPanelLayout.setHorizontalGroup(
             printFormPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(printFormPanelLayout.createSequentialGroup()
                 .addGap(162, 162, 162)
-                .addGroup(printFormPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(printFormPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(PFPanelToPrint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(PFPrintPanelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(printFormPanelLayout.createSequentialGroup()
+                        .addComponent(PFBackButton, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(PFPrintPanelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(523, Short.MAX_VALUE))
         );
         printFormPanelLayout.setVerticalGroup(
@@ -1871,7 +1938,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addGap(46, 46, 46)
                 .addComponent(PFPanelToPrint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(PFPrintPanelButton)
+                .addGroup(printFormPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(PFPrintPanelButton)
+                    .addComponent(PFBackButton))
                 .addContainerGap(248, Short.MAX_VALUE))
         );
 
@@ -3569,6 +3638,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
     private void courseNewButtonLabelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_courseNewButtonLabelMousePressed
         ChangeCard(courseEnrollmentPanel);
+        Back_Button_Action();
     }//GEN-LAST:event_courseNewButtonLabelMousePressed
 
     private void SEMaritalStatusFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SEMaritalStatusFieldActionPerformed
@@ -3629,21 +3699,21 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
     private void logoutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutButtonActionPerformed
         int q = JOptionPane.showConfirmDialog(null, "Are you sure?", "Logout", JOptionPane.YES_NO_OPTION);
-        
+
         if (q == JOptionPane.YES_OPTION) {
             this.setVisible(false);
             Login login = new Login();
             login.setVisible(true);
         } else {
-            
+
         }
-        
+
 
     }//GEN-LAST:event_logoutButtonActionPerformed
 
     private void SEContactNumberFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_SEContactNumberFieldKeyTyped
         char c = evt.getKeyChar();
-        
+
         if (!Character.isDigit(c)) {
             evt.consume();
         }
@@ -3651,7 +3721,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
     private void SEMotherContactFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_SEMotherContactFieldKeyTyped
         char c = evt.getKeyChar();
-        
+
         if (!Character.isDigit(c)) {
             evt.consume();
         }
@@ -3659,7 +3729,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
     private void SEFatherContactFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_SEFatherContactFieldKeyTyped
         char c = evt.getKeyChar();
-        
+
         if (!Character.isDigit(c)) {
             evt.consume();
         }
@@ -3710,7 +3780,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void MLSearchFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_MLSearchFieldKeyTyped
-        
+
         Masterlist_Table_Search();
     }//GEN-LAST:event_MLSearchFieldKeyTyped
 
@@ -3733,6 +3803,15 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private void PFPrintPanelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PFPrintPanelButtonActionPerformed
         Print_Form_Save(PFPanelToPrint);
     }//GEN-LAST:event_PFPrintPanelButtonActionPerformed
+
+    private void PFBackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PFBackButtonActionPerformed
+        ChangeCard(this);
+        Back_Button_Action();
+    }//GEN-LAST:event_PFBackButtonActionPerformed
+
+    private void courseNewButtonLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_courseNewButtonLabelMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_courseNewButtonLabelMouseClicked
 
     /**
      * @param args the command line arguments
@@ -3774,6 +3853,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JTable MLMasterlistTable;
     private javax.swing.JButton MLSearchButton;
     private javax.swing.JTextField MLSearchField;
+    private javax.swing.JButton PFBackButton;
     private javax.swing.JLabel PFCollegeDepLabel;
     private javax.swing.JLabel PFCourseCodeLabel1;
     private javax.swing.JLabel PFCourseCodeLabel2;
@@ -4003,33 +4083,33 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     class RoundedPanel extends JPanel {
-        
+
         private Color backgroundColor;
         private int cornerRadius = 15;
-        
+
         public RoundedPanel(LayoutManager layout, int radius) {
             super(layout);
             cornerRadius = radius;
         }
-        
+
         public RoundedPanel(LayoutManager layout, int radius, Color bgColor) {
             super(layout);
             cornerRadius = radius;
             backgroundColor = bgColor;
         }
-        
+
         public RoundedPanel(int radius) {
             super();
             cornerRadius = radius;
-            
+
         }
-        
+
         public RoundedPanel(int radius, Color bgColor) {
             super();
             cornerRadius = radius;
             backgroundColor = bgColor;
         }
-        
+
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);

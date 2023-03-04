@@ -322,6 +322,7 @@
                 </Property>
               </Properties>
               <Events>
+                <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="courseNewButtonLabelMouseClicked"/>
                 <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="courseNewButtonLabelMouseEntered"/>
                 <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="courseNewButtonLabelMouseExited"/>
                 <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="courseNewButtonLabelMousePressed"/>
@@ -460,9 +461,13 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="162" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="1" attributes="0">
+                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
                           <Component id="PFPanelToPrint" min="-2" max="-2" attributes="0"/>
-                          <Component id="PFPrintPanelButton" min="-2" pref="149" max="-2" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <Component id="PFBackButton" min="-2" pref="130" max="-2" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
+                              <Component id="PFPrintPanelButton" min="-2" pref="149" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
                       <EmptySpace pref="523" max="32767" attributes="0"/>
                   </Group>
@@ -474,7 +479,10 @@
                       <EmptySpace min="-2" pref="46" max="-2" attributes="0"/>
                       <Component id="PFPanelToPrint" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="PFPrintPanelButton" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="PFPrintPanelButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="PFBackButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
                       <EmptySpace pref="248" max="32767" attributes="0"/>
                   </Group>
               </Group>
@@ -1478,6 +1486,14 @@
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="PFPrintPanelButtonActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JButton" name="PFBackButton">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Back"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="PFBackButtonActionPerformed"/>
               </Events>
             </Component>
           </SubComponents>
