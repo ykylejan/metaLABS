@@ -30,7 +30,9 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Vector;
+import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
 /**
  *
@@ -57,6 +59,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         int studentYearNum = Integer.parseInt(studentBirthYear);
         int studentAge = 2023 - studentYearNum;
+        int id;
 
         if (studentFirstName.equals("") || studentMiddleName.equals("") || studentLastName.equals("")) {
             JOptionPane.showMessageDialog(null, "Please enter the student's name!", "Student Enrollment", JOptionPane.ERROR_MESSAGE);
@@ -77,7 +80,10 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
             try {
                 Connection connection = DriverManager.getConnection(dbURL);
-                PreparedStatement PS = connection.prepareStatement("INSERT INTO `student_enrollment`(`studentFirstName`, `studentMiddleName`, `studentLastName`, `studentBirthDate`, `studentBirthMonth`, `studentBirthYear`, `studentAge`, `studentAddress`, `studentGender`, `studentCitizenship`, `studentContactNumber`, `studentMarital`, `studentReligion`, `studentMotherName`, `studentMotherContact`, `studentFatherName`, `studentFatherContact`) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                PreparedStatement PS = connection.prepareStatement("INSERT INTO `student_enrollment`(`studentFirstName`, `studentMiddleName`, "
+                        + "`studentLastName`, `studentBirthDate`, `studentBirthMonth`, `studentBirthYear`, `studentAge`, `studentAddress`, "
+                        + "`studentGender`, `studentCitizenship`, `studentContactNumber`, `studentMarital`, `studentReligion`, `studentMotherName`, "
+                        + "`studentMotherContact`, `studentFatherName`, `studentFatherContact`) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
                 PS.setString(1, studentFirstName);
                 PS.setString(2, studentMiddleName);
@@ -98,6 +104,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 PS.setLong(17, studentFatherContact);
 
                 PS.executeUpdate();
+
                 JOptionPane.showMessageDialog(null, "Student Enrolled");
                 Masterlist_Table();
 
@@ -118,10 +125,24 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 SEFatherNameField.setText("");
                 SEFatherContactField.setText("");
 
+//                PreparedStatement ps1 = connection.prepareStatement("SELECT * FROM `student_enrollment` WHERE `studentLastName` = ? AND `studentMiddleName`=? AND `studentFirstName`=?");
+//                PreparedStatement ps2 = connection.prepareStatement("INSERT INTO `student_course_enrolled` (`studentID`) VALUES (?)");
+//
+//                ps1.setString(1, studentLastName);
+//                ps1.setString(2, studentMiddleName);
+//                ps1.setString(3, studentFirstName);
+//
+//                ResultSet rs = ps1.executeQuery();
+//
+//                while (rs.next()) {
+//                    id = rs.getInt(1);
+//
+//                    ps2.setInt(1, id);
+//                    ps2.executeUpdate();
+//                }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-
         }
     }
 
@@ -131,6 +152,8 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         String studentCollegeDep = CECollegeDepBox.getSelectedItem().toString();
         String studentCourseMajor = CECourseMajorBox.getSelectedItem().toString();
         String studentYearLevel = CEStudentYearLevelBox.getSelectedItem().toString();
+        String studentSemester = CESemesterBox.getSelectedItem().toString();
+        String studentTerm = CETermBox.getSelectedItem().toString();
 
         if (studentCollegeDep.contains("CAE")) {
             studentCollegeDep = "CAE";
@@ -154,12 +177,14 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         try {
             Connection connection = DriverManager.getConnection(dbURL);
-            PreparedStatement ps = connection.prepareStatement("UPDATE student_enrollment SET studentCollegeDep = ?, studentCourseMajor = ?, studentYearLevel = ?  WHERE studentID = ?");
+            PreparedStatement ps = connection.prepareStatement("UPDATE student_enrollment SET studentCollegeDep = ?, studentCourseMajor = ?, studentYearLevel = ?, studentSemester = ?, studentTerm = ?  WHERE studentID = ?");
 
             ps.setString(1, studentCollegeDep);
             ps.setString(2, studentCourseMajor);
             ps.setString(3, studentYearLevel);
             ps.setLong(4, studentId);
+            ps.setString(5, studentSemester);
+            ps.setString(6, studentTerm);
 
             ps.executeUpdate();
 
@@ -180,6 +205,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     }
 
     void Add_Courses_Action() {
+        int studentId = Integer.parseInt(CEStudentIDField.getText());
+        int id;
+
         String courseSubjectCode = CESubjectCodeField.getText();
         String courseSubject = CESubjectBox.getSelectedItem().toString();
         double courseUnits = Double.parseDouble(CEUnitsField.getText());
@@ -188,14 +216,23 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         try {
             Connection connection = DriverManager.getConnection(dbURL);
-            PreparedStatement ps = connection.prepareStatement("INSERT INTO `course_enrollment`(`courseCode`, `courseTitle`, `courseUnits`, `courseTime`, `courseRoom`) VALUES(?,?,?,?,?)");
+//            PreparedStatement ps = connection.prepareStatement("UPDATE student_course_enrolled SET courseCode = ?, courseTitle = ?, courseUnits = ?, courseTime = ?, courseRoom = ? WHERE studentID = ?");
 
-            ps.setString(1, courseSubjectCode);
-            ps.setString(2, courseSubject);
-            ps.setDouble(3, courseUnits);
-            ps.setString(4, courseTime);
-            ps.setString(5, courseRoom);
-
+            PreparedStatement ps = connection.prepareStatement("INSERT INTO student_course_enrolled(studentID, courseCode, courseTitle, courseUnits, courseTime, courseRoom) VALUES (?,?,?,?,?,?)");
+//            ps.setString(1, courseSubjectCode);
+//            ps.setString(2, courseSubject);
+//            ps.setDouble(3, courseUnits);
+//            ps.setString(4, courseTime);
+//            ps.setString(5, courseRoom);
+//            
+//            ps.setInt(6, studentId);
+            ps.setInt(1, studentId);
+            ps.setString(2, courseSubjectCode);
+            ps.setString(3, courseSubject);
+            ps.setDouble(4, courseUnits);
+            ps.setString(5, courseTime);
+            ps.setString(6, courseRoom);
+            
             ps.executeUpdate();
             JOptionPane.showMessageDialog(null, "Course Added!");
             Update_Courses_Table();
@@ -209,6 +246,25 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+//        try {
+//            Connection connection = DriverManager.getConnection(dbURL);
+//            PreparedStatement ps1 = connection.prepareStatement("SELECT * FROM student_course_enrolled WHERE studentID = ?");
+//            PreparedStatement ps2 = connection.prepareStatement("INSERT INTO student_course_enrolled (studentID) VALUES(?)");
+//            
+//            ps1.setInt(1, studentId);
+//            ResultSet rs = ps1.executeQuery();
+//            
+//            if (rs.next()) {
+//                id = rs.getInt(1);
+//                
+//                ps2.setInt(1, id);
+//                ps2.executeUpdate();
+//            }
+//            
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
     }
 
     void Update_Courses_Action() {
@@ -217,6 +273,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
 //        String courseCode = CESubjectCodeField.getText();
         String courseCode = tablemodel.getValueAt(selectedIndex, 0).toString();
+        String studentId = CEStudentIDField.getText();
 
         String courseSubject = CESubjectBox.getSelectedItem().toString();
         String units = CEUnitsField.getText();
@@ -225,11 +282,21 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         try {
             Connection connection = DriverManager.getConnection(dbURL);
-            PreparedStatement ps = connection.prepareStatement("UPDATE `course_enrollment` SET `courseTitle`=?, `courseUnits`=?, `courseTime`=?, `courseRoom`=? WHERE `courseCode` = ?");
+//            PreparedStatement ps = connection.prepareStatement("UPDATE `course_enrollment` SET `courseTitle`=?, `courseUnits`=?, `courseTime`=?, `courseRoom`=? WHERE `courseCode` = ?");
+            PreparedStatement ps = connection.prepareStatement("UPDATE student_course_enrolled SET courseTitle = ?, courseTime = ?, courseRoom = ? WHERE studentID = ? AND courseCode = ?");
+            
+//            ps.setString(1, courseSubject);
+//            ps.setString(2, units);
+//            ps.setString(3, time);
+//            ps.setString(4, room);
+//
+//            ps.setString(5, courseCode);
+            
             ps.setString(1, courseSubject);
-            ps.setString(2, units);
-            ps.setString(3, time);
-            ps.setString(4, room);
+            ps.setString(2, time);
+            ps.setString(3, room);
+            
+            ps.setInt(4, Integer.parseInt(studentId));
             ps.setString(5, courseCode);
 
             ps.executeUpdate();
@@ -252,6 +319,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         DefaultTableModel model = (DefaultTableModel) CECourseListTable.getModel();
         int selectedIndex = CECourseListTable.getSelectedRow();
 
+        String studentId = CEStudentIDField.getText();
         try {
             String courseCode = model.getValueAt(selectedIndex, 0).toString();
 
@@ -259,9 +327,11 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
             if (dialogResult == JOptionPane.YES_OPTION) {
                 Connection connection = DriverManager.getConnection(dbURL);
-                PreparedStatement ps = connection.prepareStatement("DELETE FROM `course_enrollment` WHERE `courseCode` = ?");
+//                PreparedStatement ps = connection.prepareStatement("DELETE FROM `course_enrollment` WHERE `courseCode` = ?");
+                PreparedStatement ps = connection.prepareStatement("DELETE FROM student_course_enrolled WHERE studentID = ? AND courseCode = ?");
 
-                ps.setString(1, courseCode);
+                ps.setInt(1, Integer.parseInt(studentId));
+                ps.setString(2, courseCode);
 
                 ps.executeUpdate();
                 JOptionPane.showMessageDialog(null, "Subject Entry Deleted");
@@ -281,28 +351,27 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     }
 
     void Update_Courses_Table() {
-        int columnCount;
+        String studentID = CEStudentIDField.getText();
 
         try {
             Connection connection = DriverManager.getConnection(dbURL);
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM `course_enrollment`");
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM student_course_enrolled WHERE studentID = ?");
+//            PreparedStatement ps = connection.prepareStatement("SELECT c,courseCode, c.courseTitle, c.courseUnits, c.courseTime, c.courseRoom FROM student_course_enrolled c JOIN student_enrollment s ON s.studentID = c.studentID");
+            ps.setString(1, studentID);
+
             ResultSet rs = ps.executeQuery();
 
-            ResultSetMetaData rsmd = rs.getMetaData();
-            columnCount = rsmd.getColumnCount();
             DefaultTableModel tableModel = (DefaultTableModel) CECourseListTable.getModel();
             tableModel.setRowCount(0);
 
             while (rs.next()) {
                 Vector vector = new Vector();
+                vector.add(rs.getString("courseCode"));
+                vector.add(rs.getString("courseTitle"));
+                vector.add(rs.getString("courseUnits"));
+                vector.add(rs.getString("courseTime"));
+                vector.add(rs.getString("courseRoom"));
 
-                for (int i = 0; i <= columnCount; i++) {
-                    vector.add(rs.getString("courseCode"));
-                    vector.add(rs.getString("courseTitle"));
-                    vector.add(rs.getInt("courseUnits"));
-                    vector.add(rs.getString("courseTime"));
-                    vector.add(rs.getString("courseRoom"));
-                }
                 tableModel.addRow(vector);
                 tableModel.fireTableDataChanged();
             }
@@ -314,7 +383,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     }
 
     void Masterlist_Table() {
-
         try {
             Connection connection = DriverManager.getConnection(dbURL);
             PreparedStatement ps = connection.prepareStatement("SELECT * FROM `student_enrollment`");
@@ -346,26 +414,18 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
     }
 
+    void Masterlist_Table_Search() {
+        String searchTerm = MLSearchField.getText();
+        DefaultTableModel model = (DefaultTableModel) MLMasterlistTable.getModel();
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
+        MLMasterlistTable.setRowSorter(sorter);
+        sorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchTerm));
+    }
+
     void Student_Details_Info_Action() {
 //        long studentID = Long.parseLong(SDStudentIDField.getText());
         String studentID = SDStudentIDField.getText();
 
-//        String studentLastName = SDLastNameField.getText();
-//        String studentFirstName = SDFirstNameField.getText();
-//        String studentMiddleName = SDMiddleNameField.getText();
-//        String studentAge = SDAgeField.getText();
-//        String studentAddress = SDAddressField.getText();
-//        long studentContact = Long.parseLong(SDStudentContactField.getText());
-//        String studentGender = SDGenderField.getText();
-//        String studentMarital = SDMaritalStatusField.getText();
-//        String studentCitizenship = SDCitizenshipField.getText();
-//        String studentReligion = SDReligionField.getText();
-//
-//        String motherName = SDMotherNameField.getText();
-//        long motherContact = Long.parseLong(SDMotherContactField.getText());
-//        String fatherName = SDFatherNameField.getText();
-//        long fatherContact = Long.parseLong(SDFatherContactField.getText());
-//        String sdID = Long.toString(studentID);
         try {
             Connection connection = DriverManager.getConnection(dbURL);
             PreparedStatement ps = connection.prepareStatement("SELECT * FROM `student_enrollment` WHERE `studentID` = ?");
@@ -389,26 +449,183 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 SDMotherContactField.setText(Long.toString(rs.getLong(16)));
                 SDFatherNameField.setText(rs.getString(17));
                 SDFatherContactField.setText(Long.toString(rs.getLong(18)));
-
-//                SDFirstNameField.setText(rs.getString(2));
-//                SDLastNameField.setText(rs.getString(4));
-//                SDMiddleNameField.setText(rs.getString(3));
-//                SDAgeField.setText(rs.getString(8));
-//                SDAddressField.setText(rs.getString(9));
-//                SDStudentContactField.setText(rs.getString(12));
-//                SDGenderField.setText(rs.getString(10));
-//                SDMaritalStatusField.setText(rs.getString(13));
-//                SDCitizenshipField.setText(rs.getString(11));
-//                SDReligionField.setText(rs.getString(14));
-//
-//                SDMotherNameField.setText(rs.getString(15));
-//                SDMotherContactField.setText(rs.getString(16));
-//                SDFatherNameField.setText(rs.getString(17));
-//                SDFatherContactField.setText(rs.getString(18));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    void Student_Details_Update_Action() {
+//        String studentID = SDStudentIDField.getText();
+        int studentID = Integer.parseInt(SDStudentIDField.getText());
+
+        String studentLastName = SDLastNameField.getText();
+        String studentFirstName = SDFirstNameField.getText();
+        String studentMiddleName = SDMiddleNameField.getText();
+//        String studentAge = SDAgeField.getText();
+        int studentAge = Integer.parseInt(SDAgeField.getText());
+        String studentAddress = SDAddressField.getText();
+        long studentContact = Long.parseLong(SDStudentContactField.getText());
+        String studentGender = SDGenderField.getText();
+        String studentMarital = SDMaritalStatusField.getText();
+        String studentCitizenship = SDCitizenshipField.getText();
+        String studentReligion = SDReligionField.getText();
+
+        String motherName = SDMotherNameField.getText();
+        long motherContact = Long.parseLong(SDMotherContactField.getText());
+        String fatherName = SDFatherNameField.getText();
+        long fatherContact = Long.parseLong(SDFatherContactField.getText());
+
+        try {
+            Connection connection = DriverManager.getConnection(dbURL);
+            PreparedStatement ps = connection.prepareStatement("UPDATE `student_enrollment` SET `studentFirstName`=?, `studentMiddleName`=?, `studentLastName`=?, `studentAge`=?, `studentAddress`=?, `studentContactNumber`=?, `studentGender`=?, `studentMarital`=?, `studentCitizenship`=?, `studentReligion`=?, `studentMotherName`=?, `studentMotherContact`=?, `studentFatherName`=?, `studentFatherContact`=? WHERE `studentID` = ?");
+
+            ps.setString(1, studentFirstName);
+            ps.setString(2, studentMiddleName);
+            ps.setString(3, studentLastName);
+            ps.setInt(4, studentAge);
+            ps.setString(5, studentAddress);
+            ps.setLong(6, studentContact);
+            ps.setString(7, studentGender);
+            ps.setString(8, studentMarital);
+            ps.setString(9, studentCitizenship);
+            ps.setString(10, studentReligion);
+            ps.setString(11, motherName);
+            ps.setLong(12, motherContact);
+            ps.setString(13, fatherName);
+            ps.setLong(14, fatherContact);
+            ps.setInt(15, studentID);
+
+            ps.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Student Details Updated");
+            Masterlist_Table();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    void Student_Details_Delete_Action() {
+        int studentID = Integer.parseInt(SDStudentIDField.getText());
+
+        try {
+            int dialogRes = JOptionPane.showConfirmDialog(null, "Do you want to un-enroll this student?", "Student Details", JOptionPane.YES_NO_OPTION);
+
+            if (dialogRes == JOptionPane.YES_OPTION) {
+                Connection connection = DriverManager.getConnection(dbURL);
+                PreparedStatement ps = connection.prepareStatement("DELETE FROM `student_enrollment` WHERE `studentID` = ?");
+
+                ps.setInt(1, studentID);
+
+                ps.executeUpdate();
+                JOptionPane.showMessageDialog(null, "Student Dropped");
+                Masterlist_Table();
+
+                SDStudentIDField.setText("");
+
+                SDFirstNameField.setText("");
+                SDMiddleNameField.setText("");
+                SDLastNameField.setText("");
+                SDAgeField.setText("");
+                SDAddressField.setText("");
+                SDStudentContactField.setText("");
+                SDGenderField.setText("");
+                SDMaritalStatusField.setText("");
+                SDCitizenshipField.setText("");
+                SDReligionField.setText("");
+
+                SDMotherNameField.setText("");
+                SDMotherContactField.setText("");
+                SDFatherNameField.setText("");
+                SDFatherContactField.setText("");
+
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    void Print_Form_Action() {
+        String studentId = CEStudentIDField.getText();
+        
+        try {
+            Connection connection = DriverManager.getConnection(dbURL);
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM student_enrollment WHERE studentID = ?");
+            PreparedStatement ps1 = connection.prepareStatement("SELECT * FROM student_course_enrolled WHERE studentID = ?");
+            ps.setString(1, studentId);
+            ps1.setString(1, studentId);
+            
+            ResultSet rs = ps.executeQuery();
+            ResultSet rs1 = ps1.executeQuery();
+            
+            if (rs.next()) {
+                PFStudentIDLabel.setText(rs.getString("studentID")); // or int
+                PFStudentNameLabel.setText(rs.getString("studentFirstName") + " " + rs.getString("studentMiddleName") + " " + rs.getString("studentLastName"));
+                PFCollegeDepLabel.setText(rs.getString("studentCollegeDep"));
+                PFCourseMajorLabel.setText(rs.getString("studentCourseMajor"));
+                PFYearLevelLabel.setText(rs.getString("studentYearLevel"));
+                PFSemesterLabel.setText(rs.getString("studetnSemester"));
+                PFTermLabel.setText(rs.getString("studentTerm"));
+            }
+            
+            if (rs1.next()) {
+                PFCourseCodeLabel1.setText(rs.getString("courseCode"));
+                PFSubjectLabel1.setText(rs.getString("courseTitle"));
+                PFUnitsLabel1.setText(rs.getString("courseUnits"));
+                PFRoomLabel1.setText(rs.getString("courseRoom"));
+                PFTimeLabel1.setText(rs.getString("courseTime"));
+                
+                PFCourseCodeLabel2.setText(rs.getString("courseCode"));
+                PFSubjectLabel2.setText(rs.getString("courseTitle"));
+                PFUnitsLabel2.setText(rs.getString("courseUnits"));
+                PFRoomLabel2.setText(rs.getString("courseRoom"));
+                PFTimeLabel2.setText(rs.getString("courseTime"));
+                
+                PFCourseCodeLabel3.setText(rs.getString("courseCode"));
+                PFSubjectLabel3.setText(rs.getString("courseTitle"));
+                PFUnitsLabel3.setText(rs.getString("courseUnits"));
+                PFRoomLabel3.setText(rs.getString("courseRoom"));
+                PFTimeLabel3.setText(rs.getString("courseTime"));
+                
+                PFCourseCodeLabel4.setText(rs.getString("courseCode"));
+                PFSubjectLabel4.setText(rs.getString("courseTitle"));
+                PFUnitsLabel4.setText(rs.getString("courseUnits"));
+                PFRoomLabel4.setText(rs.getString("courseRoom"));
+                PFTimeLabel4.setText(rs.getString("courseTime"));
+                
+                PFCourseCodeLabel5.setText(rs.getString("courseCode"));
+                PFSubjectLabel5.setText(rs.getString("courseTitle"));
+                PFUnitsLabel5.setText(rs.getString("courseUnits"));
+                PFRoomLabel5.setText(rs.getString("courseRoom"));
+                PFTimeLabel5.setText(rs.getString("courseTime"));
+                
+                PFCourseCodeLabel6.setText(rs.getString("courseCode"));
+                PFSubjectLabel6.setText(rs.getString("courseTitle"));
+                PFUnitsLabel6.setText(rs.getString("courseUnits"));
+                PFRoomLabel6.setText(rs.getString("courseRoom"));
+                PFTimeLabel6.setText(rs.getString("courseTime"));
+                
+                PFCourseCodeLabel7.setText(rs.getString("courseCode"));
+                PFSubjectLabel7.setText(rs.getString("courseTitle"));
+                PFUnitsLabel7.setText(rs.getString("courseUnits"));
+                PFRoomLabel7.setText(rs.getString("courseRoom"));
+                PFTimeLabel7.setText(rs.getString("courseTime"));
+                
+                PFCourseCodeLabel8.setText(rs.getString("courseCode"));
+                PFSubjectLabel8.setText(rs.getString("courseTitle"));
+                PFUnitsLabel8.setText(rs.getString("courseUnits"));
+                PFRoomLabel8.setText(rs.getString("courseRoom"));
+                PFTimeLabel8.setText(rs.getString("courseTime"));
+            }
+            
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        
     }
 
     void OnClick_Table_Action() {
@@ -560,6 +777,10 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         mainPanel.add(studentEnrollmentPanel);
         mainPanel.repaint();
         mainPanel.revalidate();
+
+        Masterlist_Table();
+        Update_Courses_Table();
+
     }
 
     /**
@@ -604,46 +825,63 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel26 = new javax.swing.JLabel();
         jLabel27 = new javax.swing.JLabel();
         jLabel28 = new javax.swing.JLabel();
-        jLabel29 = new javax.swing.JLabel();
-        jLabel30 = new javax.swing.JLabel();
-        jLabel31 = new javax.swing.JLabel();
+        PFStudentNameLabel = new javax.swing.JLabel();
+        PFCollegeDepLabel = new javax.swing.JLabel();
+        PFCourseMajorLabel = new javax.swing.JLabel();
         jLabel32 = new javax.swing.JLabel();
-        jLabel33 = new javax.swing.JLabel();
+        PFYearLevelLabel = new javax.swing.JLabel();
         jLabel34 = new javax.swing.JLabel();
-        jLabel35 = new javax.swing.JLabel();
+        PFSemesterLabel = new javax.swing.JLabel();
         jLabel36 = new javax.swing.JLabel();
-        jLabel37 = new javax.swing.JLabel();
+        PFTermLabel = new javax.swing.JLabel();
         jPanel7 = new javax.swing.JPanel();
-        jLabel38 = new javax.swing.JLabel();
+        PFStudentIDLabel = new javax.swing.JLabel();
         jPanel8 = new javax.swing.JPanel();
-        jLabel39 = new javax.swing.JLabel();
         jLabel40 = new javax.swing.JLabel();
-        jLabel41 = new javax.swing.JLabel();
         jLabel42 = new javax.swing.JLabel();
-        jLabel43 = new javax.swing.JLabel();
-        jLabel44 = new javax.swing.JLabel();
         jLabel45 = new javax.swing.JLabel();
-        jLabel46 = new javax.swing.JLabel();
-        jLabel47 = new javax.swing.JLabel();
-        jLabel48 = new javax.swing.JLabel();
-        jLabel49 = new javax.swing.JLabel();
-        jLabel50 = new javax.swing.JLabel();
-        jLabel51 = new javax.swing.JLabel();
-        jLabel52 = new javax.swing.JLabel();
-        jLabel53 = new javax.swing.JLabel();
-        jLabel54 = new javax.swing.JLabel();
-        jLabel55 = new javax.swing.JLabel();
-        jLabel56 = new javax.swing.JLabel();
-        jLabel57 = new javax.swing.JLabel();
-        jLabel58 = new javax.swing.JLabel();
-        jLabel59 = new javax.swing.JLabel();
-        jLabel60 = new javax.swing.JLabel();
-        jLabel61 = new javax.swing.JLabel();
-        jLabel62 = new javax.swing.JLabel();
+        PFCourseCodeLabel1 = new javax.swing.JLabel();
+        PFSubjectLabel1 = new javax.swing.JLabel();
+        PFTimeLabel1 = new javax.swing.JLabel();
+        PFCourseCodeLabel2 = new javax.swing.JLabel();
+        PFSubjectLabel2 = new javax.swing.JLabel();
+        PFTimeLabel2 = new javax.swing.JLabel();
+        PFCourseCodeLabel3 = new javax.swing.JLabel();
+        PFSubjectLabel3 = new javax.swing.JLabel();
+        PFTimeLabel3 = new javax.swing.JLabel();
         jLabel63 = new javax.swing.JLabel();
-        jLabel64 = new javax.swing.JLabel();
-        jLabel65 = new javax.swing.JLabel();
-        jLabel66 = new javax.swing.JLabel();
+        PFRoomLabel1 = new javax.swing.JLabel();
+        PFRoomLabel2 = new javax.swing.JLabel();
+        PFRoomLabel3 = new javax.swing.JLabel();
+        PFCourseCodeLabel4 = new javax.swing.JLabel();
+        PFSubjectLabel4 = new javax.swing.JLabel();
+        PFRoomLabel4 = new javax.swing.JLabel();
+        PFTimeLabel4 = new javax.swing.JLabel();
+        PFCourseCodeLabel5 = new javax.swing.JLabel();
+        PFSubjectLabel5 = new javax.swing.JLabel();
+        PFRoomLabel5 = new javax.swing.JLabel();
+        PFTimeLabel5 = new javax.swing.JLabel();
+        PFCourseCodeLabel6 = new javax.swing.JLabel();
+        PFCourseCodeLabel7 = new javax.swing.JLabel();
+        PFCourseCodeLabel8 = new javax.swing.JLabel();
+        PFSubjectLabel6 = new javax.swing.JLabel();
+        PFSubjectLabel7 = new javax.swing.JLabel();
+        PFSubjectLabel8 = new javax.swing.JLabel();
+        PFRoomLabel6 = new javax.swing.JLabel();
+        PFRoomLabel7 = new javax.swing.JLabel();
+        PFRoomLabel8 = new javax.swing.JLabel();
+        PFTimeLabel6 = new javax.swing.JLabel();
+        PFTimeLabel7 = new javax.swing.JLabel();
+        PFTimeLabel8 = new javax.swing.JLabel();
+        PFUnitsLabel8 = new javax.swing.JLabel();
+        PFUnitsLabel7 = new javax.swing.JLabel();
+        PFUnitsLabel6 = new javax.swing.JLabel();
+        PFUnitsLabel5 = new javax.swing.JLabel();
+        PFUnitsLabel4 = new javax.swing.JLabel();
+        PFUnitsLabel3 = new javax.swing.JLabel();
+        PFUnitsLabel2 = new javax.swing.JLabel();
+        PFUnitsLabel1 = new javax.swing.JLabel();
+        jLabel41 = new javax.swing.JLabel();
         jLabel68 = new javax.swing.JLabel();
         jLabel69 = new javax.swing.JLabel();
         courseEnrollmentPanel = new javax.swing.JPanel();
@@ -671,6 +909,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         CEStudentNameField = new javax.swing.JTextField();
         CEStudentIDField = new javax.swing.JTextField();
         jLabel89 = new javax.swing.JLabel();
+        CESearchButton = new javax.swing.JButton();
         jPanel14 = new RoundedPanel(50, new Color(55,111,138));
         jLabel112 = new javax.swing.JLabel();
         CESubjectBox = new javax.swing.JComboBox<>();
@@ -729,8 +968,8 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel11 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         MLMasterlistTable = new javax.swing.JTable();
-        jTextField12 = new javax.swing.JTextField();
-        jButton6 = new javax.swing.JButton();
+        MLSearchField = new javax.swing.JTextField();
+        MLSearchButton = new javax.swing.JButton();
         studentDetailsPanel = new javax.swing.JPanel();
         bottomPanel3 = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
@@ -803,6 +1042,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setIconImage(new javax.swing.ImageIcon(getClass().getResource("/com/images/metaLabs_logo_cyan-2.png")).getImage());
         setUndecorated(true);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -1072,40 +1312,40 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jPanel6.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         jLabel26.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel26.setText("Student No:");
+        jLabel26.setText("Student Name:");
 
         jLabel27.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel27.setText("Name:");
+        jLabel27.setText("College Dep:");
 
         jLabel28.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel28.setText("Year Level:");
+        jLabel28.setText("Course Major:");
 
-        jLabel29.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel29.setText("564321");
+        PFStudentNameLabel.setForeground(new java.awt.Color(1, 1, 1));
+        PFStudentNameLabel.setText(" ");
 
-        jLabel30.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel30.setText("Example D. Name");
+        PFCollegeDepLabel.setForeground(new java.awt.Color(1, 1, 1));
+        PFCollegeDepLabel.setText(" ");
 
-        jLabel31.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel31.setText("Year 1");
+        PFCourseMajorLabel.setForeground(new java.awt.Color(1, 1, 1));
+        PFCourseMajorLabel.setText(" ");
 
         jLabel32.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel32.setText("Academic Year:");
+        jLabel32.setText("Year Level:");
 
-        jLabel33.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel33.setText("2022-2023");
+        PFYearLevelLabel.setForeground(new java.awt.Color(1, 1, 1));
+        PFYearLevelLabel.setText(" ");
 
         jLabel34.setForeground(new java.awt.Color(1, 1, 1));
         jLabel34.setText("Semester:");
 
-        jLabel35.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel35.setText("2nd Semester");
+        PFSemesterLabel.setForeground(new java.awt.Color(1, 1, 1));
+        PFSemesterLabel.setText(" ");
 
         jLabel36.setForeground(new java.awt.Color(1, 1, 1));
         jLabel36.setText("Term:");
 
-        jLabel37.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel37.setText("First Term");
+        PFTermLabel.setForeground(new java.awt.Color(1, 1, 1));
+        PFTermLabel.setText(" ");
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -1117,29 +1357,29 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jLabel29, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(PFStudentNameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addComponent(jLabel27, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jLabel30, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(PFCollegeDepLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
                         .addComponent(jLabel28, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jLabel31, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(PFCourseMajorLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 74, Short.MAX_VALUE)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addComponent(jLabel32, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jLabel33, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(PFYearLevelLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addComponent(jLabel34, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jLabel35, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(PFSemesterLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addComponent(jLabel36, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jLabel37, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(PFTermLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(74, 74, 74))
         );
         jPanel6Layout.setVerticalGroup(
@@ -1149,35 +1389,35 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel32)
-                        .addComponent(jLabel33))
+                        .addComponent(PFYearLevelLabel))
                     .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel26)
-                        .addComponent(jLabel29)))
+                        .addComponent(PFStudentNameLabel)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel34)
-                        .addComponent(jLabel35))
+                        .addComponent(PFSemesterLabel))
                     .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel27)
-                        .addComponent(jLabel30)))
+                        .addComponent(PFCollegeDepLabel)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel36)
-                        .addComponent(jLabel37))
+                        .addComponent(PFTermLabel))
                     .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel28)
-                        .addComponent(jLabel31)))
+                        .addComponent(PFCourseMajorLabel)))
                 .addContainerGap(22, Short.MAX_VALUE))
         );
 
         jPanel7.setBackground(new java.awt.Color(243, 242, 242));
         jPanel7.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        jLabel38.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel38.setForeground(new java.awt.Color(51, 102, 255));
-        jLabel38.setText("ABC129717070063");
+        PFStudentIDLabel.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        PFStudentIDLabel.setForeground(new java.awt.Color(51, 102, 255));
+        PFStudentIDLabel.setText("ABC129717070063");
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
@@ -1185,209 +1425,317 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel38, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(PFStudentIDLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(66, 66, 66))
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel38)
+                .addComponent(PFStudentIDLabel)
                 .addContainerGap())
         );
 
         jPanel8.setBackground(new java.awt.Color(243, 242, 242));
         jPanel8.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        jLabel39.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel39.setText("Unit(s)");
-
         jLabel40.setForeground(new java.awt.Color(1, 1, 1));
         jLabel40.setText("Description");
 
-        jLabel41.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel41.setText("Code");
-
         jLabel42.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel42.setText("Time and Days Sched ");
-
-        jLabel43.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel43.setText("Sem./Term");
-
-        jLabel44.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel44.setText("966");
+        jLabel42.setText("Time ");
 
         jLabel45.setForeground(new java.awt.Color(1, 1, 1));
         jLabel45.setText("Title");
 
-        jLabel46.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel46.setText("NSTP 1");
+        PFCourseCodeLabel1.setForeground(new java.awt.Color(1, 1, 1));
+        PFCourseCodeLabel1.setText(" ");
 
-        jLabel47.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel47.setText("NATIONAL SERVICE TRAINING PROGRAM 1");
+        PFSubjectLabel1.setForeground(new java.awt.Color(1, 1, 1));
+        PFSubjectLabel1.setText(" ");
 
-        jLabel48.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel48.setText("3.0");
+        PFTimeLabel1.setForeground(new java.awt.Color(1, 1, 1));
+        PFTimeLabel1.setText(" ");
 
-        jLabel49.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel49.setText("Sem");
+        PFCourseCodeLabel2.setForeground(new java.awt.Color(1, 1, 1));
+        PFCourseCodeLabel2.setText(" ");
 
-        jLabel50.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel50.setText("8:00M-11:00M Sa");
+        PFSubjectLabel2.setForeground(new java.awt.Color(1, 1, 1));
+        PFSubjectLabel2.setText(" ");
 
-        jLabel51.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel51.setText("965");
+        PFTimeLabel2.setForeground(new java.awt.Color(1, 1, 1));
+        PFTimeLabel2.setText(" ");
 
-        jLabel52.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel52.setText("GPE 1");
+        PFCourseCodeLabel3.setForeground(new java.awt.Color(1, 1, 1));
+        PFCourseCodeLabel3.setText(" ");
 
-        jLabel53.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel53.setText("MOVEMENT ENHANCEMENT");
+        PFSubjectLabel3.setForeground(new java.awt.Color(1, 1, 1));
+        PFSubjectLabel3.setText(" ");
 
-        jLabel54.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel54.setText("2.0");
-
-        jLabel55.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel55.setText("Sem");
-
-        jLabel56.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel56.setText("10:00M-12:00A F");
-
-        jLabel57.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel57.setText("961");
-
-        jLabel58.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel58.setText("GE 2");
-
-        jLabel59.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel59.setText("PURPOSIVE COMMUNICATION ");
-
-        jLabel60.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel60.setText("6.0");
-
-        jLabel61.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel61.setText("1st Term");
-
-        jLabel62.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel62.setText("10:00M-12:00A F");
+        PFTimeLabel3.setForeground(new java.awt.Color(1, 1, 1));
+        PFTimeLabel3.setText(" ");
 
         jLabel63.setForeground(new java.awt.Color(1, 1, 1));
         jLabel63.setText("Room");
 
-        jLabel64.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel64.setText("-");
+        PFRoomLabel1.setForeground(new java.awt.Color(1, 1, 1));
+        PFRoomLabel1.setText(" ");
 
-        jLabel65.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel65.setText("MAT");
+        PFRoomLabel2.setForeground(new java.awt.Color(1, 1, 1));
+        PFRoomLabel2.setText(" ");
 
-        jLabel66.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel66.setText("TEC206");
+        PFRoomLabel3.setForeground(new java.awt.Color(1, 1, 1));
+        PFRoomLabel3.setText(" ");
+
+        PFCourseCodeLabel4.setForeground(new java.awt.Color(1, 1, 1));
+        PFCourseCodeLabel4.setText(" ");
+
+        PFSubjectLabel4.setForeground(new java.awt.Color(1, 1, 1));
+        PFSubjectLabel4.setText(" ");
+
+        PFRoomLabel4.setForeground(new java.awt.Color(1, 1, 1));
+        PFRoomLabel4.setText(" ");
+
+        PFTimeLabel4.setForeground(new java.awt.Color(1, 1, 1));
+        PFTimeLabel4.setText(" ");
+
+        PFCourseCodeLabel5.setForeground(new java.awt.Color(1, 1, 1));
+        PFCourseCodeLabel5.setText(" ");
+
+        PFSubjectLabel5.setForeground(new java.awt.Color(1, 1, 1));
+        PFSubjectLabel5.setText(" ");
+
+        PFRoomLabel5.setForeground(new java.awt.Color(1, 1, 1));
+        PFRoomLabel5.setText(" ");
+
+        PFTimeLabel5.setForeground(new java.awt.Color(1, 1, 1));
+        PFTimeLabel5.setText(" ");
+
+        PFCourseCodeLabel6.setForeground(new java.awt.Color(1, 1, 1));
+        PFCourseCodeLabel6.setText(" ");
+
+        PFCourseCodeLabel7.setForeground(new java.awt.Color(1, 1, 1));
+        PFCourseCodeLabel7.setText(" ");
+
+        PFCourseCodeLabel8.setForeground(new java.awt.Color(1, 1, 1));
+        PFCourseCodeLabel8.setText(" ");
+
+        PFSubjectLabel6.setForeground(new java.awt.Color(1, 1, 1));
+        PFSubjectLabel6.setText(" ");
+
+        PFSubjectLabel7.setForeground(new java.awt.Color(1, 1, 1));
+        PFSubjectLabel7.setText(" ");
+
+        PFSubjectLabel8.setForeground(new java.awt.Color(1, 1, 1));
+        PFSubjectLabel8.setText(" ");
+
+        PFRoomLabel6.setForeground(new java.awt.Color(1, 1, 1));
+        PFRoomLabel6.setText(" ");
+
+        PFRoomLabel7.setForeground(new java.awt.Color(1, 1, 1));
+        PFRoomLabel7.setText(" ");
+
+        PFRoomLabel8.setForeground(new java.awt.Color(1, 1, 1));
+        PFRoomLabel8.setText(" ");
+
+        PFTimeLabel6.setForeground(new java.awt.Color(1, 1, 1));
+        PFTimeLabel6.setText(" ");
+
+        PFTimeLabel7.setForeground(new java.awt.Color(1, 1, 1));
+        PFTimeLabel7.setText(" ");
+
+        PFTimeLabel8.setForeground(new java.awt.Color(1, 1, 1));
+        PFTimeLabel8.setText(" ");
+
+        PFUnitsLabel8.setForeground(new java.awt.Color(1, 1, 1));
+        PFUnitsLabel8.setText(" ");
+
+        PFUnitsLabel7.setForeground(new java.awt.Color(1, 1, 1));
+        PFUnitsLabel7.setText(" ");
+
+        PFUnitsLabel6.setForeground(new java.awt.Color(1, 1, 1));
+        PFUnitsLabel6.setText(" ");
+
+        PFUnitsLabel5.setForeground(new java.awt.Color(1, 1, 1));
+        PFUnitsLabel5.setText(" ");
+
+        PFUnitsLabel4.setForeground(new java.awt.Color(1, 1, 1));
+        PFUnitsLabel4.setText(" ");
+
+        PFUnitsLabel3.setForeground(new java.awt.Color(1, 1, 1));
+        PFUnitsLabel3.setText(" ");
+
+        PFUnitsLabel2.setForeground(new java.awt.Color(1, 1, 1));
+        PFUnitsLabel2.setText(" ");
+
+        PFUnitsLabel1.setForeground(new java.awt.Color(1, 1, 1));
+        PFUnitsLabel1.setText(" ");
+
+        jLabel41.setForeground(new java.awt.Color(1, 1, 1));
+        jLabel41.setText("Unit(s)");
 
         javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
         jPanel8.setLayout(jPanel8Layout);
         jPanel8Layout.setHorizontalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel8Layout.createSequentialGroup()
-                .addGap(25, 25, 25)
+                .addGap(79, 79, 79)
                 .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel44, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel57, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel51, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel41, javax.swing.GroupLayout.DEFAULT_SIZE, 64, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel46, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel52, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel58, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel45, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel53, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel40, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel47, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel59, javax.swing.GroupLayout.PREFERRED_SIZE, 297, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel39, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel48, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel54, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel60, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel8Layout.createSequentialGroup()
-                        .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel43, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel49, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel55, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel63, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel65, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel64, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel8Layout.createSequentialGroup()
-                        .addComponent(jLabel61, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel66, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(PFCourseCodeLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(PFCourseCodeLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(PFCourseCodeLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel45, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(PFCourseCodeLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(PFCourseCodeLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(PFCourseCodeLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(PFCourseCodeLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(PFCourseCodeLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(jLabel50, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel42, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel56, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jLabel62, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(36, Short.MAX_VALUE))
+                    .addComponent(PFSubjectLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(PFSubjectLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(PFSubjectLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(PFSubjectLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(PFSubjectLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel40, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(PFSubjectLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(PFSubjectLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(PFSubjectLabel8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(31, 31, 31)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jLabel41, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(PFUnitsLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(PFUnitsLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(PFUnitsLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(PFUnitsLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(PFUnitsLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(PFUnitsLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(PFUnitsLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(PFUnitsLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(33, 33, 33)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(PFRoomLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(PFRoomLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(PFRoomLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(PFRoomLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(PFRoomLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jLabel63, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(PFRoomLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(PFRoomLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(PFRoomLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(37, 37, 37)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(PFTimeLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(PFTimeLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(PFTimeLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(PFTimeLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(PFTimeLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(PFTimeLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(PFTimeLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel42, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(PFTimeLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(88, 88, 88))
         );
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel8Layout.createSequentialGroup()
-                .addGap(15, 15, 15)
-                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(28, 28, 28)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel8Layout.createSequentialGroup()
-                        .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel39)
-                            .addComponent(jLabel42)
-                            .addComponent(jLabel43)
-                            .addComponent(jLabel63))
+                        .addComponent(jLabel42)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(PFTimeLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(PFTimeLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(PFTimeLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(PFTimeLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(PFTimeLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(PFTimeLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(PFTimeLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(PFTimeLabel8))
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addComponent(jLabel41)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(PFUnitsLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(PFUnitsLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(PFUnitsLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(PFUnitsLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(PFUnitsLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(PFUnitsLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(PFUnitsLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(PFUnitsLabel8))
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addComponent(jLabel40)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(PFSubjectLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(PFSubjectLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(PFSubjectLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(PFSubjectLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(PFSubjectLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(PFSubjectLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(PFSubjectLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(PFSubjectLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel8Layout.createSequentialGroup()
+                                .addComponent(jLabel63)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(PFRoomLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(PFRoomLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(PFRoomLabel3))
+                            .addGroup(jPanel8Layout.createSequentialGroup()
+                                .addComponent(jLabel45)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(PFCourseCodeLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(PFCourseCodeLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(PFCourseCodeLabel3)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jLabel48)
-                                .addComponent(jLabel49)
-                                .addComponent(jLabel50))
-                            .addComponent(jLabel64, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(PFCourseCodeLabel4)
+                            .addComponent(PFRoomLabel4))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(PFCourseCodeLabel5)
+                            .addComponent(PFRoomLabel5))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel54)
-                            .addComponent(jLabel55)
-                            .addComponent(jLabel56)
-                            .addComponent(jLabel65))
+                            .addComponent(PFCourseCodeLabel6)
+                            .addComponent(PFRoomLabel6))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel60)
-                            .addComponent(jLabel61)
-                            .addComponent(jLabel62)
-                            .addComponent(jLabel66)))
-                    .addGroup(jPanel8Layout.createSequentialGroup()
-                        .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel40)
-                            .addComponent(jLabel41)
-                            .addComponent(jLabel45))
+                            .addComponent(PFCourseCodeLabel7)
+                            .addComponent(PFRoomLabel7))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel44)
-                            .addComponent(jLabel46)
-                            .addComponent(jLabel47))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel51)
-                            .addComponent(jLabel52)
-                            .addComponent(jLabel53))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel57)
-                            .addComponent(jLabel58)
-                            .addComponent(jLabel59))))
-                .addContainerGap(174, Short.MAX_VALUE))
+                            .addComponent(PFCourseCodeLabel8)
+                            .addComponent(PFRoomLabel8))))
+                .addContainerGap(51, Short.MAX_VALUE))
         );
 
         jLabel68.setForeground(new java.awt.Color(1, 1, 1));
@@ -1668,6 +2016,13 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel89.setForeground(new java.awt.Color(255, 255, 255));
         jLabel89.setText("Student ID");
 
+        CESearchButton.setText("Search");
+        CESearchButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CESearchButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout searchPanel2Layout = new javax.swing.GroupLayout(searchPanel2);
         searchPanel2.setLayout(searchPanel2Layout);
         searchPanel2Layout.setHorizontalGroup(
@@ -1680,8 +2035,10 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addGap(127, 127, 127)
                 .addComponent(jLabel89, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(CEStudentIDField, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(79, Short.MAX_VALUE))
+                .addComponent(CEStudentIDField, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(27, 27, 27)
+                .addComponent(CESearchButton)
+                .addContainerGap(31, Short.MAX_VALUE))
         );
         searchPanel2Layout.setVerticalGroup(
             searchPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1689,7 +2046,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addContainerGap(12, Short.MAX_VALUE)
                 .addGroup(searchPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(searchPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(CEStudentIDField)
+                        .addGroup(searchPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(CEStudentIDField)
+                            .addComponent(CESearchButton))
                         .addComponent(jLabel89, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(searchPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addComponent(CEStudentNameField)
@@ -2342,16 +2701,32 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             MLMasterlistTable.getColumnModel().getColumn(5).setMaxWidth(85);
         }
 
-        jTextField12.addActionListener(new java.awt.event.ActionListener() {
+        MLSearchField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField12ActionPerformed(evt);
+                MLSearchFieldActionPerformed(evt);
+            }
+        });
+        MLSearchField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                MLSearchFieldKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                MLSearchFieldKeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                MLSearchFieldKeyTyped(evt);
             }
         });
 
-        jButton6.setText("Search");
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
+        MLSearchButton.setText("Search");
+        MLSearchButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton6ActionPerformed(evt);
+                MLSearchButtonActionPerformed(evt);
+            }
+        });
+        MLSearchButton.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                MLSearchButtonKeyPressed(evt);
             }
         });
 
@@ -2369,9 +2744,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                         .addGap(149, 149, 149)
                         .addGroup(masterlistPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(masterlistPanelLayout.createSequentialGroup()
-                                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(MLSearchButton, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jTextField12, javax.swing.GroupLayout.PREFERRED_SIZE, 341, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(MLSearchField, javax.swing.GroupLayout.PREFERRED_SIZE, 341, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 1067, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -2384,8 +2759,8 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addComponent(bottomPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(47, 47, 47)
                 .addGroup(masterlistPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton6))
+                    .addComponent(MLSearchField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(MLSearchButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 510, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -2769,8 +3144,18 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         studentDetailsTabbedPane.addTab("Additional Information", addtionalInfoPanel);
 
         jButton5.setText("Delete");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
 
         jButton7.setText("Update");
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton7ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout studentDetailsPanelLayout = new javax.swing.GroupLayout(studentDetailsPanel);
         studentDetailsPanel.setLayout(studentDetailsPanelLayout);
@@ -3126,13 +3511,13 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         Enroll_Student_Action();
     }//GEN-LAST:event_SEEnrollButtonActionPerformed
 
-    private void jTextField12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField12ActionPerformed
+    private void MLSearchFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MLSearchFieldActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField12ActionPerformed
+    }//GEN-LAST:event_MLSearchFieldActionPerformed
 
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton6ActionPerformed
+    private void MLSearchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MLSearchButtonActionPerformed
+
+    }//GEN-LAST:event_MLSearchButtonActionPerformed
 
     private void studentDetailsNewButtonLabelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_studentDetailsNewButtonLabelMouseEntered
         SidePanel_SetColor(studentDetailsNewButton, studentDetailsNewButtonLabel);
@@ -3240,6 +3625,35 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         OnClick_Table_Action();
     }//GEN-LAST:event_CECourseListTableMouseClicked
 
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        Student_Details_Update_Action();
+    }//GEN-LAST:event_jButton7ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        Student_Details_Delete_Action();
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void MLSearchFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_MLSearchFieldKeyTyped
+
+        Masterlist_Table_Search();
+    }//GEN-LAST:event_MLSearchFieldKeyTyped
+
+    private void MLSearchFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_MLSearchFieldKeyPressed
+
+    }//GEN-LAST:event_MLSearchFieldKeyPressed
+
+    private void MLSearchFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_MLSearchFieldKeyReleased
+
+    }//GEN-LAST:event_MLSearchFieldKeyReleased
+
+    private void MLSearchButtonKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_MLSearchButtonKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_MLSearchButtonKeyPressed
+
+    private void CESearchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CESearchButtonActionPerformed
+        Update_Courses_Table();
+    }//GEN-LAST:event_CESearchButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -3266,6 +3680,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JButton CEEnrollButton;
     private javax.swing.JButton CEPrintPreviewButton;
     private javax.swing.JComboBox<String> CERoomBox;
+    private javax.swing.JButton CESearchButton;
     private javax.swing.JComboBox<String> CESemesterBox;
     private javax.swing.JTextField CEStudentIDField;
     private javax.swing.JTextField CEStudentNameField;
@@ -3276,6 +3691,55 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> CETimeDateBox;
     private javax.swing.JTextField CEUnitsField;
     private javax.swing.JTable MLMasterlistTable;
+    private javax.swing.JButton MLSearchButton;
+    private javax.swing.JTextField MLSearchField;
+    private javax.swing.JLabel PFCollegeDepLabel;
+    private javax.swing.JLabel PFCourseCodeLabel1;
+    private javax.swing.JLabel PFCourseCodeLabel2;
+    private javax.swing.JLabel PFCourseCodeLabel3;
+    private javax.swing.JLabel PFCourseCodeLabel4;
+    private javax.swing.JLabel PFCourseCodeLabel5;
+    private javax.swing.JLabel PFCourseCodeLabel6;
+    private javax.swing.JLabel PFCourseCodeLabel7;
+    private javax.swing.JLabel PFCourseCodeLabel8;
+    private javax.swing.JLabel PFCourseMajorLabel;
+    private javax.swing.JLabel PFRoomLabel1;
+    private javax.swing.JLabel PFRoomLabel2;
+    private javax.swing.JLabel PFRoomLabel3;
+    private javax.swing.JLabel PFRoomLabel4;
+    private javax.swing.JLabel PFRoomLabel5;
+    private javax.swing.JLabel PFRoomLabel6;
+    private javax.swing.JLabel PFRoomLabel7;
+    private javax.swing.JLabel PFRoomLabel8;
+    private javax.swing.JLabel PFSemesterLabel;
+    private javax.swing.JLabel PFStudentIDLabel;
+    private javax.swing.JLabel PFStudentNameLabel;
+    private javax.swing.JLabel PFSubjectLabel1;
+    private javax.swing.JLabel PFSubjectLabel2;
+    private javax.swing.JLabel PFSubjectLabel3;
+    private javax.swing.JLabel PFSubjectLabel4;
+    private javax.swing.JLabel PFSubjectLabel5;
+    private javax.swing.JLabel PFSubjectLabel6;
+    private javax.swing.JLabel PFSubjectLabel7;
+    private javax.swing.JLabel PFSubjectLabel8;
+    private javax.swing.JLabel PFTermLabel;
+    private javax.swing.JLabel PFTimeLabel1;
+    private javax.swing.JLabel PFTimeLabel2;
+    private javax.swing.JLabel PFTimeLabel3;
+    private javax.swing.JLabel PFTimeLabel4;
+    private javax.swing.JLabel PFTimeLabel5;
+    private javax.swing.JLabel PFTimeLabel6;
+    private javax.swing.JLabel PFTimeLabel7;
+    private javax.swing.JLabel PFTimeLabel8;
+    private javax.swing.JLabel PFUnitsLabel1;
+    private javax.swing.JLabel PFUnitsLabel2;
+    private javax.swing.JLabel PFUnitsLabel3;
+    private javax.swing.JLabel PFUnitsLabel4;
+    private javax.swing.JLabel PFUnitsLabel5;
+    private javax.swing.JLabel PFUnitsLabel6;
+    private javax.swing.JLabel PFUnitsLabel7;
+    private javax.swing.JLabel PFUnitsLabel8;
+    private javax.swing.JLabel PFYearLevelLabel;
     private javax.swing.JTextField SDAddressField;
     private javax.swing.JTextField SDAgeField;
     private javax.swing.JTextField SDCitizenshipField;
@@ -3329,7 +3793,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -3380,48 +3843,18 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel28;
-    private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel30;
-    private javax.swing.JLabel jLabel31;
     private javax.swing.JLabel jLabel32;
-    private javax.swing.JLabel jLabel33;
     private javax.swing.JLabel jLabel34;
-    private javax.swing.JLabel jLabel35;
     private javax.swing.JLabel jLabel36;
-    private javax.swing.JLabel jLabel37;
-    private javax.swing.JLabel jLabel38;
-    private javax.swing.JLabel jLabel39;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel40;
     private javax.swing.JLabel jLabel41;
     private javax.swing.JLabel jLabel42;
-    private javax.swing.JLabel jLabel43;
-    private javax.swing.JLabel jLabel44;
     private javax.swing.JLabel jLabel45;
-    private javax.swing.JLabel jLabel46;
-    private javax.swing.JLabel jLabel47;
-    private javax.swing.JLabel jLabel48;
-    private javax.swing.JLabel jLabel49;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel50;
-    private javax.swing.JLabel jLabel51;
-    private javax.swing.JLabel jLabel52;
-    private javax.swing.JLabel jLabel53;
-    private javax.swing.JLabel jLabel54;
-    private javax.swing.JLabel jLabel55;
-    private javax.swing.JLabel jLabel56;
-    private javax.swing.JLabel jLabel57;
-    private javax.swing.JLabel jLabel58;
-    private javax.swing.JLabel jLabel59;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel60;
-    private javax.swing.JLabel jLabel61;
-    private javax.swing.JLabel jLabel62;
     private javax.swing.JLabel jLabel63;
-    private javax.swing.JLabel jLabel64;
-    private javax.swing.JLabel jLabel65;
-    private javax.swing.JLabel jLabel66;
     private javax.swing.JLabel jLabel67;
     private javax.swing.JLabel jLabel68;
     private javax.swing.JLabel jLabel69;
@@ -3459,7 +3892,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel8;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane7;
-    private javax.swing.JTextField jTextField12;
     private javax.swing.JTextField jTextField21;
     private javax.swing.JTextField jTextField23;
     private javax.swing.JTextField jTextField24;
