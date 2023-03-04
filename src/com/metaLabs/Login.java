@@ -47,6 +47,8 @@ public class Login extends javax.swing.JFrame {
                 this.setVisible(false);
                 EnrollmentEncoding ee = new EnrollmentEncoding();
                 ee.setVisible(true);
+                ee.Current_User_Logged_In(getUsername, getPassword);
+                
             } else {
                 JOptionPane.showMessageDialog(null, "Incorrect Password");
                 userNameField.setText("");

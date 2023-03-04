@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package com.metaLabs;
 
 import com.metaLabs.JTextFieldLimit;
@@ -634,7 +630,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             }
 
             int i = 0;
-            
+
             while (rs1.next() && i < courseCodeLabels.size()) {
                 courseCodeLabels.get(i).setText(rs1.getString("courseCode"));
                 subjectLabels.get(i).setText(rs1.getString("courseTitle"));
@@ -650,14 +646,14 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         }
 
     }
-    
+
     void Back_Button_Action() {
         courseCodeLabels.clear();
         subjectLabels.clear();
         unitsLabels.clear();
         roomLabels.clear();
         timeLabels.clear();
-        
+
         PFCourseCodeLabel1.setText("");
         PFCourseCodeLabel2.setText("");
         PFCourseCodeLabel3.setText("");
@@ -666,7 +662,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         PFCourseCodeLabel6.setText("");
         PFCourseCodeLabel7.setText("");
         PFCourseCodeLabel8.setText("");
-        
+
         PFSubjectLabel1.setText("");
         PFSubjectLabel2.setText("");
         PFSubjectLabel3.setText("");
@@ -675,7 +671,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         PFSubjectLabel6.setText("");
         PFSubjectLabel7.setText("");
         PFSubjectLabel8.setText("");
-        
+
         PFUnitsLabel1.setText("");
         PFUnitsLabel2.setText("");
         PFUnitsLabel3.setText("");
@@ -684,7 +680,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         PFUnitsLabel6.setText("");
         PFUnitsLabel7.setText("");
         PFUnitsLabel8.setText("");
-        
+
         PFRoomLabel1.setText("");
         PFRoomLabel2.setText("");
         PFRoomLabel3.setText("");
@@ -693,7 +689,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         PFRoomLabel6.setText("");
         PFRoomLabel7.setText("");
         PFRoomLabel8.setText("");
-        
+
         PFTimeLabel1.setText("");
         PFTimeLabel2.setText("");
         PFTimeLabel3.setText("");
@@ -733,6 +729,81 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Print Error: " + e.getMessage());
             }
         }
+    }
+
+    void Current_User_Logged_In(String getUsername, String getPassword) {
+        String usernameLogged;
+
+        try {
+            Connection connection = DriverManager.getConnection(dbURL);
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM loginDatabase WHERE `username` = '" + getUsername + "' AND password = '" + getPassword + "'");
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                usernameLogged = rs.getString(1);
+                TPAccountLabel.setText(usernameLogged);
+
+                if (usernameLogged.equals("admin")) {
+                    adminOnlyButton.setVisible(true);
+                    adminOnlyButtonLabel.setVisible(true);
+                } else {
+                    adminOnlyButton.setVisible(false);
+                    adminOnlyButtonLabel.setVisible(false);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void Register_Employee() {
+        String employeeFirstName = REFirstNameField.getText();
+        String employeeLastName = RELastNameField.getText();
+        String employeeContactNum = REContactNumberField.getText();
+        String employeeEmail = REEmailField.getText();
+
+        String employeeUsername = REUsernameField.getText();
+        String employeePassword = REPasswordField.getText();
+        String employeeConfPassword = REConfrimPasswordField.getText();
+
+        if (!(employeePassword.equals(employeeConfPassword))) {
+            JOptionPane.showMessageDialog(null, "Password didn't match", "Register Employee", JOptionPane.ERROR_MESSAGE);
+        } else {
+            try {
+                Connection connection = DriverManager.getConnection(dbURL);
+                PreparedStatement ps1 = connection.prepareStatement("INSERT INTO loginDatabase(username, password) VALUES (?,?)");
+                PreparedStatement ps = connection.prepareStatement("INSERT INTO employee_accounts(employeeUsername, employeePassword, employeeFirstName, employeeLastName, employeeContactNum, employeeEmail) VALUES (?,?,?,?,?,?)");
+
+                ps.setString(1, employeeUsername);
+                ps.setString(2, employeePassword);
+                ps.setString(3, employeeFirstName);
+                ps.setString(4, employeeLastName);
+                ps.setLong(5, Long.parseLong(employeeContactNum));
+                ps.setString(6, employeeEmail);
+
+                ps1.setString(1, employeeUsername);
+                ps1.setString(2, employeePassword);
+                
+                
+                ps.executeUpdate();
+                ps1.executeUpdate();
+
+                JOptionPane.showMessageDialog(null, "Employee Registered Successfully");
+
+                REFirstNameField.setText("");
+                RELastNameField.setText("");
+                REContactNumberField.setText("");
+                REEmailField.setText("");
+                REUsernameField.setText("");
+                REPasswordField.setText("");
+                REConfrimPasswordField.setText("");
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     void Date_Today() {
@@ -913,6 +984,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         logoutButton = new javax.swing.JButton();
+        TPAccountLabel = new javax.swing.JLabel();
+        jLabel29 = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
         sidePanel = new javax.swing.JPanel();
         jLabel81 = new javax.swing.JLabel();
         jLabel107 = new javax.swing.JLabel();
@@ -1139,23 +1213,23 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel80 = new javax.swing.JLabel();
         searchPanel3 = new RoundedPanel(50, new Color(55,111,138));
         jLabel84 = new javax.swing.JLabel();
-        jTextField21 = new javax.swing.JTextField();
+        REUsernameField = new javax.swing.JTextField();
         jLabel86 = new javax.swing.JLabel();
-        jTextField23 = new javax.swing.JTextField();
         jLabel87 = new javax.swing.JLabel();
-        jTextField24 = new javax.swing.JTextField();
+        REPasswordField = new javax.swing.JPasswordField();
+        REConfrimPasswordField = new javax.swing.JPasswordField();
         searchPanel4 = new RoundedPanel(50, new Color(55,111,138));
         jLabel90 = new javax.swing.JLabel();
-        jTextField25 = new javax.swing.JTextField();
-        jTextField26 = new javax.swing.JTextField();
+        REFirstNameField = new javax.swing.JTextField();
+        RELastNameField = new javax.swing.JTextField();
         jLabel91 = new javax.swing.JLabel();
         jLabel92 = new javax.swing.JLabel();
-        jTextField28 = new javax.swing.JTextField();
-        jTextField29 = new javax.swing.JTextField();
+        REEmailField = new javax.swing.JTextField();
         jLabel93 = new javax.swing.JLabel();
+        REContactNumberField = new javax.swing.JTextField();
         jLabel118 = new javax.swing.JLabel();
         jLabel119 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
+        RERegisterButton = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -1189,6 +1263,30 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             }
         });
         topPanel.add(logoutButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(1360, 20, 130, -1));
+
+        TPAccountLabel.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
+        TPAccountLabel.setForeground(new java.awt.Color(0, 255, 255));
+        topPanel.add(TPAccountLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 20, 370, 20));
+
+        jLabel29.setFont(new java.awt.Font("Segoe UI Semilight", 1, 14)); // NOI18N
+        jLabel29.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel29.setText("USER LOGGED IN: ");
+        topPanel.add(jLabel29, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 20, 130, -1));
+
+        jPanel1.setBackground(new java.awt.Color(102, 102, 102));
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 9, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 70, Short.MAX_VALUE)
+        );
+
+        topPanel.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 0, -1, 70));
 
         getContentPane().add(topPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1920, 60));
 
@@ -3374,27 +3472,20 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel84.setForeground(new java.awt.Color(255, 255, 255));
         jLabel84.setText("Username");
 
-        jTextField21.setBackground(new java.awt.Color(98, 161, 192));
-        jTextField21.setForeground(new java.awt.Color(255, 255, 255));
+        REUsernameField.setBackground(new java.awt.Color(98, 161, 192));
+        REUsernameField.setForeground(new java.awt.Color(255, 255, 255));
 
         jLabel86.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         jLabel86.setForeground(new java.awt.Color(255, 255, 255));
         jLabel86.setText("Password");
 
-        jTextField23.setBackground(new java.awt.Color(98, 161, 192));
-        jTextField23.setForeground(new java.awt.Color(255, 255, 255));
-        jTextField23.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField23ActionPerformed(evt);
-            }
-        });
-
         jLabel87.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         jLabel87.setForeground(new java.awt.Color(255, 255, 255));
         jLabel87.setText("Confirm Password");
 
-        jTextField24.setBackground(new java.awt.Color(98, 161, 192));
-        jTextField24.setForeground(new java.awt.Color(255, 255, 255));
+        REPasswordField.setBackground(new java.awt.Color(98, 161, 192));
+
+        REConfrimPasswordField.setBackground(new java.awt.Color(98, 161, 192));
 
         javax.swing.GroupLayout searchPanel3Layout = new javax.swing.GroupLayout(searchPanel3);
         searchPanel3.setLayout(searchPanel3Layout);
@@ -3404,16 +3495,16 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addGap(34, 34, 34)
                 .addComponent(jLabel84, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jTextField21, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(REUsernameField, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(21, 21, 21)
                 .addComponent(jLabel86, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField23, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(24, 24, 24)
+                .addComponent(REPasswordField, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(41, 41, 41)
                 .addComponent(jLabel87, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jTextField24, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(24, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(REConfrimPasswordField, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(47, Short.MAX_VALUE))
         );
         searchPanel3Layout.setVerticalGroup(
             searchPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -3421,13 +3512,13 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addGap(25, 25, 25)
                 .addGroup(searchPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(searchPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jTextField23, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel86, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jLabel86, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(REPasswordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(searchPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jTextField24, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel87, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jLabel87, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(REConfrimPasswordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(searchPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jTextField21, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(REUsernameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel84, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(41, Short.MAX_VALUE))
         );
@@ -3438,11 +3529,11 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel90.setForeground(new java.awt.Color(255, 255, 255));
         jLabel90.setText("First Name");
 
-        jTextField25.setBackground(new java.awt.Color(98, 161, 192));
-        jTextField25.setForeground(new java.awt.Color(255, 255, 255));
+        REFirstNameField.setBackground(new java.awt.Color(98, 161, 192));
+        REFirstNameField.setForeground(new java.awt.Color(255, 255, 255));
 
-        jTextField26.setBackground(new java.awt.Color(98, 161, 192));
-        jTextField26.setForeground(new java.awt.Color(255, 255, 255));
+        RELastNameField.setBackground(new java.awt.Color(98, 161, 192));
+        RELastNameField.setForeground(new java.awt.Color(255, 255, 255));
 
         jLabel91.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         jLabel91.setForeground(new java.awt.Color(255, 255, 255));
@@ -3450,17 +3541,17 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         jLabel92.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         jLabel92.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel92.setText("Gender");
+        jLabel92.setText("Contact Number");
 
-        jTextField28.setBackground(new java.awt.Color(98, 161, 192));
-        jTextField28.setForeground(new java.awt.Color(255, 255, 255));
-
-        jTextField29.setBackground(new java.awt.Color(98, 161, 192));
-        jTextField29.setForeground(new java.awt.Color(255, 255, 255));
+        REEmailField.setBackground(new java.awt.Color(98, 161, 192));
+        REEmailField.setForeground(new java.awt.Color(255, 255, 255));
 
         jLabel93.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         jLabel93.setForeground(new java.awt.Color(255, 255, 255));
         jLabel93.setText("Email");
+
+        REContactNumberField.setBackground(new java.awt.Color(98, 161, 192));
+        REContactNumberField.setForeground(new java.awt.Color(255, 255, 255));
 
         javax.swing.GroupLayout searchPanel4Layout = new javax.swing.GroupLayout(searchPanel4);
         searchPanel4.setLayout(searchPanel4Layout);
@@ -3472,21 +3563,21 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                     .addGroup(searchPanel4Layout.createSequentialGroup()
                         .addComponent(jLabel92, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jTextField28, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(REContactNumberField, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(searchPanel4Layout.createSequentialGroup()
                         .addComponent(jLabel90, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jTextField25, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(REFirstNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(104, 104, 104)
                 .addGroup(searchPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(searchPanel4Layout.createSequentialGroup()
                         .addComponent(jLabel93, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jTextField29, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(REEmailField, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(searchPanel4Layout.createSequentialGroup()
                         .addComponent(jLabel91, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jTextField26, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(RELastNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(91, Short.MAX_VALUE))
         );
         searchPanel4Layout.setVerticalGroup(
@@ -3495,19 +3586,19 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addGap(25, 25, 25)
                 .addGroup(searchPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(searchPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jTextField26)
+                        .addComponent(RELastNameField)
                         .addComponent(jLabel91, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(searchPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jTextField25)
+                        .addComponent(REFirstNameField)
                         .addComponent(jLabel90, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
                 .addGroup(searchPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(searchPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jTextField29)
+                        .addComponent(REEmailField)
                         .addComponent(jLabel93, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(searchPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jTextField28)
-                        .addComponent(jLabel92, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(searchPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel92, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(REContactNumberField)))
                 .addContainerGap(34, Short.MAX_VALUE))
         );
 
@@ -3519,7 +3610,12 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel119.setForeground(new java.awt.Color(255, 255, 255));
         jLabel119.setText("ACCOUNT INFORMATION");
 
-        jButton2.setText("Register");
+        RERegisterButton.setText("Register");
+        RERegisterButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RERegisterButtonActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("Cancel");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
@@ -3542,14 +3638,14 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                         .addGap(156, 156, 156)
                         .addGroup(registerEmployeePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(registerEmployeePanelLayout.createSequentialGroup()
-                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(RERegisterButton, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(registerEmployeePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(searchPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(jLabel118)
                                 .addComponent(jLabel119)))))
-                .addContainerGap(177, Short.MAX_VALUE))
+                .addContainerGap(179, Short.MAX_VALUE))
             .addGroup(registerEmployeePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(registerEmployeePanelLayout.createSequentialGroup()
                     .addGap(156, 156, 156)
@@ -3571,7 +3667,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addComponent(searchPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(registerEmployeePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2)
+                    .addComponent(RERegisterButton)
                     .addComponent(jButton3))
                 .addContainerGap(444, Short.MAX_VALUE))
             .addGroup(registerEmployeePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -3751,10 +3847,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton3ActionPerformed
 
-    private void jTextField23ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField23ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField23ActionPerformed
-
     private void CECourseMajorBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CECourseMajorBoxActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_CECourseMajorBoxActionPerformed
@@ -3812,6 +3904,10 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private void courseNewButtonLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_courseNewButtonLabelMouseClicked
         // TODO add your handling code here:
     }//GEN-LAST:event_courseNewButtonLabelMouseClicked
+
+    private void RERegisterButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RERegisterButtonActionPerformed
+        Register_Employee();
+    }//GEN-LAST:event_RERegisterButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -3903,6 +3999,14 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JLabel PFUnitsLabel7;
     private javax.swing.JLabel PFUnitsLabel8;
     private javax.swing.JLabel PFYearLevelLabel;
+    private javax.swing.JPasswordField REConfrimPasswordField;
+    private javax.swing.JTextField REContactNumberField;
+    private javax.swing.JTextField REEmailField;
+    private javax.swing.JTextField REFirstNameField;
+    private javax.swing.JTextField RELastNameField;
+    private javax.swing.JPasswordField REPasswordField;
+    private javax.swing.JButton RERegisterButton;
+    private javax.swing.JTextField REUsernameField;
     private javax.swing.JTextField SDAddressField;
     private javax.swing.JTextField SDAgeField;
     private javax.swing.JTextField SDCitizenshipField;
@@ -3938,6 +4042,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JTextField SEMotherContactField;
     private javax.swing.JTextField SEMotherNameField;
     private javax.swing.JComboBox<String> SEReligionBox;
+    private javax.swing.JLabel TPAccountLabel;
     private javax.swing.JPanel addtionalInfoPanel;
     private javax.swing.JPanel adminOnlyButton;
     private javax.swing.JLabel adminOnlyButtonLabel;
@@ -3953,7 +4058,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JPanel enrollmentNewButton;
     private javax.swing.JLabel enrollmentNewButtonLabel;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton7;
@@ -4006,6 +4110,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel28;
+    private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel32;
     private javax.swing.JLabel jLabel34;
@@ -4043,6 +4148,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel91;
     private javax.swing.JLabel jLabel92;
     private javax.swing.JLabel jLabel93;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel15;
@@ -4053,13 +4159,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel8;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane7;
-    private javax.swing.JTextField jTextField21;
-    private javax.swing.JTextField jTextField23;
-    private javax.swing.JTextField jTextField24;
-    private javax.swing.JTextField jTextField25;
-    private javax.swing.JTextField jTextField26;
-    private javax.swing.JTextField jTextField28;
-    private javax.swing.JTextField jTextField29;
     private javax.swing.JButton logoutButton;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JPanel masterlistNewButton;
