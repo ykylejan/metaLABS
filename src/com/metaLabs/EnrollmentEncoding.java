@@ -16,7 +16,12 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.LayoutManager;
+import java.awt.Panel;
 import java.awt.RenderingHints;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -29,6 +34,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Vector;
 import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
@@ -39,9 +47,9 @@ import javax.swing.table.TableRowSorter;
  * @author user
  */
 public class EnrollmentEncoding extends javax.swing.JFrame {
-
+    
     String dbURL = "jdbc:sqlite:/C:\\Users\\user\\OneDrive\\Documents\\NetBeansProjects\\MetaLabs\\src\\com\\database\\metalabsDatabase.db";
-
+    
     void Enroll_Student_Action() {
         String studentFirstName = SEFirstNameField.getText();
         String studentMiddleName = SEMiddleNameField.getText();
@@ -56,11 +64,11 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         String studentReligion = SEReligionBox.getSelectedItem().toString();
         String studentMotherName = SEMotherNameField.getText();
         String studentFatherName = SEFatherNameField.getText();
-
+        
         int studentYearNum = Integer.parseInt(studentBirthYear);
         int studentAge = 2023 - studentYearNum;
         int id;
-
+        
         if (studentFirstName.equals("") || studentMiddleName.equals("") || studentLastName.equals("")) {
             JOptionPane.showMessageDialog(null, "Please enter the student's name!", "Student Enrollment", JOptionPane.ERROR_MESSAGE);
         } else if (studentBirthDate.equals(" ") || studentBirthMonth.equals(" ") || studentBirthYear.equals(" ")) {
@@ -77,14 +85,14 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             long studentContactNumber = Long.parseLong(SEContactNumberField.getText());
             long studentMotherContact = Long.parseLong(SEMotherContactField.getText());
             long studentFatherContact = Long.parseLong(SEFatherContactField.getText());
-
+            
             try {
                 Connection connection = DriverManager.getConnection(dbURL);
                 PreparedStatement PS = connection.prepareStatement("INSERT INTO `student_enrollment`(`studentFirstName`, `studentMiddleName`, "
                         + "`studentLastName`, `studentBirthDate`, `studentBirthMonth`, `studentBirthYear`, `studentAge`, `studentAddress`, "
                         + "`studentGender`, `studentCitizenship`, `studentContactNumber`, `studentMarital`, `studentReligion`, `studentMotherName`, "
                         + "`studentMotherContact`, `studentFatherName`, `studentFatherContact`) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-
+                
                 PS.setString(1, studentFirstName);
                 PS.setString(2, studentMiddleName);
                 PS.setString(3, studentLastName);
@@ -102,12 +110,12 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 PS.setLong(15, studentMotherContact);
                 PS.setString(16, studentFatherName);
                 PS.setLong(17, studentFatherContact);
-
+                
                 PS.executeUpdate();
-
+                
                 JOptionPane.showMessageDialog(null, "Student Enrolled");
                 Masterlist_Table();
-
+                
                 SEFirstNameField.setText("");
                 SEMiddleNameField.setText("");
                 SELastNameField.setText("");
@@ -145,16 +153,16 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             }
         }
     }
-
+    
     void Enroll_Course_Action() {
         long studentId = Long.parseLong(CEStudentIDField.getText());
         String studentName = CEStudentNameField.getText();
         String studentCollegeDep = CECollegeDepBox.getSelectedItem().toString();
         String studentCourseMajor = CECourseMajorBox.getSelectedItem().toString();
-        String studentYearLevel = CEStudentYearLevelBox.getSelectedItem().toString();
+        String studentYearLevel = CEYearLevelBox.getSelectedItem().toString();
         String studentSemester = CESemesterBox.getSelectedItem().toString();
         String studentTerm = CETermBox.getSelectedItem().toString();
-
+        
         if (studentCollegeDep.contains("CAE")) {
             studentCollegeDep = "CAE";
         } else if (studentCollegeDep.contains("CAFAE")) {
@@ -174,46 +182,50 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         } else {
             studentCollegeDep = null;
         }
-
+        
         try {
             Connection connection = DriverManager.getConnection(dbURL);
             PreparedStatement ps = connection.prepareStatement("UPDATE student_enrollment SET studentCollegeDep = ?, studentCourseMajor = ?, studentYearLevel = ?, studentSemester = ?, studentTerm = ?  WHERE studentID = ?");
-
+            
             ps.setString(1, studentCollegeDep);
             ps.setString(2, studentCourseMajor);
             ps.setString(3, studentYearLevel);
-            ps.setLong(4, studentId);
-            ps.setString(5, studentSemester);
-            ps.setString(6, studentTerm);
-
+            ps.setString(4, studentSemester);
+            ps.setString(5, studentTerm);
+            
+            ps.setLong(6, studentId);
+            
             ps.executeUpdate();
-
+            
             JOptionPane.showMessageDialog(null, "Course Enrolled");
             Masterlist_Table();
-
+            
             CEStudentIDField.setText("");
             CEStudentNameField.setText("");
             CECollegeDepBox.setSelectedIndex(0);
             CECourseMajorBox.setSelectedIndex(0);
-            CEStudentYearLevelBox.setSelectedIndex(0);
-            CESemesterBox.setSelectedIndex(0);
-            CETermBox.setSelectedIndex(0);
-
+//            CEYearLevelBox.setSelectedIndex(0);
+//            CESemesterBox.setSelectedIndex(0);
+//            CETermBox.setSelectedIndex(0);
+            CEYearLevelBox.setSelectedItem("");
+            CESemesterBox.setSelectedItem("");
+            CETermBox.setSelectedItem("");
+            
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-
+    
     void Add_Courses_Action() {
         int studentId = Integer.parseInt(CEStudentIDField.getText());
         int id;
-
+        
         String courseSubjectCode = CESubjectCodeField.getText();
         String courseSubject = CESubjectBox.getSelectedItem().toString();
         double courseUnits = Double.parseDouble(CEUnitsField.getText());
         String courseTime = CETimeDateBox.getSelectedItem().toString();
         String courseRoom = CERoomBox.getSelectedItem().toString();
-
+        
         try {
             Connection connection = DriverManager.getConnection(dbURL);
 //            PreparedStatement ps = connection.prepareStatement("UPDATE student_course_enrolled SET courseCode = ?, courseTitle = ?, courseUnits = ?, courseTime = ?, courseRoom = ? WHERE studentID = ?");
@@ -236,13 +248,13 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             ps.executeUpdate();
             JOptionPane.showMessageDialog(null, "Course Added!");
             Update_Courses_Table();
-
+            
             CESubjectBox.setSelectedIndex(0);
             CESubjectCodeField.setText("");
             CEUnitsField.setText("");
             CETimeDateBox.setSelectedIndex(0);
             CERoomBox.setSelectedIndex(0);
-
+            
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -266,7 +278,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 //            e.printStackTrace();
 //        }
     }
-
+    
     void Update_Courses_Action() {
         DefaultTableModel tablemodel = (DefaultTableModel) CECourseListTable.getModel();
         int selectedIndex = CECourseListTable.getSelectedRow();
@@ -274,96 +286,95 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 //        String courseCode = CESubjectCodeField.getText();
         String courseCode = tablemodel.getValueAt(selectedIndex, 0).toString();
         String studentId = CEStudentIDField.getText();
-
+        
         String courseSubject = CESubjectBox.getSelectedItem().toString();
         String units = CEUnitsField.getText();
         String time = CETimeDateBox.getSelectedItem().toString();
         String room = CERoomBox.getSelectedItem().toString();
-
+        
         try {
             Connection connection = DriverManager.getConnection(dbURL);
 //            PreparedStatement ps = connection.prepareStatement("UPDATE `course_enrollment` SET `courseTitle`=?, `courseUnits`=?, `courseTime`=?, `courseRoom`=? WHERE `courseCode` = ?");
             PreparedStatement ps = connection.prepareStatement("UPDATE student_course_enrolled SET courseTitle = ?, courseTime = ?, courseRoom = ? WHERE studentID = ? AND courseCode = ?");
-            
+
 //            ps.setString(1, courseSubject);
 //            ps.setString(2, units);
 //            ps.setString(3, time);
 //            ps.setString(4, room);
 //
 //            ps.setString(5, courseCode);
-            
             ps.setString(1, courseSubject);
             ps.setString(2, time);
             ps.setString(3, room);
             
             ps.setInt(4, Integer.parseInt(studentId));
             ps.setString(5, courseCode);
-
+            
             ps.executeUpdate();
             JOptionPane.showMessageDialog(null, "Subject Entry Updated");
             Update_Courses_Table();
-
+            
             CESubjectBox.setSelectedIndex(0);
             CESubjectCodeField.setText("");
             CEUnitsField.setText("");
             CETimeDateBox.setSelectedIndex(0);
             CERoomBox.setSelectedIndex(0);
-
+            
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
+        
     }
-
+    
     void Delete_Courses_Action() {
         DefaultTableModel model = (DefaultTableModel) CECourseListTable.getModel();
         int selectedIndex = CECourseListTable.getSelectedRow();
-
+        
         String studentId = CEStudentIDField.getText();
         try {
             String courseCode = model.getValueAt(selectedIndex, 0).toString();
-
+            
             int dialogResult = JOptionPane.showConfirmDialog(null, "Do you want to delete this subject entry?", "Course Enrollment", JOptionPane.YES_NO_OPTION);
-
+            
             if (dialogResult == JOptionPane.YES_OPTION) {
                 Connection connection = DriverManager.getConnection(dbURL);
 //                PreparedStatement ps = connection.prepareStatement("DELETE FROM `course_enrollment` WHERE `courseCode` = ?");
                 PreparedStatement ps = connection.prepareStatement("DELETE FROM student_course_enrolled WHERE studentID = ? AND courseCode = ?");
-
+                
                 ps.setInt(1, Integer.parseInt(studentId));
                 ps.setString(2, courseCode);
-
+                
                 ps.executeUpdate();
                 JOptionPane.showMessageDialog(null, "Subject Entry Deleted");
                 Update_Courses_Table();
-
+                
                 CESubjectBox.setSelectedIndex(0);
                 CESubjectCodeField.setText("");
                 CEUnitsField.setText("");
                 CETimeDateBox.setSelectedIndex(0);
                 CERoomBox.setSelectedIndex(0);
             }
-
+            
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
+        
     }
-
+    
     void Update_Courses_Table() {
         String studentID = CEStudentIDField.getText();
-
+        
         try {
             Connection connection = DriverManager.getConnection(dbURL);
             PreparedStatement ps = connection.prepareStatement("SELECT * FROM student_course_enrolled WHERE studentID = ?");
 //            PreparedStatement ps = connection.prepareStatement("SELECT c,courseCode, c.courseTitle, c.courseUnits, c.courseTime, c.courseRoom FROM student_course_enrolled c JOIN student_enrollment s ON s.studentID = c.studentID");
             ps.setString(1, studentID);
-
+            
             ResultSet rs = ps.executeQuery();
-
+            
             DefaultTableModel tableModel = (DefaultTableModel) CECourseListTable.getModel();
             tableModel.setRowCount(0);
-
+            
             while (rs.next()) {
                 Vector vector = new Vector();
                 vector.add(rs.getString("courseCode"));
@@ -371,29 +382,29 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 vector.add(rs.getString("courseUnits"));
                 vector.add(rs.getString("courseTime"));
                 vector.add(rs.getString("courseRoom"));
-
+                
                 tableModel.addRow(vector);
                 tableModel.fireTableDataChanged();
             }
-
+            
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
+        
     }
-
+    
     void Masterlist_Table() {
         try {
             Connection connection = DriverManager.getConnection(dbURL);
             PreparedStatement ps = connection.prepareStatement("SELECT * FROM `student_enrollment`");
-
+            
             ResultSet rs = ps.executeQuery();
 
 //            ResultSetMetaData rsmd = rs.getMetaData();
 //            columnCount = rsmd.getColumnCount();
             DefaultTableModel tableModel = (DefaultTableModel) MLMasterlistTable.getModel();
             tableModel.setRowCount(0);
-
+            
             while (rs.next()) {
                 Vector vector = new Vector();
                 vector.add(rs.getInt("studentID"));
@@ -403,17 +414,17 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 vector.add(rs.getString("studentYearLevel"));
                 vector.add(rs.getString("studentCollegeDep"));
                 vector.add(rs.getString("studentCourseMajor"));
-
+                
                 tableModel.addRow(vector);
                 tableModel.fireTableDataChanged();
             }
-
+            
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
+        
     }
-
+    
     void Masterlist_Table_Search() {
         String searchTerm = MLSearchField.getText();
         DefaultTableModel model = (DefaultTableModel) MLMasterlistTable.getModel();
@@ -421,18 +432,18 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         MLMasterlistTable.setRowSorter(sorter);
         sorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchTerm));
     }
-
+    
     void Student_Details_Info_Action() {
 //        long studentID = Long.parseLong(SDStudentIDField.getText());
         String studentID = SDStudentIDField.getText();
-
+        
         try {
             Connection connection = DriverManager.getConnection(dbURL);
             PreparedStatement ps = connection.prepareStatement("SELECT * FROM `student_enrollment` WHERE `studentID` = ?");
             ps.setString(1, studentID);
-
+            
             ResultSet rs = ps.executeQuery();
-
+            
             while (rs.next()) {
                 SDFirstNameField.setText(rs.getString(2));
                 SDLastNameField.setText(rs.getString(4));
@@ -444,7 +455,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 SDMaritalStatusField.setText(rs.getString(13));
                 SDCitizenshipField.setText(rs.getString(11));
                 SDReligionField.setText(rs.getString(14));
-
+                
                 SDMotherNameField.setText(rs.getString(15));
                 SDMotherContactField.setText(Long.toString(rs.getLong(16)));
                 SDFatherNameField.setText(rs.getString(17));
@@ -454,11 +465,11 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }
-
+    
     void Student_Details_Update_Action() {
 //        String studentID = SDStudentIDField.getText();
         int studentID = Integer.parseInt(SDStudentIDField.getText());
-
+        
         String studentLastName = SDLastNameField.getText();
         String studentFirstName = SDFirstNameField.getText();
         String studentMiddleName = SDMiddleNameField.getText();
@@ -470,16 +481,16 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         String studentMarital = SDMaritalStatusField.getText();
         String studentCitizenship = SDCitizenshipField.getText();
         String studentReligion = SDReligionField.getText();
-
+        
         String motherName = SDMotherNameField.getText();
         long motherContact = Long.parseLong(SDMotherContactField.getText());
         String fatherName = SDFatherNameField.getText();
         long fatherContact = Long.parseLong(SDFatherContactField.getText());
-
+        
         try {
             Connection connection = DriverManager.getConnection(dbURL);
             PreparedStatement ps = connection.prepareStatement("UPDATE `student_enrollment` SET `studentFirstName`=?, `studentMiddleName`=?, `studentLastName`=?, `studentAge`=?, `studentAddress`=?, `studentContactNumber`=?, `studentGender`=?, `studentMarital`=?, `studentCitizenship`=?, `studentReligion`=?, `studentMotherName`=?, `studentMotherContact`=?, `studentFatherName`=?, `studentFatherContact`=? WHERE `studentID` = ?");
-
+            
             ps.setString(1, studentFirstName);
             ps.setString(2, studentMiddleName);
             ps.setString(3, studentLastName);
@@ -495,35 +506,35 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             ps.setString(13, fatherName);
             ps.setLong(14, fatherContact);
             ps.setInt(15, studentID);
-
+            
             ps.executeUpdate();
             JOptionPane.showMessageDialog(null, "Student Details Updated");
             Masterlist_Table();
-
+            
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
+        
     }
-
+    
     void Student_Details_Delete_Action() {
         int studentID = Integer.parseInt(SDStudentIDField.getText());
-
+        
         try {
             int dialogRes = JOptionPane.showConfirmDialog(null, "Do you want to un-enroll this student?", "Student Details", JOptionPane.YES_NO_OPTION);
-
+            
             if (dialogRes == JOptionPane.YES_OPTION) {
                 Connection connection = DriverManager.getConnection(dbURL);
                 PreparedStatement ps = connection.prepareStatement("DELETE FROM `student_enrollment` WHERE `studentID` = ?");
-
+                
                 ps.setInt(1, studentID);
-
+                
                 ps.executeUpdate();
                 JOptionPane.showMessageDialog(null, "Student Dropped");
                 Masterlist_Table();
-
+                
                 SDStudentIDField.setText("");
-
+                
                 SDFirstNameField.setText("");
                 SDMiddleNameField.setText("");
                 SDLastNameField.setText("");
@@ -534,14 +545,14 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 SDMaritalStatusField.setText("");
                 SDCitizenshipField.setText("");
                 SDReligionField.setText("");
-
+                
                 SDMotherNameField.setText("");
                 SDMotherContactField.setText("");
                 SDFatherNameField.setText("");
                 SDFatherContactField.setText("");
-
+                
             }
-
+            
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -549,6 +560,60 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     
     void Print_Form_Action() {
         String studentId = CEStudentIDField.getText();
+        
+        ArrayList<JLabel> courseCodeLabels = new ArrayList<>();
+        ArrayList<JLabel> subjectLabels = new ArrayList<>();
+        ArrayList<JLabel> unitsLabels = new ArrayList<>();
+        ArrayList<JLabel> roomLabels = new ArrayList<>();
+        ArrayList<JLabel> timeLabels = new ArrayList<>();
+        
+        courseCodeLabels.add(PFCourseCodeLabel1);
+        subjectLabels.add(PFSubjectLabel1);
+        unitsLabels.add(PFUnitsLabel1);
+        roomLabels.add(PFRoomLabel1);
+        timeLabels.add(PFTimeLabel1);
+        
+        courseCodeLabels.add(PFCourseCodeLabel2);
+        subjectLabels.add(PFSubjectLabel2);
+        unitsLabels.add(PFUnitsLabel2);
+        roomLabels.add(PFRoomLabel2);
+        timeLabels.add(PFTimeLabel2);
+        
+        courseCodeLabels.add(PFCourseCodeLabel3);
+        subjectLabels.add(PFSubjectLabel3);
+        unitsLabels.add(PFUnitsLabel3);
+        roomLabels.add(PFRoomLabel3);
+        timeLabels.add(PFTimeLabel3);
+        
+        courseCodeLabels.add(PFCourseCodeLabel4);
+        subjectLabels.add(PFSubjectLabel4);
+        unitsLabels.add(PFUnitsLabel4);
+        roomLabels.add(PFRoomLabel4);
+        timeLabels.add(PFTimeLabel4);
+        
+        courseCodeLabels.add(PFCourseCodeLabel5);
+        subjectLabels.add(PFSubjectLabel5);
+        unitsLabels.add(PFUnitsLabel5);
+        roomLabels.add(PFRoomLabel5);
+        timeLabels.add(PFTimeLabel5);
+        
+        courseCodeLabels.add(PFCourseCodeLabel6);
+        subjectLabels.add(PFSubjectLabel6);
+        unitsLabels.add(PFUnitsLabel6);
+        roomLabels.add(PFRoomLabel6);
+        timeLabels.add(PFTimeLabel6);
+        
+        courseCodeLabels.add(PFCourseCodeLabel7);
+        subjectLabels.add(PFSubjectLabel7);
+        unitsLabels.add(PFUnitsLabel7);
+        roomLabels.add(PFRoomLabel7);
+        timeLabels.add(PFTimeLabel7);
+        
+        courseCodeLabels.add(PFCourseCodeLabel8);
+        subjectLabels.add(PFSubjectLabel8);
+        unitsLabels.add(PFUnitsLabel8);
+        roomLabels.add(PFRoomLabel8);
+        timeLabels.add(PFTimeLabel8);
         
         try {
             Connection connection = DriverManager.getConnection(dbURL);
@@ -566,80 +631,77 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 PFCollegeDepLabel.setText(rs.getString("studentCollegeDep"));
                 PFCourseMajorLabel.setText(rs.getString("studentCourseMajor"));
                 PFYearLevelLabel.setText(rs.getString("studentYearLevel"));
-                PFSemesterLabel.setText(rs.getString("studetnSemester"));
+                PFSemesterLabel.setText(rs.getString("studentSemester"));
                 PFTermLabel.setText(rs.getString("studentTerm"));
             }
             
-            if (rs1.next()) {
-                PFCourseCodeLabel1.setText(rs.getString("courseCode"));
-                PFSubjectLabel1.setText(rs.getString("courseTitle"));
-                PFUnitsLabel1.setText(rs.getString("courseUnits"));
-                PFRoomLabel1.setText(rs.getString("courseRoom"));
-                PFTimeLabel1.setText(rs.getString("courseTime"));
+            int i = 0;
+            while (rs1.next() && i < courseCodeLabels.size()) {
+                courseCodeLabels.get(i).setText(rs1.getString("courseCode"));
+                subjectLabels.get(i).setText(rs1.getString("courseTitle"));
+                unitsLabels.get(i).setText(rs1.getString("courseUnits"));
+                roomLabels.get(i).setText(rs1.getString("courseRoom"));
+                timeLabels.get(i).setText(rs1.getString("courseTime"));
                 
-                PFCourseCodeLabel2.setText(rs.getString("courseCode"));
-                PFSubjectLabel2.setText(rs.getString("courseTitle"));
-                PFUnitsLabel2.setText(rs.getString("courseUnits"));
-                PFRoomLabel2.setText(rs.getString("courseRoom"));
-                PFTimeLabel2.setText(rs.getString("courseTime"));
-                
-                PFCourseCodeLabel3.setText(rs.getString("courseCode"));
-                PFSubjectLabel3.setText(rs.getString("courseTitle"));
-                PFUnitsLabel3.setText(rs.getString("courseUnits"));
-                PFRoomLabel3.setText(rs.getString("courseRoom"));
-                PFTimeLabel3.setText(rs.getString("courseTime"));
-                
-                PFCourseCodeLabel4.setText(rs.getString("courseCode"));
-                PFSubjectLabel4.setText(rs.getString("courseTitle"));
-                PFUnitsLabel4.setText(rs.getString("courseUnits"));
-                PFRoomLabel4.setText(rs.getString("courseRoom"));
-                PFTimeLabel4.setText(rs.getString("courseTime"));
-                
-                PFCourseCodeLabel5.setText(rs.getString("courseCode"));
-                PFSubjectLabel5.setText(rs.getString("courseTitle"));
-                PFUnitsLabel5.setText(rs.getString("courseUnits"));
-                PFRoomLabel5.setText(rs.getString("courseRoom"));
-                PFTimeLabel5.setText(rs.getString("courseTime"));
-                
-                PFCourseCodeLabel6.setText(rs.getString("courseCode"));
-                PFSubjectLabel6.setText(rs.getString("courseTitle"));
-                PFUnitsLabel6.setText(rs.getString("courseUnits"));
-                PFRoomLabel6.setText(rs.getString("courseRoom"));
-                PFTimeLabel6.setText(rs.getString("courseTime"));
-                
-                PFCourseCodeLabel7.setText(rs.getString("courseCode"));
-                PFSubjectLabel7.setText(rs.getString("courseTitle"));
-                PFUnitsLabel7.setText(rs.getString("courseUnits"));
-                PFRoomLabel7.setText(rs.getString("courseRoom"));
-                PFTimeLabel7.setText(rs.getString("courseTime"));
-                
-                PFCourseCodeLabel8.setText(rs.getString("courseCode"));
-                PFSubjectLabel8.setText(rs.getString("courseTitle"));
-                PFUnitsLabel8.setText(rs.getString("courseUnits"));
-                PFRoomLabel8.setText(rs.getString("courseRoom"));
-                PFTimeLabel8.setText(rs.getString("courseTime"));
+                i++;
             }
-            
             
         } catch (SQLException e) {
             e.printStackTrace();
         }
         
-        
     }
-
+    
+    void Print_Form_Save(JPanel panel) {
+        PrinterJob printerJob = PrinterJob.getPrinterJob();
+        printerJob.setJobName("Print Record");
+        
+        printerJob.setPrintable(new Printable() {
+            @Override
+            public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
+                if (pageIndex > 0) {
+                    return Printable.NO_SUCH_PAGE;
+                }
+                Graphics2D graphics2D = (Graphics2D)graphics;
+                graphics2D.translate(pageFormat.getImageableX()*2, pageFormat.getImageableY()*2);
+                graphics2D.scale(0.6, 0.6);
+                
+                panel.paint(graphics2D);
+                
+                return Printable.PAGE_EXISTS;
+            }
+        });
+        boolean returningResult = printerJob.printDialog();
+        
+        if (returningResult) {
+             try {
+                printerJob.print();
+            } catch (PrinterException e) {
+                JOptionPane.showMessageDialog(this, "Print Error: " + e.getMessage());
+            }
+        }
+    }
+    
+    void Date_Today() {
+        LocalDate dateObj = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String date = dateObj.format(formatter);
+        
+        CEDatePrintedLabel.setText(date);
+    }
+    
     void OnClick_Table_Action() {
         DefaultTableModel tableModel = (DefaultTableModel) CECourseListTable.getModel();
-
+        
         int selectedIndex = CECourseListTable.getSelectedRow();
-
+        
         CESubjectCodeField.setText(tableModel.getValueAt(selectedIndex, 0).toString());
         CESubjectBox.setSelectedItem(tableModel.getValueAt(selectedIndex, 1).toString());
         CEUnitsField.setText(tableModel.getValueAt(selectedIndex, 2).toString());
         CETimeDateBox.setSelectedItem(tableModel.getValueAt(selectedIndex, 3).toString());
         CERoomBox.setSelectedItem(tableModel.getValueAt(selectedIndex, 4).toString());
     }
-
+    
     void Change_Major_Courses() {
         if (CECollegeDepBox.getSelectedItem().equals("CAE - College of Accounting Education")) {
             CECourseMajorBox.removeAllItems();
@@ -704,7 +766,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             CECourseMajorBox.setSelectedItem(null);
         }
     }
-
+    
     void Course_Set_Text_Action() {
         if (CESubjectBox.getSelectedItem().equals("Understanding the Self")) {
             CESubjectCodeField.setText("GE 1");
@@ -747,17 +809,17 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             CEUnitsField.setText("");
         }
     }
-
+    
     void SidePanel_SetColor(JPanel bg, JLabel fg) {
         bg.setBackground(new Color(201, 251, 252));
         fg.setForeground(new Color(0, 0, 0));
     }
-
+    
     void SidePanel_ResetColor(JPanel bg, JLabel fg) {
         bg.setBackground(new Color(33, 67, 83));
         fg.setForeground(new Color(255, 255, 255));
     }
-
+    
     void ChangeCard(Component Card) {
         mainPanel.removeAll();
         mainPanel.add(Card);
@@ -770,17 +832,17 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
      */
     public EnrollmentEncoding() {
         initComponents();
-
+        
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-
+        
         mainPanel.removeAll();
         mainPanel.add(studentEnrollmentPanel);
         mainPanel.repaint();
         mainPanel.revalidate();
-
+        
         Masterlist_Table();
         Update_Courses_Table();
-
+        
     }
 
     /**
@@ -813,7 +875,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         adminOnlyButtonLabel = new javax.swing.JLabel();
         mainPanel = new javax.swing.JPanel();
         printFormPanel = new javax.swing.JPanel();
-        jPanel1 = new javax.swing.JPanel();
+        PFPanelToPrint = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
@@ -883,14 +945,15 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         PFUnitsLabel1 = new javax.swing.JLabel();
         jLabel41 = new javax.swing.JLabel();
         jLabel68 = new javax.swing.JLabel();
-        jLabel69 = new javax.swing.JLabel();
+        CEDatePrintedLabel = new javax.swing.JLabel();
+        PFPrintPanelButton = new javax.swing.JButton();
         courseEnrollmentPanel = new javax.swing.JPanel();
         jPanel13 = new RoundedPanel(50, new Color(55,111,138));
         jLabel101 = new javax.swing.JLabel();
         CECollegeDepBox = new javax.swing.JComboBox<>();
         CECourseMajorBox = new javax.swing.JComboBox<>();
         jLabel108 = new javax.swing.JLabel();
-        CEStudentYearLevelBox = new javax.swing.JComboBox<>();
+        CEYearLevelBox = new javax.swing.JComboBox<>();
         jLabel109 = new javax.swing.JLabel();
         CESemesterBox = new javax.swing.JComboBox<>();
         jLabel110 = new javax.swing.JLabel();
@@ -1269,8 +1332,8 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         printFormPanel.setBackground(new java.awt.Color(90, 118, 132));
         printFormPanel.setPreferredSize(new java.awt.Dimension(1710, 646));
 
-        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        PFPanelToPrint.setBackground(new java.awt.Color(255, 255, 255));
+        PFPanelToPrint.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -1352,7 +1415,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
-                .addGap(40, 40, 40)
+                .addGap(83, 83, 83)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1369,18 +1432,18 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 74, Short.MAX_VALUE)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addComponent(jLabel32, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel36, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(PFYearLevelLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(PFTermLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addComponent(jLabel34, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(PFSemesterLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(PFSemesterLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addComponent(jLabel36, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel32, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(PFTermLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(74, 74, 74))
+                        .addComponent(PFYearLevelLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(91, 91, 91))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1741,34 +1804,34 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel68.setForeground(new java.awt.Color(1, 1, 1));
         jLabel68.setText("Date Printed:");
 
-        jLabel69.setForeground(new java.awt.Color(1, 1, 1));
-        jLabel69.setText("12/02/2023");
+        CEDatePrintedLabel.setForeground(new java.awt.Color(1, 1, 1));
+        CEDatePrintedLabel.setText("12/02/2023");
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+        javax.swing.GroupLayout PFPanelToPrintLayout = new javax.swing.GroupLayout(PFPanelToPrint);
+        PFPanelToPrint.setLayout(PFPanelToPrintLayout);
+        PFPanelToPrintLayout.setHorizontalGroup(
+            PFPanelToPrintLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, PFPanelToPrintLayout.createSequentialGroup()
                 .addContainerGap(66, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(PFPanelToPrintLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(PFPanelToPrintLayout.createSequentialGroup()
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 908, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap())
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, PFPanelToPrintLayout.createSequentialGroup()
+                        .addGroup(PFPanelToPrintLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(PFPanelToPrintLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                 .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addGroup(PFPanelToPrintLayout.createSequentialGroup()
                                 .addComponent(jLabel68, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel69, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(CEDatePrintedLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(49, 49, 49))))
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        PFPanelToPrintLayout.setVerticalGroup(
+            PFPanelToPrintLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(PFPanelToPrintLayout.createSequentialGroup()
                 .addGap(18, 18, 18)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -1778,11 +1841,18 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(PFPanelToPrintLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel68)
-                    .addComponent(jLabel69))
+                    .addComponent(CEDatePrintedLabel))
                 .addGap(93, 93, 93))
         );
+
+        PFPrintPanelButton.setText("PRINT");
+        PFPrintPanelButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PFPrintPanelButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout printFormPanelLayout = new javax.swing.GroupLayout(printFormPanel);
         printFormPanel.setLayout(printFormPanelLayout);
@@ -1790,15 +1860,19 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             printFormPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(printFormPanelLayout.createSequentialGroup()
                 .addGap(162, 162, 162)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(printFormPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(PFPanelToPrint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(PFPrintPanelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(523, Short.MAX_VALUE))
         );
         printFormPanelLayout.setVerticalGroup(
             printFormPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(printFormPanelLayout.createSequentialGroup()
                 .addGap(46, 46, 46)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(PFPanelToPrint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(PFPrintPanelButton)
+                .addContainerGap(248, Short.MAX_VALUE))
         );
 
         mainPanel.add(printFormPanel, "card5");
@@ -1838,11 +1912,11 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel108.setForeground(new java.awt.Color(255, 255, 255));
         jLabel108.setText("Course Major");
 
-        CEStudentYearLevelBox.setBackground(new java.awt.Color(98, 161, 192));
-        CEStudentYearLevelBox.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        CEStudentYearLevelBox.setForeground(new java.awt.Color(204, 255, 255));
-        CEStudentYearLevelBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Year 1", "Year 2", "Year 3", "Year 4", "Year 5" }));
-        CEStudentYearLevelBox.setFocusable(false);
+        CEYearLevelBox.setBackground(new java.awt.Color(98, 161, 192));
+        CEYearLevelBox.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
+        CEYearLevelBox.setForeground(new java.awt.Color(204, 255, 255));
+        CEYearLevelBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Year 1", "Year 2", "Year 3", "Year 4", "Year 5" }));
+        CEYearLevelBox.setFocusable(false);
 
         jLabel109.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
         jLabel109.setForeground(new java.awt.Color(255, 255, 255));
@@ -1882,7 +1956,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                     .addGroup(jPanel13Layout.createSequentialGroup()
                         .addComponent(jLabel109, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(CEStudentYearLevelBox, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(CEYearLevelBox, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel13Layout.createSequentialGroup()
                         .addComponent(jLabel110, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
@@ -1911,7 +1985,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel109, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(CEStudentYearLevelBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(CEYearLevelBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel110, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -2225,7 +2299,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                                 .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(jPanel14, javax.swing.GroupLayout.DEFAULT_SIZE, 549, Short.MAX_VALUE)))))
-                .addContainerGap(194, Short.MAX_VALUE))
+                .addContainerGap(190, Short.MAX_VALUE))
         );
         courseEnrollmentPanelLayout.setVerticalGroup(
             courseEnrollmentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2618,7 +2692,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jPanel15, javax.swing.GroupLayout.DEFAULT_SIZE, 1067, Short.MAX_VALUE)
                             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap(209, Short.MAX_VALUE))
+                .addContainerGap(206, Short.MAX_VALUE))
         );
         studentEnrollmentPanelLayout.setVerticalGroup(
             studentEnrollmentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -3177,7 +3251,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                             .addGroup(studentDetailsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(searchPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(studentDetailsTabbedPane)))))
-                .addContainerGap(252, Short.MAX_VALUE))
+                .addContainerGap(249, Short.MAX_VALUE))
         );
         studentDetailsPanelLayout.setVerticalGroup(
             studentDetailsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -3406,7 +3480,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                                 .addComponent(searchPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(jLabel118)
                                 .addComponent(jLabel119)))))
-                .addContainerGap(179, Short.MAX_VALUE))
+                .addContainerGap(177, Short.MAX_VALUE))
             .addGroup(registerEmployeePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(registerEmployeePanelLayout.createSequentialGroup()
                     .addGap(156, 156, 156)
@@ -3481,6 +3555,8 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
     private void CEPrintPreviewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CEPrintPreviewButtonActionPerformed
         ChangeCard(printFormPanel);
+        Print_Form_Action();
+        Date_Today();
     }//GEN-LAST:event_CEPrintPreviewButtonActionPerformed
 
     private void courseNewButtonLabelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_courseNewButtonLabelMouseEntered
@@ -3553,21 +3629,21 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
     private void logoutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutButtonActionPerformed
         int q = JOptionPane.showConfirmDialog(null, "Are you sure?", "Logout", JOptionPane.YES_NO_OPTION);
-
+        
         if (q == JOptionPane.YES_OPTION) {
             this.setVisible(false);
             Login login = new Login();
             login.setVisible(true);
         } else {
-
+            
         }
-
+        
 
     }//GEN-LAST:event_logoutButtonActionPerformed
 
     private void SEContactNumberFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_SEContactNumberFieldKeyTyped
         char c = evt.getKeyChar();
-
+        
         if (!Character.isDigit(c)) {
             evt.consume();
         }
@@ -3575,7 +3651,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
     private void SEMotherContactFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_SEMotherContactFieldKeyTyped
         char c = evt.getKeyChar();
-
+        
         if (!Character.isDigit(c)) {
             evt.consume();
         }
@@ -3583,7 +3659,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
     private void SEFatherContactFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_SEFatherContactFieldKeyTyped
         char c = evt.getKeyChar();
-
+        
         if (!Character.isDigit(c)) {
             evt.consume();
         }
@@ -3634,7 +3710,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void MLSearchFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_MLSearchFieldKeyTyped
-
+        
         Masterlist_Table_Search();
     }//GEN-LAST:event_MLSearchFieldKeyTyped
 
@@ -3653,6 +3729,10 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private void CESearchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CESearchButtonActionPerformed
         Update_Courses_Table();
     }//GEN-LAST:event_CESearchButtonActionPerformed
+
+    private void PFPrintPanelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PFPrintPanelButtonActionPerformed
+        Print_Form_Save(PFPanelToPrint);
+    }//GEN-LAST:event_PFPrintPanelButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -3676,6 +3756,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JButton CECourseButton;
     private javax.swing.JTable CECourseListTable;
     private javax.swing.JComboBox<String> CECourseMajorBox;
+    private javax.swing.JLabel CEDatePrintedLabel;
     private javax.swing.JButton CEDeleteButton;
     private javax.swing.JButton CEEnrollButton;
     private javax.swing.JButton CEPrintPreviewButton;
@@ -3684,12 +3765,12 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> CESemesterBox;
     private javax.swing.JTextField CEStudentIDField;
     private javax.swing.JTextField CEStudentNameField;
-    private javax.swing.JComboBox<String> CEStudentYearLevelBox;
     private javax.swing.JComboBox<String> CESubjectBox;
     private javax.swing.JTextField CESubjectCodeField;
     private javax.swing.JComboBox<String> CETermBox;
     private javax.swing.JComboBox<String> CETimeDateBox;
     private javax.swing.JTextField CEUnitsField;
+    private javax.swing.JComboBox<String> CEYearLevelBox;
     private javax.swing.JTable MLMasterlistTable;
     private javax.swing.JButton MLSearchButton;
     private javax.swing.JTextField MLSearchField;
@@ -3703,6 +3784,8 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JLabel PFCourseCodeLabel7;
     private javax.swing.JLabel PFCourseCodeLabel8;
     private javax.swing.JLabel PFCourseMajorLabel;
+    private javax.swing.JPanel PFPanelToPrint;
+    private javax.swing.JButton PFPrintPanelButton;
     private javax.swing.JLabel PFRoomLabel1;
     private javax.swing.JLabel PFRoomLabel2;
     private javax.swing.JLabel PFRoomLabel3;
@@ -3857,7 +3940,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel63;
     private javax.swing.JLabel jLabel67;
     private javax.swing.JLabel jLabel68;
-    private javax.swing.JLabel jLabel69;
     private javax.swing.JLabel jLabel70;
     private javax.swing.JLabel jLabel71;
     private javax.swing.JLabel jLabel72;
@@ -3881,7 +3963,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel91;
     private javax.swing.JLabel jLabel92;
     private javax.swing.JLabel jLabel93;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel15;
@@ -3922,33 +4003,33 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     class RoundedPanel extends JPanel {
-
+        
         private Color backgroundColor;
         private int cornerRadius = 15;
-
+        
         public RoundedPanel(LayoutManager layout, int radius) {
             super(layout);
             cornerRadius = radius;
         }
-
+        
         public RoundedPanel(LayoutManager layout, int radius, Color bgColor) {
             super(layout);
             cornerRadius = radius;
             backgroundColor = bgColor;
         }
-
+        
         public RoundedPanel(int radius) {
             super();
             cornerRadius = radius;
-
+            
         }
-
+        
         public RoundedPanel(int radius, Color bgColor) {
             super();
             cornerRadius = radius;
             backgroundColor = bgColor;
         }
-
+        
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);

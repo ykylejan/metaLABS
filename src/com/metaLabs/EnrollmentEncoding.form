@@ -460,7 +460,10 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="162" max="-2" attributes="0"/>
-                      <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Component id="PFPanelToPrint" min="-2" max="-2" attributes="0"/>
+                          <Component id="PFPrintPanelButton" min="-2" pref="149" max="-2" attributes="0"/>
+                      </Group>
                       <EmptySpace pref="523" max="32767" attributes="0"/>
                   </Group>
               </Group>
@@ -469,14 +472,16 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="46" max="-2" attributes="0"/>
-                      <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <Component id="PFPanelToPrint" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="PFPrintPanelButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace pref="248" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Container class="javax.swing.JPanel" name="jPanel1">
+            <Container class="javax.swing.JPanel" name="PFPanelToPrint">
               <Properties>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="ff" green="ff" red="ff" type="rgb"/>
@@ -508,7 +513,7 @@
                                       <Group type="102" attributes="0">
                                           <Component id="jLabel68" min="-2" pref="138" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="jLabel69" min="-2" pref="117" max="-2" attributes="0"/>
+                                          <Component id="CEDatePrintedLabel" min="-2" pref="117" max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
                                   <EmptySpace min="-2" pref="49" max="-2" attributes="0"/>
@@ -531,7 +536,7 @@
                           <EmptySpace pref="31" max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel68" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="jLabel69" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="CEDatePrintedLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace min="-2" pref="93" max="-2" attributes="0"/>
                       </Group>
@@ -660,8 +665,8 @@
                   <Layout>
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="-2" pref="40" max="-2" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <EmptySpace min="-2" pref="83" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="jLabel26" min="-2" pref="91" max="-2" attributes="0"/>
@@ -682,22 +687,22 @@
                               <EmptySpace pref="74" max="32767" attributes="0"/>
                               <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                   <Group type="102" alignment="0" attributes="0">
-                                      <Component id="jLabel32" min="-2" pref="91" max="-2" attributes="0"/>
+                                      <Component id="jLabel36" min="-2" pref="91" max="-2" attributes="0"/>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="PFYearLevelLabel" max="32767" attributes="0"/>
+                                      <Component id="PFTermLabel" max="32767" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="jLabel34" min="-2" pref="91" max="-2" attributes="0"/>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="PFSemesterLabel" max="32767" attributes="0"/>
+                                      <Component id="PFSemesterLabel" min="-2" pref="177" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
-                                      <Component id="jLabel36" min="-2" pref="91" max="-2" attributes="0"/>
+                                      <Component id="jLabel32" min="-2" pref="91" max="-2" attributes="0"/>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="PFTermLabel" min="-2" pref="237" max="-2" attributes="0"/>
+                                      <Component id="PFYearLevelLabel" min="-2" pref="177" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
-                              <EmptySpace min="-2" pref="74" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="91" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -1457,7 +1462,7 @@
                     <Property name="text" type="java.lang.String" value="Date Printed:"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JLabel" name="jLabel69">
+                <Component class="javax.swing.JLabel" name="CEDatePrintedLabel">
                   <Properties>
                     <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="1" green="1" red="1" type="rgb"/>
@@ -1467,6 +1472,14 @@
                 </Component>
               </SubComponents>
             </Container>
+            <Component class="javax.swing.JButton" name="PFPrintPanelButton">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="PRINT"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="PFPrintPanelButtonActionPerformed"/>
+              </Events>
+            </Component>
           </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="courseEnrollmentPanel">
@@ -1517,7 +1530,7 @@
                               </Group>
                           </Group>
                       </Group>
-                      <EmptySpace pref="194" max="32767" attributes="0"/>
+                      <EmptySpace pref="190" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -1577,7 +1590,7 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="jLabel109" min="-2" pref="125" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="CEStudentYearLevelBox" min="-2" pref="270" max="-2" attributes="0"/>
+                                  <Component id="CEYearLevelBox" min="-2" pref="270" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="jLabel110" min="-2" pref="125" max="-2" attributes="0"/>
@@ -1614,7 +1627,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel109" alignment="3" min="-2" pref="22" max="-2" attributes="0"/>
-                              <Component id="CEStudentYearLevelBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="CEYearLevelBox" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
@@ -1709,7 +1722,7 @@
                     <Property name="text" type="java.lang.String" value="Course Major"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JComboBox" name="CEStudentYearLevelBox">
+                <Component class="javax.swing.JComboBox" name="CEYearLevelBox">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -2414,7 +2427,7 @@
                               </Group>
                           </Group>
                       </Group>
-                      <EmptySpace pref="209" max="32767" attributes="0"/>
+                      <EmptySpace pref="206" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -3569,7 +3582,7 @@
                               </Group>
                           </Group>
                       </Group>
-                      <EmptySpace pref="252" max="32767" attributes="0"/>
+                      <EmptySpace pref="249" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -4408,7 +4421,7 @@
                               </Group>
                           </Group>
                       </Group>
-                      <EmptySpace pref="179" max="32767" attributes="0"/>
+                      <EmptySpace pref="177" max="32767" attributes="0"/>
                   </Group>
                   <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
