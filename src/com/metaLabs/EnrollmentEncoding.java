@@ -1,9 +1,6 @@
 package com.metaLabs;
 
 import com.metaLabs.JTextFieldLimit;
-import com.formdev.flatlaf.FlatDarkLaf;
-import com.formdev.flatlaf.intellijthemes.FlatArcIJTheme;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatSolarizedDarkContrastIJTheme;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import java.awt.Color;
 import java.awt.Component;
@@ -44,6 +41,12 @@ import javax.swing.table.TableRowSorter;
  */
 public class EnrollmentEncoding extends javax.swing.JFrame {
 
+//    MainVars mVar = new MainVars();
+//    SEActions se = new SEActions();
+//    CEActions ce = new CEActions();
+//    MLActions ml = new MLActions();
+//    SDActions sd = new SDActions();
+//    REActions re = new REActions();
     String dbURL = "jdbc:sqlite:/C:\\Users\\user\\OneDrive\\Documents\\NetBeansProjects\\MetaLabs\\src\\com\\database\\metalabsDatabase.db";
 
     private ArrayList<JLabel> courseCodeLabels = new ArrayList<>();
@@ -69,7 +72,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         int studentYearNum = Integer.parseInt(studentBirthYear);
         int studentAge = 2023 - studentYearNum;
-        int id;
 
         if (studentFirstName.equals("") || studentMiddleName.equals("") || studentLastName.equals("")) {
             JOptionPane.showMessageDialog(null, "Please enter the student's name!", "Student Enrollment", JOptionPane.ERROR_MESSAGE);
@@ -116,49 +118,36 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 PS.executeUpdate();
 
                 JOptionPane.showMessageDialog(null, "Student Enrolled");
-                Masterlist_Table();
 
-                SEFirstNameField.setText("");
-                SEMiddleNameField.setText("");
-                SELastNameField.setText("");
-                SEBirthDateBox.setSelectedIndex(0);
-                SEBirthMonthBox.setSelectedIndex(0);
-                SEBirthYearBox.setSelectedIndex(0);
-                SEAddressField.setText("");
-                SEGenderBox.setSelectedIndex(0);
-                SECitizenshipBox.setSelectedIndex(0);
-                SEContactNumberField.setText("");
-                SEMaritalStatusField.setSelectedIndex(0);
-                SEReligionBox.setSelectedIndex(0);
-                SEMotherNameField.setText("");
-                SEMotherContactField.setText("");
-                SEFatherNameField.setText("");
-                SEFatherContactField.setText("");
-
-//                PreparedStatement ps1 = connection.prepareStatement("SELECT * FROM `student_enrollment` WHERE `studentLastName` = ? AND `studentMiddleName`=? AND `studentFirstName`=?");
-//                PreparedStatement ps2 = connection.prepareStatement("INSERT INTO `student_course_enrolled` (`studentID`) VALUES (?)");
-//
-//                ps1.setString(1, studentLastName);
-//                ps1.setString(2, studentMiddleName);
-//                ps1.setString(3, studentFirstName);
-//
-//                ResultSet rs = ps1.executeQuery();
-//
-//                while (rs.next()) {
-//                    id = rs.getInt(1);
-//
-//                    ps2.setInt(1, id);
-//                    ps2.executeUpdate();
-//                }
+                connection.close();
+                PS.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+            Masterlist_Table();
+            SEFirstNameField.setText("");
+            SEMiddleNameField.setText("");
+            SELastNameField.setText("");
+            SEBirthDateBox.setSelectedIndex(0);
+            SEBirthMonthBox.setSelectedIndex(0);
+            SEBirthYearBox.setSelectedIndex(0);
+            SEAddressField.setText("");
+            SEGenderBox.setSelectedIndex(0);
+            SECitizenshipBox.setSelectedIndex(0);
+            SEContactNumberField.setText("");
+            SEMaritalStatusField.setSelectedIndex(0);
+            SEReligionBox.setSelectedIndex(0);
+            SEMotherNameField.setText("");
+            SEMotherContactField.setText("");
+            SEFatherNameField.setText("");
+            SEFatherContactField.setText("");
+
         }
     }
 
     void Enroll_Course_Action() {
+
         long studentId = Long.parseLong(CEStudentIDField.getText());
-        String studentName = CEStudentNameField.getText();
         String studentCollegeDep = CECollegeDepBox.getSelectedItem().toString();
         String studentCourseMajor = CECourseMajorBox.getSelectedItem().toString();
         String studentYearLevel = CEYearLevelBox.getSelectedItem().toString();
@@ -210,15 +199,17 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             CEYearLevelBox.setSelectedIndex(0);
             CESemesterBox.setSelectedIndex(0);
             CETermBox.setSelectedIndex(0);
-
+            connection.close();
+            ps.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
     }
 
     void Add_Courses_Action() {
+
         int studentId = Integer.parseInt(CEStudentIDField.getText());
-        int id;
 
         String courseSubjectCode = CESubjectCodeField.getText();
         String courseSubject = CESubjectBox.getSelectedItem().toString();
@@ -228,16 +219,8 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         try {
             Connection connection = DriverManager.getConnection(dbURL);
-//            PreparedStatement ps = connection.prepareStatement("UPDATE student_course_enrolled SET courseCode = ?, courseTitle = ?, courseUnits = ?, courseTime = ?, courseRoom = ? WHERE studentID = ?");
-
             PreparedStatement ps = connection.prepareStatement("INSERT INTO student_course_enrolled(studentID, courseCode, courseTitle, courseUnits, courseTime, courseRoom) VALUES (?,?,?,?,?,?)");
-//            ps.setString(1, courseSubjectCode);
-//            ps.setString(2, courseSubject);
-//            ps.setDouble(3, courseUnits);
-//            ps.setString(4, courseTime);
-//            ps.setString(5, courseRoom);
-//            
-//            ps.setInt(6, studentId);
+
             ps.setInt(1, studentId);
             ps.setString(2, courseSubjectCode);
             ps.setString(3, courseSubject);
@@ -247,43 +230,25 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
             ps.executeUpdate();
             JOptionPane.showMessageDialog(null, "Course Added!");
-            Update_Courses_Table();
 
-            CESubjectBox.setSelectedIndex(0);
-            CESubjectCodeField.setText("");
-            CEUnitsField.setText("");
-            CETimeDateBox.setSelectedIndex(0);
-            CERoomBox.setSelectedIndex(0);
-
+            connection.close();
+            ps.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        Update_Courses_Table();
 
-//        try {
-//            Connection connection = DriverManager.getConnection(dbURL);
-//            PreparedStatement ps1 = connection.prepareStatement("SELECT * FROM student_course_enrolled WHERE studentID = ?");
-//            PreparedStatement ps2 = connection.prepareStatement("INSERT INTO student_course_enrolled (studentID) VALUES(?)");
-//            
-//            ps1.setInt(1, studentId);
-//            ResultSet rs = ps1.executeQuery();
-//            
-//            if (rs.next()) {
-//                id = rs.getInt(1);
-//                
-//                ps2.setInt(1, id);
-//                ps2.executeUpdate();
-//            }
-//            
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
+        CESubjectBox.setSelectedIndex(0);
+        CESubjectCodeField.setText("");
+        CEUnitsField.setText("");
+        CETimeDateBox.setSelectedIndex(0);
+        CERoomBox.setSelectedIndex(0);
     }
 
     void Update_Courses_Action() {
         DefaultTableModel tablemodel = (DefaultTableModel) CECourseListTable.getModel();
         int selectedIndex = CECourseListTable.getSelectedRow();
 
-//        String courseCode = CESubjectCodeField.getText();
         String courseCode = tablemodel.getValueAt(selectedIndex, 0).toString();
         String studentId = CEStudentIDField.getText();
 
@@ -294,15 +259,10 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         try {
             Connection connection = DriverManager.getConnection(dbURL);
-//            PreparedStatement ps = connection.prepareStatement("UPDATE `course_enrollment` SET `courseTitle`=?, `courseUnits`=?, `courseTime`=?, `courseRoom`=? WHERE `courseCode` = ?");
-            PreparedStatement ps = connection.prepareStatement("UPDATE student_course_enrolled SET courseTitle = ?, courseTime = ?, courseRoom = ? WHERE studentID = ? AND courseCode = ?");
 
-//            ps.setString(1, courseSubject);
-//            ps.setString(2, units);
-//            ps.setString(3, time);
-//            ps.setString(4, room);
-//
-//            ps.setString(5, courseCode);
+            PreparedStatement ps = connection.prepareStatement("UPDATE student_course_enrolled SET courseTitle = ?, courseTime = ?, "
+                    + "courseRoom = ? WHERE studentID = ? AND courseCode = ?");
+
             ps.setString(1, courseSubject);
             ps.setString(2, time);
             ps.setString(3, room);
@@ -319,7 +279,8 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             CEUnitsField.setText("");
             CETimeDateBox.setSelectedIndex(0);
             CERoomBox.setSelectedIndex(0);
-
+            connection.close();
+            ps.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -330,15 +291,14 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         DefaultTableModel model = (DefaultTableModel) CECourseListTable.getModel();
         int selectedIndex = CECourseListTable.getSelectedRow();
 
+        String courseCode = model.getValueAt(selectedIndex, 0).toString();
         String studentId = CEStudentIDField.getText();
-        try {
-            String courseCode = model.getValueAt(selectedIndex, 0).toString();
 
+        try {
             int dialogResult = JOptionPane.showConfirmDialog(null, "Do you want to delete this subject entry?", "Course Enrollment", JOptionPane.YES_NO_OPTION);
 
             if (dialogResult == JOptionPane.YES_OPTION) {
                 Connection connection = DriverManager.getConnection(dbURL);
-//                PreparedStatement ps = connection.prepareStatement("DELETE FROM `course_enrollment` WHERE `courseCode` = ?");
                 PreparedStatement ps = connection.prepareStatement("DELETE FROM student_course_enrolled WHERE studentID = ? AND courseCode = ?");
 
                 ps.setInt(1, Integer.parseInt(studentId));
@@ -353,6 +313,8 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 CEUnitsField.setText("");
                 CETimeDateBox.setSelectedIndex(0);
                 CERoomBox.setSelectedIndex(0);
+                connection.close();
+                ps.close();
             }
 
         } catch (SQLException e) {
@@ -362,22 +324,25 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     }
 
     void Update_Courses_Table() {
+        String firstname;
+        String lastname;
+        String collegeDep, courseMajor, yearLevel, semester, term;
+        DefaultTableModel tableModel = (DefaultTableModel) CECourseListTable.getModel();
+        tableModel.setRowCount(0);
+
+        CECourseListTable.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 12));
+
         String studentID = CEStudentIDField.getText();
 
         try {
             Connection connection = DriverManager.getConnection(dbURL);
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM student_course_enrolled WHERE studentID = ?");
-            PreparedStatement ps1 = connection.prepareStatement("SELECT * FROM student_enrollment WHERE studentID = ?");
-//            PreparedStatement ps = connection.prepareStatement("SELECT c,courseCode, c.courseTitle, c.courseUnits, c.courseTime, c.courseRoom FROM student_course_enrolled c JOIN student_enrollment s ON s.studentID = c.studentID");
+            PreparedStatement ps = connection.prepareStatement("SELECT sce.courseCode, sce.courseTitle, sce.courseUnits, sce.courseTime, "
+                    + "sce.courseRoom, se.studentFirstName, se.studentLastName, se.studentCollegeDep, se.studentCourseMajor, se.studentYearLevel, "
+                    + "se.studentSemester, se.studentTerm "
+                    + "FROM student_course_enrolled sce INNER JOIN student_enrollment se ON sce.studentID = se.studentID WHERE sce.studentID = ?");
+
             ps.setString(1, studentID);
-            ps1.setString(1, studentID);
-
             ResultSet rs = ps.executeQuery();
-            ResultSet rs1 = ps1.executeQuery();
-            
-
-            DefaultTableModel tableModel = (DefaultTableModel) CECourseListTable.getModel();
-            tableModel.setRowCount(0);
 
             while (rs.next()) {
                 Vector vector = new Vector();
@@ -389,27 +354,130 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
                 tableModel.addRow(vector);
                 tableModel.fireTableDataChanged();
-                
-                CEStudentNameField.setText(rs1.getString("studentFirstName") + " " +  rs1.getString("studentLastName"));
+
+                firstname = rs.getString("studentFirstName");
+                lastname = rs.getString("studentLastName");
+
+                collegeDep = rs.getString("studentCollegeDep");
+                courseMajor = rs.getString("studentCourseMajor");
+                yearLevel = rs.getString("studentYearLevel");
+                semester = rs.getString("studentSemester");
+                term = rs.getString("studentTerm");
+
+                CEStudentNameField.setText(firstname + " " + lastname);
+
+                CECourseMajorBox.setSelectedItem(courseMajor);
+                CEYearLevelBox.setSelectedItem(yearLevel);
+                CESemesterBox.setSelectedItem(semester);
+                CETermBox.setSelectedItem(term);
+
+                if (collegeDep.equals("CAE")) {
+                    CECollegeDepBox.setSelectedIndex(2);
+
+                    CECourseMajorBox.removeAllItems();
+                    CECourseMajorBox.addItem("Bachelor of Science in Accountancy");
+                    CECourseMajorBox.addItem("Bachelor of Science in Internal Auditing");
+                    CECourseMajorBox.addItem("Bachelor of Science in Accounting Information System");
+                    CECourseMajorBox.addItem("Bachelor of Science in Management Accounting");
+                    CECourseMajorBox.getEditor().setItem(courseMajor);
+
+                } else if (collegeDep.equals("CAFAE")) {
+                    CECollegeDepBox.setSelectedIndex(3);
+
+                    CECourseMajorBox.removeAllItems();
+                    CECourseMajorBox.addItem("Bachelor of Science in Architecture");
+                    CECourseMajorBox.addItem("Bachelor of Fine Arts and Design");
+                    CECourseMajorBox.getEditor().setItem(courseMajor);
+
+                } else if (collegeDep.equals("CCE")) {
+                    CECollegeDepBox.setSelectedIndex(4);
+
+                    CECourseMajorBox.removeAllItems();
+                    CECourseMajorBox.addItem("Bachelor of Science in Information Technology");
+                    CECourseMajorBox.addItem("Bachelor of Science in Computer Science");
+                    CECourseMajorBox.addItem("Bachelor of Science in Information Systems");
+                    CECourseMajorBox.addItem("Bachelor of Library and Information Science");
+                    CECourseMajorBox.addItem("Bachelor of Science in Entertainment and Multimedia Computing – Digital Animation");
+                    CECourseMajorBox.addItem("Bachelor of Science in Entertainment and Multimedia Computing – Game Development");
+                    CECourseMajorBox.addItem("Bachelor of Arts in Multimedia Arts");
+                    CECourseMajorBox.getEditor().setItem(courseMajor);
+
+                } else if (collegeDep.equals("CCJE")) {
+                    CECollegeDepBox.setSelectedIndex(5);
+
+                    CECourseMajorBox.removeAllItems();
+                    CECourseMajorBox.addItem("Bachelor of Science in Criminology");
+                    CECourseMajorBox.addItem("Bachelor of Science in Industrial Security Management");
+                    CECourseMajorBox.getEditor().setItem(courseMajor);
+
+                } else if (collegeDep.equals("CEE")) {
+                    CECollegeDepBox.setSelectedIndex(6);
+
+                    CECourseMajorBox.removeAllItems();
+                    CECourseMajorBox.addItem("Bachelor of Science in Chemical Engineering");
+                    CECourseMajorBox.addItem("Bachelor of Science in Mechanical Engineering");
+                    CECourseMajorBox.addItem("Bachelor of Science in Electrical Engineering");
+                    CECourseMajorBox.addItem("Bachelor of Science in Electronics Engineering");
+                    CECourseMajorBox.addItem("Bachelor of Science in Computer Engineering");
+                    CECourseMajorBox.addItem("Bachelor of Science in Civil Engineering Major in Structural");
+                    CECourseMajorBox.addItem("Bachelor of Science in Civil Engineering Major in Water Resource");
+                    CECourseMajorBox.addItem("Bachelor of Science in Civil Engineering Major in Transportation");
+                    CECourseMajorBox.addItem("Bachelor of Science in Civil Engineering Major in Geotechnical");
+                    CECourseMajorBox.getEditor().setItem(courseMajor);
+                } else if (collegeDep.equals("CHE")) {
+                    CECollegeDepBox.setSelectedIndex(7);
+
+                    CECourseMajorBox.removeAllItems();
+                    CECourseMajorBox.addItem("Bachelor of Science in Nursing");
+                    CECourseMajorBox.addItem("Bachelor of Science in Pharmacy");
+                    CECourseMajorBox.addItem("Bachelor of Science in Medical Technology/Medical Laboratory Science");
+                    CECourseMajorBox.addItem("Bachelor of Science in Nutrition and Dietetics");
+                    CECourseMajorBox.getEditor().setItem(courseMajor);
+                } else if (collegeDep.equals("CHSE")) {
+                    CECollegeDepBox.setSelectedIndex(8);
+
+                    CECourseMajorBox.removeAllItems();
+                    CECourseMajorBox.addItem("Bachelor of Science in Nursing");
+                    CECourseMajorBox.addItem("Bachelor of Science in Pharmacy");
+                    CECourseMajorBox.addItem("Bachelor of Science in Medical Technology/Medical Laboratory Science");
+                    CECourseMajorBox.addItem("Bachelor of Science in Nutrition and Dietetics");
+                    CECourseMajorBox.getEditor().setItem(courseMajor);
+                } else if (collegeDep.equals("TS")) {
+                    CECollegeDepBox.setSelectedIndex(9);
+
+                    CECourseMajorBox.removeAllItems();
+                    CECourseMajorBox.addItem("Automotive Servicing");
+                    CECourseMajorBox.addItem("Electronic Product Assembly and Servicing");
+                    CECourseMajorBox.addItem("Electrical Installation Maintenance");
+                    CECourseMajorBox.addItem("Caregiving");
+                    CECourseMajorBox.getEditor().setItem(courseMajor);
+                } else {
+                    CECollegeDepBox.setSelectedIndex(1);
+
+                    CECourseMajorBox.removeAllItems();
+                    CECourseMajorBox.setSelectedItem(null);
+                }
+
             }
+            connection.close();
+            ps.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
     }
-    
+
     void Masterlist_Table() {
+        DefaultTableModel tableModel = (DefaultTableModel) MLMasterlistTable.getModel();
+        tableModel.setRowCount(0);
+
+        MLMasterlistTable.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 13));
         try {
             Connection connection = DriverManager.getConnection(dbURL);
             PreparedStatement ps = connection.prepareStatement("SELECT * FROM `student_enrollment`");
 
             ResultSet rs = ps.executeQuery();
-
-//            ResultSetMetaData rsmd = rs.getMetaData();
-//            columnCount = rsmd.getColumnCount();
-            DefaultTableModel tableModel = (DefaultTableModel) MLMasterlistTable.getModel();
-            tableModel.setRowCount(0);
 
             while (rs.next()) {
                 Vector vector = new Vector();
@@ -424,6 +492,8 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 tableModel.addRow(vector);
                 tableModel.fireTableDataChanged();
             }
+            connection.close();
+            ps.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -440,7 +510,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     }
 
     void Student_Details_Info_Action() {
-//        String studentName = SDStudentNameField.getText();
         String studentID = SDStudentIDField.getText();
 
         try {
@@ -450,7 +519,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
             ResultSet rs = ps.executeQuery();
 
-            while (rs.next()) {
+            if (rs.next()) {
                 SDStudentNameField.setText(rs.getString(2) + " " + rs.getString(3) + " " + rs.getString(4));
                 SDFirstNameField.setText(rs.getString(2));
                 SDLastNameField.setText(rs.getString(4));
@@ -467,7 +536,30 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 SDMotherContactField.setText(Long.toString(rs.getLong(16)));
                 SDFatherNameField.setText(rs.getString(17));
                 SDFatherContactField.setText(Long.toString(rs.getLong(18)));
+
+                SDRemarksField.setText(rs.getString("studentRemarks"));
+            } else {
+                SDStudentNameField.setText("");
+                SDFirstNameField.setText("");
+                SDLastNameField.setText("");
+                SDMiddleNameField.setText("");
+                SDAgeField.setText("");
+                SDAddressField.setText("");
+                SDStudentContactField.setText("");
+                SDGenderField.setText("");
+                SDMaritalStatusField.setText("");
+                SDCitizenshipField.setText("");
+                SDReligionField.setText("");
+
+                SDMotherNameField.setText("");
+                SDMotherContactField.setText("");
+                SDFatherNameField.setText("");
+                SDFatherContactField.setText("");
+
+                SDRemarksField.setText("");
             }
+            connection.close();
+            ps.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -492,9 +584,14 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         String fatherName = SDFatherNameField.getText();
         long fatherContact = Long.parseLong(SDFatherContactField.getText());
 
+        String studentRemarks = SDRemarksField.getText();
+
         try {
             Connection connection = DriverManager.getConnection(dbURL);
-            PreparedStatement ps = connection.prepareStatement("UPDATE `student_enrollment` SET `studentFirstName`=?, `studentMiddleName`=?, `studentLastName`=?, `studentAge`=?, `studentAddress`=?, `studentContactNumber`=?, `studentGender`=?, `studentMarital`=?, `studentCitizenship`=?, `studentReligion`=?, `studentMotherName`=?, `studentMotherContact`=?, `studentFatherName`=?, `studentFatherContact`=? WHERE `studentID` = ?");
+            PreparedStatement ps = connection.prepareStatement("UPDATE `student_enrollment` SET `studentFirstName`=?, `studentMiddleName`=?, "
+                    + "`studentLastName`=?, `studentAge`=?, `studentAddress`=?, `studentContactNumber`=?, `studentGender`=?, "
+                    + "`studentMarital`=?, `studentCitizenship`=?, `studentReligion`=?, `studentMotherName`=?, "
+                    + "`studentMotherContact`=?, `studentFatherName`=?, `studentFatherContact`=?, `studentRemarks`=? WHERE `studentID` = ?");
 
             ps.setString(1, studentFirstName);
             ps.setString(2, studentMiddleName);
@@ -510,12 +607,15 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             ps.setLong(12, motherContact);
             ps.setString(13, fatherName);
             ps.setLong(14, fatherContact);
-            ps.setInt(15, studentID);
+            ps.setString(15, studentRemarks);
+            ps.setInt(16, studentID);
 
             ps.executeUpdate();
             JOptionPane.showMessageDialog(null, "Student Details Updated");
             Masterlist_Table();
 
+            connection.close();
+            ps.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -539,6 +639,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 Masterlist_Table();
 
                 SDStudentIDField.setText("");
+                SDStudentNameField.setText("");
 
                 SDFirstNameField.setText("");
                 SDMiddleNameField.setText("");
@@ -555,12 +656,17 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 SDMotherContactField.setText("");
                 SDFatherNameField.setText("");
                 SDFatherContactField.setText("");
+                SDRemarksField.setText("");
+
+                connection.close();
+                ps.close();
 
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
     }
 
     void Print_Form_Action() {
@@ -646,6 +752,8 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 i++;
             }
 
+            connection.close();
+            ps.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -718,7 +826,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 }
                 Graphics2D graphics2D = (Graphics2D) graphics;
                 graphics2D.translate(pageFormat.getImageableX() * 2, pageFormat.getImageableY() * 2);
-                graphics2D.scale(0.6, 0.6);
+                graphics2D.scale(0.59, 0.59);
 
                 panel.paint(graphics2D);
 
@@ -756,6 +864,8 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                     adminOnlyButtonLabel.setVisible(false);
                 }
             }
+            connection.close();
+            ps.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -789,8 +899,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
                 ps1.setString(1, employeeUsername);
                 ps1.setString(2, employeePassword);
-                
-                
+
                 ps.executeUpdate();
                 ps1.executeUpdate();
 
@@ -804,9 +913,12 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 REPasswordField.setText("");
                 REConfrimPasswordField.setText("");
 
+                connection.close();
+                ps.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+
         }
 
     }
@@ -974,11 +1086,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
     }
 
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -1255,13 +1362,14 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel2.setText("meta");
         topPanel.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 10, -1, 44));
 
-        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/images/metaLabs_logo_2_small-2.png"))); // NOI18N
+        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/images/logotest1.jpg"))); // NOI18N
         topPanel.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, -1, -1));
 
         logoutButton.setBackground(new java.awt.Color(255, 102, 102));
         logoutButton.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         logoutButton.setForeground(new java.awt.Color(255, 255, 255));
         logoutButton.setText("LOGOUT");
+        logoutButton.setFocusable(false);
         logoutButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 logoutButtonActionPerformed(evt);
@@ -1278,7 +1386,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel29.setText("USER LOGGED IN: ");
         topPanel.add(jLabel29, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 20, 130, -1));
 
-        jPanel1.setBackground(new java.awt.Color(102, 102, 102));
+        jPanel1.setBackground(new java.awt.Color(8, 17, 22));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -1534,12 +1642,15 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jPanel6.setBackground(new java.awt.Color(243, 242, 242));
         jPanel6.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
+        jLabel26.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel26.setForeground(new java.awt.Color(1, 1, 1));
         jLabel26.setText("Student Name:");
 
+        jLabel27.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel27.setForeground(new java.awt.Color(1, 1, 1));
         jLabel27.setText("College Dep:");
 
+        jLabel28.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel28.setForeground(new java.awt.Color(1, 1, 1));
         jLabel28.setText("Course Major:");
 
@@ -1552,18 +1663,21 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         PFCourseMajorLabel.setForeground(new java.awt.Color(1, 1, 1));
         PFCourseMajorLabel.setText(" ");
 
+        jLabel32.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel32.setForeground(new java.awt.Color(1, 1, 1));
         jLabel32.setText("Year Level:");
 
         PFYearLevelLabel.setForeground(new java.awt.Color(1, 1, 1));
         PFYearLevelLabel.setText(" ");
 
+        jLabel34.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel34.setForeground(new java.awt.Color(1, 1, 1));
         jLabel34.setText("Semester:");
 
         PFSemesterLabel.setForeground(new java.awt.Color(1, 1, 1));
         PFSemesterLabel.setText(" ");
 
+        jLabel36.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel36.setForeground(new java.awt.Color(1, 1, 1));
         jLabel36.setText("Term:");
 
@@ -1638,7 +1752,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jPanel7.setBackground(new java.awt.Color(243, 242, 242));
         jPanel7.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        PFStudentIDLabel.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        PFStudentIDLabel.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         PFStudentIDLabel.setForeground(new java.awt.Color(51, 102, 255));
         PFStudentIDLabel.setText("ABC129717070063");
 
@@ -1661,305 +1775,192 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         jPanel8.setBackground(new java.awt.Color(243, 242, 242));
         jPanel8.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jPanel8.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jLabel40.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel40.setForeground(new java.awt.Color(1, 1, 1));
         jLabel40.setText("Description");
+        jPanel8.add(jLabel40, new org.netbeans.lib.awtextra.AbsoluteConstraints(162, 29, 313, -1));
 
+        jLabel42.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel42.setForeground(new java.awt.Color(1, 1, 1));
         jLabel42.setText("Time ");
+        jPanel8.add(jLabel42, new org.netbeans.lib.awtextra.AbsoluteConstraints(719, 29, 100, -1));
 
+        jLabel45.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel45.setForeground(new java.awt.Color(1, 1, 1));
         jLabel45.setText("Title");
+        jPanel8.add(jLabel45, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 29, 64, -1));
 
         PFCourseCodeLabel1.setForeground(new java.awt.Color(1, 1, 1));
         PFCourseCodeLabel1.setText(" ");
+        jPanel8.add(PFCourseCodeLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 51, 64, -1));
 
         PFSubjectLabel1.setForeground(new java.awt.Color(1, 1, 1));
         PFSubjectLabel1.setText(" ");
+        jPanel8.add(PFSubjectLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(162, 51, 313, -1));
 
         PFTimeLabel1.setForeground(new java.awt.Color(1, 1, 1));
         PFTimeLabel1.setText(" ");
+        jPanel8.add(PFTimeLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(719, 51, 100, -1));
 
         PFCourseCodeLabel2.setForeground(new java.awt.Color(1, 1, 1));
         PFCourseCodeLabel2.setText(" ");
+        jPanel8.add(PFCourseCodeLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 73, 64, -1));
 
         PFSubjectLabel2.setForeground(new java.awt.Color(1, 1, 1));
         PFSubjectLabel2.setText(" ");
+        jPanel8.add(PFSubjectLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(162, 73, 313, -1));
 
         PFTimeLabel2.setForeground(new java.awt.Color(1, 1, 1));
         PFTimeLabel2.setText(" ");
+        jPanel8.add(PFTimeLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(719, 73, 100, -1));
 
         PFCourseCodeLabel3.setForeground(new java.awt.Color(1, 1, 1));
         PFCourseCodeLabel3.setText(" ");
+        jPanel8.add(PFCourseCodeLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 95, 64, -1));
 
         PFSubjectLabel3.setForeground(new java.awt.Color(1, 1, 1));
         PFSubjectLabel3.setText(" ");
+        jPanel8.add(PFSubjectLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(162, 95, 313, -1));
 
         PFTimeLabel3.setForeground(new java.awt.Color(1, 1, 1));
         PFTimeLabel3.setText(" ");
+        jPanel8.add(PFTimeLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(719, 95, 100, -1));
 
+        jLabel63.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel63.setForeground(new java.awt.Color(1, 1, 1));
         jLabel63.setText("Room");
+        jPanel8.add(jLabel63, new org.netbeans.lib.awtextra.AbsoluteConstraints(591, 29, 91, -1));
 
         PFRoomLabel1.setForeground(new java.awt.Color(1, 1, 1));
         PFRoomLabel1.setText(" ");
+        jPanel8.add(PFRoomLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(591, 51, 91, -1));
 
         PFRoomLabel2.setForeground(new java.awt.Color(1, 1, 1));
         PFRoomLabel2.setText(" ");
+        jPanel8.add(PFRoomLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(591, 73, 91, -1));
 
         PFRoomLabel3.setForeground(new java.awt.Color(1, 1, 1));
         PFRoomLabel3.setText(" ");
+        jPanel8.add(PFRoomLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(591, 95, 91, -1));
 
         PFCourseCodeLabel4.setForeground(new java.awt.Color(1, 1, 1));
         PFCourseCodeLabel4.setText(" ");
+        jPanel8.add(PFCourseCodeLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 117, 64, -1));
 
         PFSubjectLabel4.setForeground(new java.awt.Color(1, 1, 1));
         PFSubjectLabel4.setText(" ");
+        jPanel8.add(PFSubjectLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(162, 117, 313, -1));
 
         PFRoomLabel4.setForeground(new java.awt.Color(1, 1, 1));
         PFRoomLabel4.setText(" ");
+        jPanel8.add(PFRoomLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(591, 117, 91, -1));
 
         PFTimeLabel4.setForeground(new java.awt.Color(1, 1, 1));
         PFTimeLabel4.setText(" ");
+        jPanel8.add(PFTimeLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(719, 117, 100, -1));
 
         PFCourseCodeLabel5.setForeground(new java.awt.Color(1, 1, 1));
         PFCourseCodeLabel5.setText(" ");
+        jPanel8.add(PFCourseCodeLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 139, 64, -1));
 
         PFSubjectLabel5.setForeground(new java.awt.Color(1, 1, 1));
         PFSubjectLabel5.setText(" ");
+        jPanel8.add(PFSubjectLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(162, 139, 313, -1));
 
         PFRoomLabel5.setForeground(new java.awt.Color(1, 1, 1));
         PFRoomLabel5.setText(" ");
+        jPanel8.add(PFRoomLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(591, 139, 91, -1));
 
         PFTimeLabel5.setForeground(new java.awt.Color(1, 1, 1));
         PFTimeLabel5.setText(" ");
+        jPanel8.add(PFTimeLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(719, 139, 100, -1));
 
         PFCourseCodeLabel6.setForeground(new java.awt.Color(1, 1, 1));
         PFCourseCodeLabel6.setText(" ");
+        jPanel8.add(PFCourseCodeLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 161, 64, -1));
 
         PFCourseCodeLabel7.setForeground(new java.awt.Color(1, 1, 1));
         PFCourseCodeLabel7.setText(" ");
+        jPanel8.add(PFCourseCodeLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 183, 64, -1));
 
         PFCourseCodeLabel8.setForeground(new java.awt.Color(1, 1, 1));
         PFCourseCodeLabel8.setText(" ");
+        jPanel8.add(PFCourseCodeLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 205, 64, -1));
 
         PFSubjectLabel6.setForeground(new java.awt.Color(1, 1, 1));
         PFSubjectLabel6.setText(" ");
+        jPanel8.add(PFSubjectLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(162, 161, 313, -1));
 
         PFSubjectLabel7.setForeground(new java.awt.Color(1, 1, 1));
         PFSubjectLabel7.setText(" ");
+        jPanel8.add(PFSubjectLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(162, 183, 313, -1));
 
         PFSubjectLabel8.setForeground(new java.awt.Color(1, 1, 1));
         PFSubjectLabel8.setText(" ");
+        jPanel8.add(PFSubjectLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(162, 205, 313, -1));
 
         PFRoomLabel6.setForeground(new java.awt.Color(1, 1, 1));
         PFRoomLabel6.setText(" ");
+        jPanel8.add(PFRoomLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(591, 161, 91, -1));
 
         PFRoomLabel7.setForeground(new java.awt.Color(1, 1, 1));
         PFRoomLabel7.setText(" ");
+        jPanel8.add(PFRoomLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(591, 183, 91, -1));
 
         PFRoomLabel8.setForeground(new java.awt.Color(1, 1, 1));
         PFRoomLabel8.setText(" ");
+        jPanel8.add(PFRoomLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(591, 205, 91, -1));
 
         PFTimeLabel6.setForeground(new java.awt.Color(1, 1, 1));
         PFTimeLabel6.setText(" ");
+        jPanel8.add(PFTimeLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(719, 161, 100, -1));
 
         PFTimeLabel7.setForeground(new java.awt.Color(1, 1, 1));
         PFTimeLabel7.setText(" ");
+        jPanel8.add(PFTimeLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(719, 183, 100, -1));
 
         PFTimeLabel8.setForeground(new java.awt.Color(1, 1, 1));
         PFTimeLabel8.setText(" ");
+        jPanel8.add(PFTimeLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(719, 205, 100, -1));
 
         PFUnitsLabel8.setForeground(new java.awt.Color(1, 1, 1));
         PFUnitsLabel8.setText(" ");
+        jPanel8.add(PFUnitsLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(506, 205, 52, -1));
 
         PFUnitsLabel7.setForeground(new java.awt.Color(1, 1, 1));
         PFUnitsLabel7.setText(" ");
+        jPanel8.add(PFUnitsLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(506, 183, 52, -1));
 
         PFUnitsLabel6.setForeground(new java.awt.Color(1, 1, 1));
         PFUnitsLabel6.setText(" ");
+        jPanel8.add(PFUnitsLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(506, 161, 52, -1));
 
         PFUnitsLabel5.setForeground(new java.awt.Color(1, 1, 1));
         PFUnitsLabel5.setText(" ");
+        jPanel8.add(PFUnitsLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(506, 139, 52, -1));
 
         PFUnitsLabel4.setForeground(new java.awt.Color(1, 1, 1));
         PFUnitsLabel4.setText(" ");
+        jPanel8.add(PFUnitsLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(506, 117, 52, -1));
 
         PFUnitsLabel3.setForeground(new java.awt.Color(1, 1, 1));
         PFUnitsLabel3.setText(" ");
+        jPanel8.add(PFUnitsLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(506, 95, 52, -1));
 
         PFUnitsLabel2.setForeground(new java.awt.Color(1, 1, 1));
         PFUnitsLabel2.setText(" ");
+        jPanel8.add(PFUnitsLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(506, 73, 52, -1));
 
         PFUnitsLabel1.setForeground(new java.awt.Color(1, 1, 1));
         PFUnitsLabel1.setText(" ");
+        jPanel8.add(PFUnitsLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(506, 51, 52, -1));
 
+        jLabel41.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel41.setForeground(new java.awt.Color(1, 1, 1));
         jLabel41.setText("Unit(s)");
-
-        javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
-        jPanel8.setLayout(jPanel8Layout);
-        jPanel8Layout.setHorizontalGroup(
-            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel8Layout.createSequentialGroup()
-                .addGap(79, 79, 79)
-                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(PFCourseCodeLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(PFCourseCodeLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(PFCourseCodeLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel45, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(PFCourseCodeLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(PFCourseCodeLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(PFCourseCodeLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(PFCourseCodeLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(PFCourseCodeLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(PFSubjectLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(PFSubjectLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(PFSubjectLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(PFSubjectLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(PFSubjectLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel40, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(PFSubjectLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(PFSubjectLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(PFSubjectLabel8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(31, 31, 31)
-                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jLabel41, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(PFUnitsLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(PFUnitsLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(PFUnitsLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(PFUnitsLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(PFUnitsLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(PFUnitsLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(PFUnitsLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(PFUnitsLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(33, 33, 33)
-                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(PFRoomLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(PFRoomLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(PFRoomLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(PFRoomLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(PFRoomLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jLabel63, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(PFRoomLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(PFRoomLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(PFRoomLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(37, 37, 37)
-                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(PFTimeLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(PFTimeLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(PFTimeLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(PFTimeLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(PFTimeLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(PFTimeLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(PFTimeLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel42, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(PFTimeLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(88, 88, 88))
-        );
-        jPanel8Layout.setVerticalGroup(
-            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel8Layout.createSequentialGroup()
-                .addGap(28, 28, 28)
-                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel8Layout.createSequentialGroup()
-                        .addComponent(jLabel42)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(PFTimeLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(PFTimeLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(PFTimeLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(PFTimeLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(PFTimeLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(PFTimeLabel6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(PFTimeLabel7)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(PFTimeLabel8))
-                    .addGroup(jPanel8Layout.createSequentialGroup()
-                        .addComponent(jLabel41)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(PFUnitsLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(PFUnitsLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(PFUnitsLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(PFUnitsLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(PFUnitsLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(PFUnitsLabel6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(PFUnitsLabel7)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(PFUnitsLabel8))
-                    .addGroup(jPanel8Layout.createSequentialGroup()
-                        .addComponent(jLabel40)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(PFSubjectLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(PFSubjectLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(PFSubjectLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(PFSubjectLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(PFSubjectLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(PFSubjectLabel6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(PFSubjectLabel7)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(PFSubjectLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel8Layout.createSequentialGroup()
-                        .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel8Layout.createSequentialGroup()
-                                .addComponent(jLabel63)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(PFRoomLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(PFRoomLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(PFRoomLabel3))
-                            .addGroup(jPanel8Layout.createSequentialGroup()
-                                .addComponent(jLabel45)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(PFCourseCodeLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(PFCourseCodeLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(PFCourseCodeLabel3)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(PFCourseCodeLabel4)
-                            .addComponent(PFRoomLabel4))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(PFCourseCodeLabel5)
-                            .addComponent(PFRoomLabel5))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(PFCourseCodeLabel6)
-                            .addComponent(PFRoomLabel6))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(PFCourseCodeLabel7)
-                            .addComponent(PFRoomLabel7))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(PFCourseCodeLabel8)
-                            .addComponent(PFRoomLabel8))))
-                .addContainerGap(51, Short.MAX_VALUE))
-        );
+        jPanel8.add(jLabel41, new org.netbeans.lib.awtextra.AbsoluteConstraints(506, 29, 52, -1));
 
         jLabel68.setForeground(new java.awt.Color(1, 1, 1));
         jLabel68.setText("Date Printed:");
@@ -1999,12 +2000,12 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
+                .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(PFPanelToPrintLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel68)
                     .addComponent(CEDatePrintedLabel))
-                .addGap(93, 93, 93))
+                .addGap(73, 73, 73))
         );
 
         PFPrintPanelButton.setText("PRINT");
@@ -2044,7 +2045,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addGroup(printFormPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(PFPrintPanelButton)
                     .addComponent(PFBackButton))
-                .addContainerGap(248, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         mainPanel.add(printFormPanel, "card5");
@@ -2054,13 +2055,13 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jPanel13.setBackground(new java.awt.Color(31, 48, 56));
         jPanel13.setPreferredSize(new java.awt.Dimension(1060, 221));
 
-        jLabel101.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
+        jLabel101.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel101.setForeground(new java.awt.Color(255, 255, 255));
         jLabel101.setText("College Department");
 
         CECollegeDepBox.setBackground(new java.awt.Color(98, 161, 192));
-        CECollegeDepBox.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        CECollegeDepBox.setForeground(new java.awt.Color(204, 255, 255));
+        CECollegeDepBox.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        CECollegeDepBox.setForeground(new java.awt.Color(51, 51, 51));
         CECollegeDepBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "CAE - College of Accounting Education", "CAFAE - College of Architecture and Fine Arts Education", "CCE - College of Computing Education", "CCJE - College of Criminal Justice Education", "CEE - College of Engineering Education", "CHE - College of Hospitality Education", "CHSE - College of Health Science Education", "TS - Technical School" }));
         CECollegeDepBox.setFocusable(false);
         CECollegeDepBox.addActionListener(new java.awt.event.ActionListener() {
@@ -2070,8 +2071,8 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         });
 
         CECourseMajorBox.setBackground(new java.awt.Color(98, 161, 192));
-        CECourseMajorBox.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        CECourseMajorBox.setForeground(new java.awt.Color(204, 255, 255));
+        CECourseMajorBox.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        CECourseMajorBox.setForeground(new java.awt.Color(51, 51, 51));
         CECourseMajorBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " " }));
         CECourseMajorBox.setFocusable(false);
         CECourseMajorBox.addActionListener(new java.awt.event.ActionListener() {
@@ -2080,37 +2081,37 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             }
         });
 
-        jLabel108.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
+        jLabel108.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel108.setForeground(new java.awt.Color(255, 255, 255));
         jLabel108.setText("Course Major");
 
         CEYearLevelBox.setBackground(new java.awt.Color(98, 161, 192));
-        CEYearLevelBox.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        CEYearLevelBox.setForeground(new java.awt.Color(204, 255, 255));
+        CEYearLevelBox.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        CEYearLevelBox.setForeground(new java.awt.Color(51, 51, 51));
         CEYearLevelBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Year 1", "Year 2", "Year 3", "Year 4", "Year 5" }));
         CEYearLevelBox.setFocusable(false);
 
-        jLabel109.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
+        jLabel109.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel109.setForeground(new java.awt.Color(255, 255, 255));
         jLabel109.setText("Year Level");
 
         CESemesterBox.setBackground(new java.awt.Color(98, 161, 192));
-        CESemesterBox.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        CESemesterBox.setForeground(new java.awt.Color(204, 255, 255));
+        CESemesterBox.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        CESemesterBox.setForeground(new java.awt.Color(51, 51, 51));
         CESemesterBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "1ST Sem", "2ND Sem" }));
         CESemesterBox.setFocusable(false);
 
-        jLabel110.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
+        jLabel110.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel110.setForeground(new java.awt.Color(255, 255, 255));
         jLabel110.setText("Semester");
 
-        jLabel111.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
+        jLabel111.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
         jLabel111.setForeground(new java.awt.Color(255, 255, 255));
         jLabel111.setText("Term");
 
         CETermBox.setBackground(new java.awt.Color(98, 161, 192));
-        CETermBox.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        CETermBox.setForeground(new java.awt.Color(204, 255, 255));
+        CETermBox.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        CETermBox.setForeground(new java.awt.Color(51, 51, 51));
         CETermBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "1ST Term", "2ND Term" }));
         CETermBox.setFocusable(false);
 
@@ -2223,7 +2224,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         bottomPanel.setBackground(new java.awt.Color(8, 17, 22));
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(204, 204, 204));
         jLabel3.setText("This section is reponsible for enrolling a student's courses for the semester/term.");
 
@@ -2247,26 +2248,21 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         searchPanel2.setBackground(new java.awt.Color(31, 48, 56));
 
-        jLabel88.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel88.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel88.setForeground(new java.awt.Color(255, 255, 255));
         jLabel88.setText("Student ID");
 
         CEStudentIDField.setBackground(new java.awt.Color(98, 161, 192));
         CEStudentIDField.setDocument(new JTextFieldLimit(6));
-        CEStudentIDField.setForeground(new java.awt.Color(255, 255, 255));
+        CEStudentIDField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        CEStudentIDField.setForeground(new java.awt.Color(51, 51, 51));
         CEStudentIDField.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                CEStudentIDFieldKeyPressed(evt);
-            }
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                CEStudentIDFieldKeyReleased(evt);
-            }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 CEStudentIDFieldKeyTyped(evt);
             }
         });
 
-        jLabel89.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel89.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel89.setForeground(new java.awt.Color(255, 255, 255));
         jLabel89.setText("Student Name");
 
@@ -2278,6 +2274,8 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         });
 
         CEStudentNameField.setBackground(new java.awt.Color(98, 161, 192));
+        CEStudentNameField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        CEStudentNameField.setForeground(new java.awt.Color(51, 51, 51));
 
         javax.swing.GroupLayout searchPanel2Layout = new javax.swing.GroupLayout(searchPanel2);
         searchPanel2.setLayout(searchPanel2Layout);
@@ -2301,11 +2299,10 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, searchPanel2Layout.createSequentialGroup()
                 .addContainerGap(12, Short.MAX_VALUE)
                 .addGroup(searchPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(searchPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(CESearchButton)
-                        .addGroup(searchPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel89, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(CEStudentNameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(CESearchButton)
+                    .addGroup(searchPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel89, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(CEStudentNameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(searchPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel88, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(CEStudentIDField)))
@@ -2315,13 +2312,13 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jPanel14.setBackground(new java.awt.Color(31, 48, 56));
         jPanel14.setPreferredSize(new java.awt.Dimension(1060, 221));
 
-        jLabel112.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
+        jLabel112.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel112.setForeground(new java.awt.Color(255, 255, 255));
         jLabel112.setText("Course/Subject");
 
         CESubjectBox.setBackground(new java.awt.Color(98, 161, 192));
-        CESubjectBox.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        CESubjectBox.setForeground(new java.awt.Color(204, 255, 255));
+        CESubjectBox.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        CESubjectBox.setForeground(new java.awt.Color(51, 51, 51));
         CESubjectBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Understanding the Self", "Readings in Philippine History", "The Contemporary World", "Mathematics in the Modern World", "Purposive Communication", "Art Appreciation", "Science, Technology and Society", "Ethics", "Life and Works of Rizal", "G.E. Electives", "Introduction to Language Studies", "Cross Cultural Communication" }));
         CESubjectBox.setFocusable(false);
         CESubjectBox.addActionListener(new java.awt.event.ActionListener() {
@@ -2330,29 +2327,29 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             }
         });
 
-        jLabel113.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
+        jLabel113.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel113.setForeground(new java.awt.Color(255, 255, 255));
         jLabel113.setText("Course Code");
 
         CESubjectCodeField.setBackground(new java.awt.Color(98, 161, 192));
-        CESubjectCodeField.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        CESubjectCodeField.setForeground(new java.awt.Color(204, 255, 255));
+        CESubjectCodeField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        CESubjectCodeField.setForeground(new java.awt.Color(51, 51, 51));
 
-        jLabel114.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
+        jLabel114.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel114.setForeground(new java.awt.Color(255, 255, 255));
         jLabel114.setText("Units");
 
         CEUnitsField.setBackground(new java.awt.Color(98, 161, 192));
-        CEUnitsField.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        CEUnitsField.setForeground(new java.awt.Color(204, 255, 255));
+        CEUnitsField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        CEUnitsField.setForeground(new java.awt.Color(51, 51, 51));
 
-        jLabel116.setFont(new java.awt.Font("Segoe UI Semibold", 0, 13)); // NOI18N
+        jLabel116.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel116.setForeground(new java.awt.Color(255, 255, 255));
         jLabel116.setText("Time | Date");
 
         CETimeDateBox.setBackground(new java.awt.Color(98, 161, 192));
-        CETimeDateBox.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        CETimeDateBox.setForeground(new java.awt.Color(204, 255, 255));
+        CETimeDateBox.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        CETimeDateBox.setForeground(new java.awt.Color(51, 51, 51));
         CETimeDateBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "700M-800M", "800M-900M", "900M-1000M", "1000M-1100M", "1100M-1200A", "1230A-130A", "130A-230A", "230A-330A", "330A-430A", "430A-530E" }));
         CETimeDateBox.setFocusable(false);
 
@@ -2361,8 +2358,8 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel117.setText("Room");
 
         CERoomBox.setBackground(new java.awt.Color(98, 161, 192));
-        CERoomBox.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        CERoomBox.setForeground(new java.awt.Color(204, 255, 255));
+        CERoomBox.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        CERoomBox.setForeground(new java.awt.Color(51, 51, 51));
         CERoomBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "H1A", "H1B", "H1C", "H1D", "H2A", "H2B", "H2C", "H2D", "TEC101", "TEC102", "TEC103", "TEC201", "TEC202", "TEC203" }));
         CERoomBox.setFocusable(false);
 
@@ -2481,7 +2478,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                                 .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(jPanel14, javax.swing.GroupLayout.DEFAULT_SIZE, 549, Short.MAX_VALUE)))))
-                .addContainerGap(194, Short.MAX_VALUE))
+                .addContainerGap(189, Short.MAX_VALUE))
         );
         courseEnrollmentPanelLayout.setVerticalGroup(
             courseEnrollmentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2513,7 +2510,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         bottomPanel1.setBackground(new java.awt.Color(8, 17, 22));
 
-        jLabel8.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
+        jLabel8.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(204, 204, 204));
         jLabel8.setText("This section is reponsible for enrolling a student into the metaLABS database.");
 
@@ -2539,64 +2536,64 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jPanel15.setPreferredSize(new java.awt.Dimension(771, 296));
 
         SEFirstNameField.setBackground(new java.awt.Color(98, 161, 192));
-        SEFirstNameField.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        SEFirstNameField.setForeground(new java.awt.Color(255, 255, 255));
+        SEFirstNameField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SEFirstNameField.setForeground(new java.awt.Color(51, 51, 51));
 
-        jLabel125.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel125.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel125.setForeground(new java.awt.Color(255, 255, 255));
         jLabel125.setText("First Name");
 
-        jLabel126.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel126.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel126.setForeground(new java.awt.Color(255, 255, 255));
         jLabel126.setText("Middle Name");
 
         SEMiddleNameField.setBackground(new java.awt.Color(98, 161, 192));
-        SEMiddleNameField.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        SEMiddleNameField.setForeground(new java.awt.Color(255, 255, 255));
+        SEMiddleNameField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SEMiddleNameField.setForeground(new java.awt.Color(51, 51, 51));
 
-        jLabel127.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel127.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel127.setForeground(new java.awt.Color(255, 255, 255));
         jLabel127.setText("Last Name");
 
         SELastNameField.setBackground(new java.awt.Color(98, 161, 192));
-        SELastNameField.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        SELastNameField.setForeground(new java.awt.Color(255, 255, 255));
+        SELastNameField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SELastNameField.setForeground(new java.awt.Color(51, 51, 51));
 
-        jLabel129.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel129.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel129.setForeground(new java.awt.Color(255, 255, 255));
         jLabel129.setText("Date of Birth");
 
         SEBirthMonthBox.setBackground(new java.awt.Color(98, 161, 192));
-        SEBirthMonthBox.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        SEBirthMonthBox.setForeground(new java.awt.Color(255, 255, 255));
+        SEBirthMonthBox.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SEBirthMonthBox.setForeground(new java.awt.Color(51, 51, 51));
         SEBirthMonthBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" }));
 
         SEBirthDateBox.setBackground(new java.awt.Color(98, 161, 192));
-        SEBirthDateBox.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        SEBirthDateBox.setForeground(new java.awt.Color(255, 255, 255));
+        SEBirthDateBox.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SEBirthDateBox.setForeground(new java.awt.Color(51, 51, 51));
         SEBirthDateBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31" }));
 
         SEBirthYearBox.setBackground(new java.awt.Color(98, 161, 192));
-        SEBirthYearBox.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        SEBirthYearBox.setForeground(new java.awt.Color(255, 255, 255));
+        SEBirthYearBox.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SEBirthYearBox.setForeground(new java.awt.Color(51, 51, 51));
         SEBirthYearBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "2023", "2022", "2021", "2020", "2019", "2018", "2017", "2016", "2015", "2014", "2013", "2012", "2011", "2010", "2009", "2008", "2007", "2006", "2005", "2004", "2003", "2002", "2001", "2000", "1999", "1998", "1997", "1996", "1995", "1994", "1993", "1992", "1991", "1990", "1989", "1988", "1987", "1986", "1985", "1984", "1983", "1982", "1981", "1980", "1979", "1978", "1977", "1976", "1975", "1974", "1973", "1972", "1971", "1970", "1969", "1968", "1967", "1966", "1965", "1964", "1963", "1962", "1961", "1960", "1959", "1958", "1957", "1956", "1955", "1954", "1953", "1952", "1951", "1950", "1949", "1948", "1947", "1946", "1945", "1944", "1943", "1942", "1941", "1940", "1939", "1938", "1937", "1936", "1935", "1934", "1933", "1932", "1931", "1930", "1929", "1928", "1927", "1926", "1925", "1924", "1923", "1922", "1921", "1920", "1919", "1918", "1917", "1916", "1915", "1914", "1913", "1912", "1911", "1910", "1909", "1908", "1907", "1906", "1905", "1904", "1903", "1902", "1901", "1900", "1899", "1898", "1897", "1896", "1895" }));
 
-        jLabel130.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel130.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel130.setForeground(new java.awt.Color(255, 255, 255));
         jLabel130.setText("Gender");
 
         SEGenderBox.setBackground(new java.awt.Color(98, 161, 192));
-        SEGenderBox.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        SEGenderBox.setForeground(new java.awt.Color(255, 255, 255));
+        SEGenderBox.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SEGenderBox.setForeground(new java.awt.Color(51, 51, 51));
         SEGenderBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Male", "Female" }));
 
-        jLabel131.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel131.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel131.setForeground(new java.awt.Color(255, 255, 255));
         jLabel131.setText("Marital Status");
 
         SEMaritalStatusField.setBackground(new java.awt.Color(98, 161, 192));
-        SEMaritalStatusField.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        SEMaritalStatusField.setForeground(new java.awt.Color(255, 255, 255));
+        SEMaritalStatusField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SEMaritalStatusField.setForeground(new java.awt.Color(51, 51, 51));
         SEMaritalStatusField.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Single", "Married", "Divorced", "Widowed" }));
         SEMaritalStatusField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2604,43 +2601,43 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             }
         });
 
-        jLabel132.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel132.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel132.setForeground(new java.awt.Color(255, 255, 255));
         jLabel132.setText("Address");
 
         SEAddressField.setBackground(new java.awt.Color(98, 161, 192));
-        SEAddressField.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        SEAddressField.setForeground(new java.awt.Color(255, 255, 255));
+        SEAddressField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SEAddressField.setForeground(new java.awt.Color(51, 51, 51));
 
-        jLabel133.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel133.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel133.setForeground(new java.awt.Color(255, 255, 255));
         jLabel133.setText("Contact Number");
 
         SEContactNumberField.setBackground(new java.awt.Color(98, 161, 192));
-        SEContactNumberField.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        SEContactNumberField.setForeground(new java.awt.Color(255, 255, 255));
+        SEContactNumberField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SEContactNumberField.setForeground(new java.awt.Color(51, 51, 51));
         SEContactNumberField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 SEContactNumberFieldKeyTyped(evt);
             }
         });
 
-        jLabel134.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel134.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel134.setForeground(new java.awt.Color(255, 255, 255));
         jLabel134.setText("Citzenship");
 
         SECitizenshipBox.setBackground(new java.awt.Color(98, 161, 192));
-        SECitizenshipBox.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        SECitizenshipBox.setForeground(new java.awt.Color(255, 255, 255));
+        SECitizenshipBox.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SECitizenshipBox.setForeground(new java.awt.Color(51, 51, 51));
         SECitizenshipBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Filipino", "Cebuano", "Japanese", "American" }));
 
-        jLabel135.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel135.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel135.setForeground(new java.awt.Color(255, 255, 255));
         jLabel135.setText("Religion");
 
         SEReligionBox.setBackground(new java.awt.Color(98, 161, 192));
-        SEReligionBox.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        SEReligionBox.setForeground(new java.awt.Color(255, 255, 255));
+        SEReligionBox.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SEReligionBox.setForeground(new java.awt.Color(51, 51, 51));
         SEReligionBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Catholic", "Islam", "Judaism", "Unaffiliated" }));
         SEReligionBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2763,41 +2760,41 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jPanel3.setBackground(new java.awt.Color(31, 48, 56));
 
         SEMotherNameField.setBackground(new java.awt.Color(98, 161, 192));
-        SEMotherNameField.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        SEMotherNameField.setForeground(new java.awt.Color(255, 255, 255));
+        SEMotherNameField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SEMotherNameField.setForeground(new java.awt.Color(51, 51, 51));
 
-        jLabel128.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel128.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel128.setForeground(new java.awt.Color(255, 255, 255));
         jLabel128.setText("Mother's Name");
 
-        jLabel136.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel136.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel136.setForeground(new java.awt.Color(255, 255, 255));
         jLabel136.setText("Father's Name");
 
         SEFatherNameField.setBackground(new java.awt.Color(98, 161, 192));
-        SEFatherNameField.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        SEFatherNameField.setForeground(new java.awt.Color(255, 255, 255));
+        SEFatherNameField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SEFatherNameField.setForeground(new java.awt.Color(51, 51, 51));
 
-        jLabel137.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel137.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel137.setForeground(new java.awt.Color(255, 255, 255));
         jLabel137.setText("Contact No");
 
         SEMotherContactField.setBackground(new java.awt.Color(98, 161, 192));
-        SEMotherContactField.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        SEMotherContactField.setForeground(new java.awt.Color(255, 255, 255));
+        SEMotherContactField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SEMotherContactField.setForeground(new java.awt.Color(51, 51, 51));
         SEMotherContactField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 SEMotherContactFieldKeyTyped(evt);
             }
         });
 
-        jLabel138.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel138.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel138.setForeground(new java.awt.Color(255, 255, 255));
         jLabel138.setText("Contact No");
 
         SEFatherContactField.setBackground(new java.awt.Color(98, 161, 192));
-        SEFatherContactField.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
-        SEFatherContactField.setForeground(new java.awt.Color(255, 255, 255));
+        SEFatherContactField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SEFatherContactField.setForeground(new java.awt.Color(51, 51, 51));
         SEFatherContactField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 SEFatherContactFieldKeyTyped(evt);
@@ -2874,7 +2871,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jPanel15, javax.swing.GroupLayout.DEFAULT_SIZE, 1067, Short.MAX_VALUE)
                             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap(209, Short.MAX_VALUE))
+                .addContainerGap(208, Short.MAX_VALUE))
         );
         studentEnrollmentPanelLayout.setVerticalGroup(
             studentEnrollmentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2900,7 +2897,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         bottomPanel2.setBackground(new java.awt.Color(8, 17, 22));
 
-        jLabel10.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
+        jLabel10.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel10.setForeground(new java.awt.Color(204, 204, 204));
         jLabel10.setText("This section holds the list for all the enrolled students within the database.");
 
@@ -3028,7 +3025,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         bottomPanel3.setBackground(new java.awt.Color(8, 17, 22));
 
-        jLabel12.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
+        jLabel12.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel12.setForeground(new java.awt.Color(204, 204, 204));
         jLabel12.setText("This section focuses on the student's background and parent details..");
 
@@ -3052,17 +3049,24 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         searchPanel.setBackground(new java.awt.Color(31, 48, 56));
 
-        jLabel16.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel16.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
         jLabel16.setForeground(new java.awt.Color(255, 255, 255));
         jLabel16.setText("Student No");
 
         SDStudentIDField.setBackground(new java.awt.Color(98, 161, 192));
-        SDStudentIDField.setForeground(new java.awt.Color(255, 255, 255));
+        SDStudentIDField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SDStudentIDField.setForeground(new java.awt.Color(51, 51, 51));
+        SDStudentIDField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                SDStudentIDFieldKeyTyped(evt);
+            }
+        });
 
         SDStudentNameField.setBackground(new java.awt.Color(98, 161, 192));
-        SDStudentNameField.setForeground(new java.awt.Color(255, 255, 255));
+        SDStudentNameField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SDStudentNameField.setForeground(new java.awt.Color(51, 51, 51));
 
-        jLabel17.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel17.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
         jLabel17.setForeground(new java.awt.Color(255, 255, 255));
         jLabel17.setText("Student Name");
 
@@ -3112,77 +3116,87 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         personalInfoPanel.setBackground(new java.awt.Color(31, 48, 56));
 
         SDLastNameField.setBackground(new java.awt.Color(98, 161, 192));
-        SDLastNameField.setForeground(new java.awt.Color(255, 255, 255));
+        SDLastNameField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SDLastNameField.setForeground(new java.awt.Color(51, 51, 51));
 
-        jLabel18.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel18.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel18.setForeground(new java.awt.Color(255, 255, 255));
         jLabel18.setText("Last Name");
 
-        jLabel19.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel19.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel19.setForeground(new java.awt.Color(255, 255, 255));
         jLabel19.setText("First Name");
 
         SDFirstNameField.setBackground(new java.awt.Color(98, 161, 192));
-        SDFirstNameField.setForeground(new java.awt.Color(255, 255, 255));
+        SDFirstNameField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SDFirstNameField.setForeground(new java.awt.Color(51, 51, 51));
 
         SDMiddleNameField.setBackground(new java.awt.Color(98, 161, 192));
-        SDMiddleNameField.setForeground(new java.awt.Color(255, 255, 255));
+        SDMiddleNameField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SDMiddleNameField.setForeground(new java.awt.Color(51, 51, 51));
 
-        jLabel21.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel21.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel21.setForeground(new java.awt.Color(255, 255, 255));
         jLabel21.setText("Middle Name");
 
-        jLabel22.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel22.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel22.setForeground(new java.awt.Color(255, 255, 255));
         jLabel22.setText("Age");
 
         SDAgeField.setBackground(new java.awt.Color(98, 161, 192));
-        SDAgeField.setForeground(new java.awt.Color(255, 255, 255));
+        SDAgeField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SDAgeField.setForeground(new java.awt.Color(51, 51, 51));
 
-        jLabel23.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel23.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel23.setForeground(new java.awt.Color(255, 255, 255));
         jLabel23.setText("Address");
 
         SDAddressField.setBackground(new java.awt.Color(98, 161, 192));
-        SDAddressField.setForeground(new java.awt.Color(255, 255, 255));
+        SDAddressField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SDAddressField.setForeground(new java.awt.Color(51, 51, 51));
         SDAddressField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 SDAddressFieldActionPerformed(evt);
             }
         });
 
-        jLabel70.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel70.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel70.setForeground(new java.awt.Color(255, 255, 255));
         jLabel70.setText("Gender");
 
         SDGenderField.setBackground(new java.awt.Color(98, 161, 192));
-        SDGenderField.setForeground(new java.awt.Color(255, 255, 255));
+        SDGenderField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SDGenderField.setForeground(new java.awt.Color(51, 51, 51));
 
         SDMaritalStatusField.setBackground(new java.awt.Color(98, 161, 192));
-        SDMaritalStatusField.setForeground(new java.awt.Color(255, 255, 255));
+        SDMaritalStatusField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SDMaritalStatusField.setForeground(new java.awt.Color(51, 51, 51));
 
-        jLabel71.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel71.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel71.setForeground(new java.awt.Color(255, 255, 255));
         jLabel71.setText("Marital Status");
 
-        jLabel72.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel72.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel72.setForeground(new java.awt.Color(255, 255, 255));
         jLabel72.setText("Citizenship");
 
         SDCitizenshipField.setBackground(new java.awt.Color(98, 161, 192));
-        SDCitizenshipField.setForeground(new java.awt.Color(255, 255, 255));
+        SDCitizenshipField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SDCitizenshipField.setForeground(new java.awt.Color(51, 51, 51));
 
-        jLabel73.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel73.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel73.setForeground(new java.awt.Color(255, 255, 255));
         jLabel73.setText("Religion");
 
         SDReligionField.setBackground(new java.awt.Color(98, 161, 192));
-        SDReligionField.setForeground(new java.awt.Color(255, 255, 255));
+        SDReligionField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SDReligionField.setForeground(new java.awt.Color(51, 51, 51));
 
         SDStudentContactField.setBackground(new java.awt.Color(98, 161, 192));
-        SDStudentContactField.setForeground(new java.awt.Color(255, 255, 255));
+        SDStudentContactField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SDStudentContactField.setForeground(new java.awt.Color(51, 51, 51));
 
-        jLabel74.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel74.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel74.setForeground(new java.awt.Color(255, 255, 255));
         jLabel74.setText("Contact No");
 
@@ -3292,33 +3306,37 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         parentsInfoPanel.setBackground(new java.awt.Color(31, 48, 56));
 
-        jLabel75.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel75.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel75.setForeground(new java.awt.Color(255, 255, 255));
         jLabel75.setText("Mother's Name");
 
         SDMotherNameField.setBackground(new java.awt.Color(98, 161, 192));
-        SDMotherNameField.setForeground(new java.awt.Color(255, 255, 255));
+        SDMotherNameField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SDMotherNameField.setForeground(new java.awt.Color(51, 51, 51));
 
-        jLabel76.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel76.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel76.setForeground(new java.awt.Color(255, 255, 255));
         jLabel76.setText("Contact No");
 
         SDMotherContactField.setBackground(new java.awt.Color(98, 161, 192));
-        SDMotherContactField.setForeground(new java.awt.Color(255, 255, 255));
+        SDMotherContactField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SDMotherContactField.setForeground(new java.awt.Color(51, 51, 51));
 
-        jLabel77.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel77.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel77.setForeground(new java.awt.Color(255, 255, 255));
         jLabel77.setText("Father's Name");
 
         SDFatherNameField.setBackground(new java.awt.Color(98, 161, 192));
-        SDFatherNameField.setForeground(new java.awt.Color(255, 255, 255));
+        SDFatherNameField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SDFatherNameField.setForeground(new java.awt.Color(51, 51, 51));
 
-        jLabel78.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel78.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel78.setForeground(new java.awt.Color(255, 255, 255));
         jLabel78.setText("Contact No");
 
         SDFatherContactField.setBackground(new java.awt.Color(98, 161, 192));
-        SDFatherContactField.setForeground(new java.awt.Color(255, 255, 255));
+        SDFatherContactField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SDFatherContactField.setForeground(new java.awt.Color(51, 51, 51));
 
         javax.swing.GroupLayout parentsInfoPanelLayout = new javax.swing.GroupLayout(parentsInfoPanel);
         parentsInfoPanel.setLayout(parentsInfoPanelLayout);
@@ -3369,12 +3387,13 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         addtionalInfoPanel.setBackground(new java.awt.Color(31, 48, 56));
 
-        jLabel79.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel79.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel79.setForeground(new java.awt.Color(255, 255, 255));
         jLabel79.setText("Remarks");
 
         SDRemarksField.setBackground(new java.awt.Color(98, 161, 192));
-        SDRemarksField.setForeground(new java.awt.Color(255, 255, 255));
+        SDRemarksField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SDRemarksField.setForeground(new java.awt.Color(51, 51, 51));
 
         javax.swing.GroupLayout addtionalInfoPanelLayout = new javax.swing.GroupLayout(addtionalInfoPanel);
         addtionalInfoPanel.setLayout(addtionalInfoPanelLayout);
@@ -3433,7 +3452,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                             .addGroup(studentDetailsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(searchPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(studentDetailsTabbedPane)))))
-                .addContainerGap(252, Short.MAX_VALUE))
+                .addContainerGap(250, Short.MAX_VALUE))
         );
         studentDetailsPanelLayout.setVerticalGroup(
             studentDetailsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -3459,7 +3478,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         bottomPanel4.setBackground(new java.awt.Color(8, 17, 22));
 
-        jLabel24.setFont(new java.awt.Font("Segoe UI Semilight", 0, 12)); // NOI18N
+        jLabel24.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel24.setForeground(new java.awt.Color(204, 204, 204));
         jLabel24.setText("This section features an employee register system that is only exclusive for admins. ");
 
@@ -3483,24 +3502,29 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         searchPanel3.setBackground(new java.awt.Color(31, 48, 56));
 
-        jLabel84.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel84.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel84.setForeground(new java.awt.Color(255, 255, 255));
         jLabel84.setText("Username");
 
         REUsernameField.setBackground(new java.awt.Color(98, 161, 192));
-        REUsernameField.setForeground(new java.awt.Color(255, 255, 255));
+        REUsernameField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        REUsernameField.setForeground(new java.awt.Color(51, 51, 51));
 
-        jLabel86.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel86.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel86.setForeground(new java.awt.Color(255, 255, 255));
         jLabel86.setText("Password");
 
-        jLabel87.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel87.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel87.setForeground(new java.awt.Color(255, 255, 255));
         jLabel87.setText("Confirm Password");
 
         REPasswordField.setBackground(new java.awt.Color(98, 161, 192));
+        REPasswordField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        REPasswordField.setForeground(new java.awt.Color(51, 51, 51));
 
         REConfrimPasswordField.setBackground(new java.awt.Color(98, 161, 192));
+        REConfrimPasswordField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        REConfrimPasswordField.setForeground(new java.awt.Color(51, 51, 51));
 
         javax.swing.GroupLayout searchPanel3Layout = new javax.swing.GroupLayout(searchPanel3);
         searchPanel3.setLayout(searchPanel3Layout);
@@ -3540,33 +3564,42 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         searchPanel4.setBackground(new java.awt.Color(31, 48, 56));
 
-        jLabel90.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel90.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel90.setForeground(new java.awt.Color(255, 255, 255));
         jLabel90.setText("First Name");
 
         REFirstNameField.setBackground(new java.awt.Color(98, 161, 192));
-        REFirstNameField.setForeground(new java.awt.Color(255, 255, 255));
+        REFirstNameField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        REFirstNameField.setForeground(new java.awt.Color(51, 51, 51));
 
         RELastNameField.setBackground(new java.awt.Color(98, 161, 192));
-        RELastNameField.setForeground(new java.awt.Color(255, 255, 255));
+        RELastNameField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        RELastNameField.setForeground(new java.awt.Color(51, 51, 51));
 
-        jLabel91.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel91.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel91.setForeground(new java.awt.Color(255, 255, 255));
         jLabel91.setText("Last Name");
 
-        jLabel92.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel92.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel92.setForeground(new java.awt.Color(255, 255, 255));
         jLabel92.setText("Contact Number");
 
         REEmailField.setBackground(new java.awt.Color(98, 161, 192));
-        REEmailField.setForeground(new java.awt.Color(255, 255, 255));
+        REEmailField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        REEmailField.setForeground(new java.awt.Color(51, 51, 51));
 
-        jLabel93.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        jLabel93.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel93.setForeground(new java.awt.Color(255, 255, 255));
         jLabel93.setText("Email");
 
         REContactNumberField.setBackground(new java.awt.Color(98, 161, 192));
-        REContactNumberField.setForeground(new java.awt.Color(255, 255, 255));
+        REContactNumberField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        REContactNumberField.setForeground(new java.awt.Color(51, 51, 51));
+        REContactNumberField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                REContactNumberFieldKeyTyped(evt);
+            }
+        });
 
         javax.swing.GroupLayout searchPanel4Layout = new javax.swing.GroupLayout(searchPanel4);
         searchPanel4.setLayout(searchPanel4Layout);
@@ -3660,7 +3693,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                                 .addComponent(searchPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(jLabel118)
                                 .addComponent(jLabel119)))))
-                .addContainerGap(179, Short.MAX_VALUE))
+                .addContainerGap(172, Short.MAX_VALUE))
             .addGroup(registerEmployeePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(registerEmployeePanelLayout.createSequentialGroup()
                     .addGap(156, 156, 156)
@@ -3887,7 +3920,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void MLSearchFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_MLSearchFieldKeyTyped
-
         Masterlist_Table_Search();
     }//GEN-LAST:event_MLSearchFieldKeyTyped
 
@@ -3912,7 +3944,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     }//GEN-LAST:event_PFPrintPanelButtonActionPerformed
 
     private void PFBackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PFBackButtonActionPerformed
-        ChangeCard(this);
+        ChangeCard(courseEnrollmentPanel);
         Back_Button_Action();
     }//GEN-LAST:event_PFBackButtonActionPerformed
 
@@ -3928,13 +3960,17 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         Update_Courses_Table();
     }//GEN-LAST:event_CEStudentIDFieldKeyTyped
 
-    private void CEStudentIDFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_CEStudentIDFieldKeyPressed
-        Update_Courses_Table();
-    }//GEN-LAST:event_CEStudentIDFieldKeyPressed
+    private void REContactNumberFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_REContactNumberFieldKeyTyped
+        char c = evt.getKeyChar();
 
-    private void CEStudentIDFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_CEStudentIDFieldKeyReleased
-        Update_Courses_Table();
-    }//GEN-LAST:event_CEStudentIDFieldKeyReleased
+        if (!Character.isDigit(c)) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_REContactNumberFieldKeyTyped
+
+    private void SDStudentIDFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_SDStudentIDFieldKeyTyped
+        Student_Details_Info_Action();
+    }//GEN-LAST:event_SDStudentIDFieldKeyTyped
 
     /**
      * @param args the command line arguments
