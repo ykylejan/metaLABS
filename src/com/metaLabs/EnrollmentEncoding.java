@@ -367,10 +367,14 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         try {
             Connection connection = DriverManager.getConnection(dbURL);
             PreparedStatement ps = connection.prepareStatement("SELECT * FROM student_course_enrolled WHERE studentID = ?");
+            PreparedStatement ps1 = connection.prepareStatement("SELECT * FROM student_enrollment WHERE studentID = ?");
 //            PreparedStatement ps = connection.prepareStatement("SELECT c,courseCode, c.courseTitle, c.courseUnits, c.courseTime, c.courseRoom FROM student_course_enrolled c JOIN student_enrollment s ON s.studentID = c.studentID");
             ps.setString(1, studentID);
+            ps1.setString(1, studentID);
 
             ResultSet rs = ps.executeQuery();
+            ResultSet rs1 = ps1.executeQuery();
+            
 
             DefaultTableModel tableModel = (DefaultTableModel) CECourseListTable.getModel();
             tableModel.setRowCount(0);
@@ -385,6 +389,8 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
                 tableModel.addRow(vector);
                 tableModel.fireTableDataChanged();
+                
+                CEStudentNameField.setText(rs1.getString("studentFirstName") + " " +  rs1.getString("studentLastName"));
             }
 
         } catch (SQLException e) {
@@ -392,7 +398,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         }
 
     }
-
+    
     void Masterlist_Table() {
         try {
             Connection connection = DriverManager.getConnection(dbURL);
@@ -434,7 +440,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     }
 
     void Student_Details_Info_Action() {
-//        long studentID = Long.parseLong(SDStudentIDField.getText());
+//        String studentName = SDStudentNameField.getText();
         String studentID = SDStudentIDField.getText();
 
         try {
@@ -445,6 +451,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
+                SDStudentNameField.setText(rs.getString(2) + " " + rs.getString(3) + " " + rs.getString(4));
                 SDFirstNameField.setText(rs.getString(2));
                 SDLastNameField.setText(rs.getString(4));
                 SDMiddleNameField.setText(rs.getString(3));
@@ -467,13 +474,11 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     }
 
     void Student_Details_Update_Action() {
-//        String studentID = SDStudentIDField.getText();
         int studentID = Integer.parseInt(SDStudentIDField.getText());
 
         String studentLastName = SDLastNameField.getText();
         String studentFirstName = SDFirstNameField.getText();
         String studentMiddleName = SDMiddleNameField.getText();
-//        String studentAge = SDAgeField.getText();
         int studentAge = Integer.parseInt(SDAgeField.getText());
         String studentAddress = SDAddressField.getText();
         long studentContact = Long.parseLong(SDStudentContactField.getText());
@@ -1097,10 +1102,10 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         searchPanel2 = new RoundedPanel(30, new Color(55,111,138));
         jLabel88 = new javax.swing.JLabel();
-        CEStudentNameField = new javax.swing.JTextField();
         CEStudentIDField = new javax.swing.JTextField();
         jLabel89 = new javax.swing.JLabel();
         CESearchButton = new javax.swing.JButton();
+        CEStudentNameField = new javax.swing.JTextField();
         jPanel14 = new RoundedPanel(50, new Color(55,111,138));
         jLabel112 = new javax.swing.JLabel();
         CESubjectBox = new javax.swing.JComboBox<>();
@@ -1168,7 +1173,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         searchPanel = new RoundedPanel(50, new Color(55,111,138));
         jLabel16 = new javax.swing.JLabel();
         SDStudentIDField = new javax.swing.JTextField();
-        SDStudentYearLevelField = new javax.swing.JTextField();
+        SDStudentNameField = new javax.swing.JTextField();
         jLabel17 = new javax.swing.JLabel();
         SDSearchButton = new javax.swing.JButton();
         studentDetailsTabbedPane = new javax.swing.JTabbedPane();
@@ -2244,18 +2249,26 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         jLabel88.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         jLabel88.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel88.setText("Student Name");
-
-        CEStudentNameField.setBackground(new java.awt.Color(98, 161, 192));
-        CEStudentNameField.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel88.setText("Student ID");
 
         CEStudentIDField.setBackground(new java.awt.Color(98, 161, 192));
         CEStudentIDField.setDocument(new JTextFieldLimit(6));
         CEStudentIDField.setForeground(new java.awt.Color(255, 255, 255));
+        CEStudentIDField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                CEStudentIDFieldKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                CEStudentIDFieldKeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                CEStudentIDFieldKeyTyped(evt);
+            }
+        });
 
         jLabel89.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         jLabel89.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel89.setText("Student ID");
+        jLabel89.setText("Student Name");
 
         CESearchButton.setText("Search");
         CESearchButton.addActionListener(new java.awt.event.ActionListener() {
@@ -2264,6 +2277,8 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             }
         });
 
+        CEStudentNameField.setBackground(new java.awt.Color(98, 161, 192));
+
         javax.swing.GroupLayout searchPanel2Layout = new javax.swing.GroupLayout(searchPanel2);
         searchPanel2.setLayout(searchPanel2Layout);
         searchPanel2Layout.setHorizontalGroup(
@@ -2271,13 +2286,13 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             .addGroup(searchPanel2Layout.createSequentialGroup()
                 .addGap(65, 65, 65)
                 .addComponent(jLabel88, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(CEStudentNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(127, 127, 127)
-                .addComponent(jLabel89, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(CEStudentIDField, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(27, 27, 27)
+                .addGap(187, 187, 187)
+                .addComponent(jLabel89, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(CEStudentNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(37, 37, 37)
                 .addComponent(CESearchButton)
                 .addContainerGap(31, Short.MAX_VALUE))
         );
@@ -2286,14 +2301,14 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, searchPanel2Layout.createSequentialGroup()
                 .addContainerGap(12, Short.MAX_VALUE)
                 .addGroup(searchPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(searchPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(searchPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(CESearchButton)
                         .addGroup(searchPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(CEStudentIDField)
-                            .addComponent(CESearchButton))
-                        .addComponent(jLabel89, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(searchPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(CEStudentNameField)
-                        .addComponent(jLabel88, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addComponent(jLabel89, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(CEStudentNameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(searchPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel88, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(CEStudentIDField)))
                 .addContainerGap())
         );
 
@@ -2466,7 +2481,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                                 .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(jPanel14, javax.swing.GroupLayout.DEFAULT_SIZE, 549, Short.MAX_VALUE)))))
-                .addContainerGap(190, Short.MAX_VALUE))
+                .addContainerGap(194, Short.MAX_VALUE))
         );
         courseEnrollmentPanelLayout.setVerticalGroup(
             courseEnrollmentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2859,7 +2874,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jPanel15, javax.swing.GroupLayout.DEFAULT_SIZE, 1067, Short.MAX_VALUE)
                             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap(206, Short.MAX_VALUE))
+                .addContainerGap(209, Short.MAX_VALUE))
         );
         studentEnrollmentPanelLayout.setVerticalGroup(
             studentEnrollmentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -3044,12 +3059,12 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         SDStudentIDField.setBackground(new java.awt.Color(98, 161, 192));
         SDStudentIDField.setForeground(new java.awt.Color(255, 255, 255));
 
-        SDStudentYearLevelField.setBackground(new java.awt.Color(98, 161, 192));
-        SDStudentYearLevelField.setForeground(new java.awt.Color(255, 255, 255));
+        SDStudentNameField.setBackground(new java.awt.Color(98, 161, 192));
+        SDStudentNameField.setForeground(new java.awt.Color(255, 255, 255));
 
         jLabel17.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         jLabel17.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel17.setText("Year Level");
+        jLabel17.setText("Student Name");
 
         SDSearchButton.setText("Search");
         SDSearchButton.addActionListener(new java.awt.event.ActionListener() {
@@ -3072,7 +3087,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addGap(106, 106, 106)
                 .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(SDStudentYearLevelField, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(SDStudentNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         searchPanelLayout.setVerticalGroup(
@@ -3081,7 +3096,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addContainerGap(21, Short.MAX_VALUE)
                 .addGroup(searchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(searchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(SDStudentYearLevelField)
+                        .addComponent(SDStudentNameField)
                         .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(searchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addGroup(searchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -3418,7 +3433,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                             .addGroup(studentDetailsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(searchPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(studentDetailsTabbedPane)))))
-                .addContainerGap(249, Short.MAX_VALUE))
+                .addContainerGap(252, Short.MAX_VALUE))
         );
         studentDetailsPanelLayout.setVerticalGroup(
             studentDetailsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -3909,6 +3924,18 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         Register_Employee();
     }//GEN-LAST:event_RERegisterButtonActionPerformed
 
+    private void CEStudentIDFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_CEStudentIDFieldKeyTyped
+        Update_Courses_Table();
+    }//GEN-LAST:event_CEStudentIDFieldKeyTyped
+
+    private void CEStudentIDFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_CEStudentIDFieldKeyPressed
+        Update_Courses_Table();
+    }//GEN-LAST:event_CEStudentIDFieldKeyPressed
+
+    private void CEStudentIDFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_CEStudentIDFieldKeyReleased
+        Update_Courses_Table();
+    }//GEN-LAST:event_CEStudentIDFieldKeyReleased
+
     /**
      * @param args the command line arguments
      */
@@ -4024,7 +4051,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JButton SDSearchButton;
     private javax.swing.JTextField SDStudentContactField;
     private javax.swing.JTextField SDStudentIDField;
-    private javax.swing.JTextField SDStudentYearLevelField;
+    private javax.swing.JTextField SDStudentNameField;
     private javax.swing.JTextField SEAddressField;
     private javax.swing.JComboBox<String> SEBirthDateBox;
     private javax.swing.JComboBox<String> SEBirthMonthBox;
