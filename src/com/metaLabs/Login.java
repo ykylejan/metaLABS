@@ -40,6 +40,8 @@ public class Login extends javax.swing.JFrame {
                 ee.setVisible(true);
                 ee.Current_User_Logged_In(lgn.Get_Username(), lgn.Get_Password());
                 
+                
+                
             } else {
                 JOptionPane.showMessageDialog(null, "Incorrect Password");
                 userNameField.setText("");

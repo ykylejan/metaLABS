@@ -11,6 +11,8 @@ import java.awt.Graphics2D;
 import java.awt.LayoutManager;
 import java.awt.Panel;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
@@ -31,7 +33,13 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Vector;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.RowFilter;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
@@ -41,12 +49,6 @@ import javax.swing.table.TableRowSorter;
  */
 public class EnrollmentEncoding extends javax.swing.JFrame {
 
-//    MainVars mVar = new MainVars();
-//    SEActions se = new SEActions();
-//    CEActions ce = new CEActions();
-//    MLActions ml = new MLActions();
-//    SDActions sd = new SDActions();
-//    REActions re = new REActions();
     String dbURL = "jdbc:sqlite:/C:\\Users\\user\\OneDrive\\Documents\\NetBeansProjects\\MetaLabs\\src\\com\\database\\metalabsDatabase.db";
 
     private ArrayList<JLabel> courseCodeLabels = new ArrayList<>();
@@ -244,6 +246,30 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         CETimeDateBox.setSelectedIndex(0);
         CERoomBox.setSelectedIndex(0);
     }
+    
+    
+    public double Total_Units (String studentId) {
+        double totalUnits = 0;
+        double units = 0;
+        
+        try {
+            Connection connection = DriverManager.getConnection(dbURL);
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM student_course_enrolled WHERE studentID = ?");
+            
+            ps.setString(1, studentId);
+            ResultSet rs = ps.executeQuery();
+            
+            while(rs.next()) {
+                units = rs.getDouble("courseUnits");
+                totalUnits += units;
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return totalUnits;
+    }
 
     void Update_Courses_Action() {
         DefaultTableModel tablemodel = (DefaultTableModel) CECourseListTable.getModel();
@@ -323,6 +349,28 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
     }
 
+    void Clear_Courses_Action() {
+        try {
+            int dialogResult = JOptionPane.showConfirmDialog(null, "Do you want to clear all subjects?", "Course Enrollment", JOptionPane.YES_NO_OPTION);
+
+            if (dialogResult == JOptionPane.YES_OPTION) {
+                Connection connection = DriverManager.getConnection(dbURL);
+                PreparedStatement ps = connection.prepareStatement("DELETE FROM student_course_enrolled WHERE studentID = ?");
+
+                ps.setInt(1, Integer.parseInt(CEStudentIDField.getText()));
+                ps.executeUpdate();
+
+                JOptionPane.showMessageDialog(null, "Subjects Cleared Successfully");
+                Update_Courses_Table();
+
+                connection.close();
+                ps.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     void Update_Courses_Table() {
         String firstname;
         String lastname;
@@ -338,8 +386,8 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             Connection connection = DriverManager.getConnection(dbURL);
             PreparedStatement ps = connection.prepareStatement("SELECT sce.courseCode, sce.courseTitle, sce.courseUnits, sce.courseTime, "
                     + "sce.courseRoom, se.studentFirstName, se.studentLastName, se.studentCollegeDep, se.studentCourseMajor, se.studentYearLevel, "
-                    + "se.studentSemester, se.studentTerm "
-                    + "FROM student_course_enrolled sce INNER JOIN student_enrollment se ON sce.studentID = se.studentID WHERE sce.studentID = ?");
+                    + "se.studentSemester, se.studentTerm FROM student_course_enrolled sce "
+                    + "INNER JOIN student_enrollment se ON sce.studentID = se.studentID WHERE sce.studentID = ?");
 
             ps.setString(1, studentID);
             ResultSet rs = ps.executeQuery();
@@ -468,11 +516,24 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
     }
 
+
     void Masterlist_Table() {
         DefaultTableModel tableModel = (DefaultTableModel) MLMasterlistTable.getModel();
+        DefaultTableCellRenderer tableCell = new DefaultTableCellRenderer();
+        DefaultTableCellRenderer rightCell = new DefaultTableCellRenderer();
+        
         tableModel.setRowCount(0);
+//        tableCell.setForeground(new Color(28, 240, 243));
+        tableCell.setForeground(new Color(182, 89, 205));
+        rightCell.setHorizontalAlignment(SwingConstants.RIGHT);
+//        tableCell.setForeground(Color.MAGENTA);
+//        tableCell.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        
 
         MLMasterlistTable.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 13));
+        MLMasterlistTable.getColumnModel().getColumn(0).setCellRenderer(tableCell);
+//        MLMasterlistTable.getColumnModel().getColumn(0).setCellRenderer(rightCell);
+        
         try {
             Connection connection = DriverManager.getConnection(dbURL);
             PreparedStatement ps = connection.prepareStatement("SELECT * FROM `student_enrollment`");
@@ -500,6 +561,22 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         }
 
     }
+    
+    void Masterlist_Redirect_Click() {
+        DefaultTableModel tableModel = (DefaultTableModel) MLMasterlistTable.getModel();
+        int selectedIndex = MLMasterlistTable.getSelectedRow();
+        
+        try {
+            Connection connection = DriverManager.getConnection(dbURL);
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM where studentID = ?");
+            
+            
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+    }
 
     void Masterlist_Table_Search() {
         String searchTerm = MLSearchField.getText();
@@ -508,6 +585,43 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         MLMasterlistTable.setRowSorter(sorter);
         sorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchTerm));
     }
+    
+    void Masterlist_Popup() {
+        DefaultTableModel tableModel = (DefaultTableModel) MLMasterlistTable.getModel();
+        int selectedIndex = MLMasterlistTable.getSelectedRow();
+        
+        JScrollPane pane = new JScrollPane(MLMasterlistTable);
+        
+        
+        
+    }
+    
+//    void Row_Popup(JTable table) {
+//        
+//        JMenuItem edit = new JMenuItem("Edit");
+//        JMenuItem delete = new JMenuItem("Delete");
+//        
+//        edit.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                
+//            }
+//        });
+//        
+//        delete.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                int x = JOptionPane.showConfirmDialog(null, "Do you want to drop this student", "Delete", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+//                
+//                if (x == JOptionPane.YES_OPTION) {
+//                    Masterlist_Popup();
+//                }
+//            }
+//        });
+//        
+//        add(edit);
+//        add(delete);
+//    }
 
     void Student_Details_Info_Action() {
         String studentID = SDStudentIDField.getText();
@@ -672,6 +786,8 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     void Print_Form_Action() {
         String studentId = CEStudentIDField.getText();
 
+        PFTotalUnitsLabel.setText(Double.toString(Total_Units(studentId)));
+        
         courseCodeLabels.add(PFCourseCodeLabel1);
         subjectLabels.add(PFSubjectLabel1);
         unitsLabels.add(PFUnitsLabel1);
@@ -942,6 +1058,66 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         CETimeDateBox.setSelectedItem(tableModel.getValueAt(selectedIndex, 3).toString());
         CERoomBox.setSelectedItem(tableModel.getValueAt(selectedIndex, 4).toString());
     }
+    
+//    void Year_Subjects() {
+//        if (CEYearLevelBox.getSelectedItem().equals("Year 1")) {
+//            CESubjectBox.removeAllItems();
+//            CESubjectBox.addItem("Understanding the Self");
+//            CESubjectBox.addItem("Readings in Philippine History");
+//            CESubjectBox.addItem("The Contemporary World");
+//            CESubjectBox.addItem("Mathematics in the Modern World");
+//            CESubjectBox.addItem("Purposive Communication");
+//            CESubjectBox.addItem("Art Appreciation");
+//            CESubjectBox.addItem("Science, Technology and Society");
+//            CESubjectBox.addItem("Ethics");
+//            CESubjectBox.addItem("Life and Works of Rizal");
+//            CESubjectBox.addItem("G.E. Electives");
+//            CESubjectBox.addItem("Introduction to Language Studies");
+//            CESubjectBox.addItem("Cross Cultural Communication");
+//            CESubjectBox.setSelectedItem(null);
+//            
+//        } else if (CEYearLevelBox.getSelectedItem().equals("Year 2")) {
+//            CESubjectBox.removeAllItems();
+//            CESubjectBox.addItem("Critical Perspectives in the Arts");
+//            CESubjectBox.addItem("Writing as Thinking");
+//            CESubjectBox.addItem("Ethics and Moral Reasoning in Everyday Life");
+//            CESubjectBox.addItem("Information and Society");
+//            CESubjectBox.addItem("Mathematics, Culture, and Society");
+//            CESubjectBox.addItem("Philippine Arts and Culture");
+//            CESubjectBox.addItem("Public Speaking and Persuasion");
+//            CESubjectBox.addItem("Self and Society");
+//            CESubjectBox.addItem("Bodies, Senses and Humanity");
+//            CESubjectBox.setSelectedItem(null);
+//            
+//        } else if (CEYearLevelBox.getSelectedItem().equals("Year 3")) {
+//            CESubjectBox.removeAllItems();
+//            CESubjectBox.addItem("Archaeological Heritage");
+//            CESubjectBox.addItem("Ang Pilipinas: Arkiyoloji at Kasaysayan");
+//            CESubjectBox.addItem("Art Around Us: Exploring Everyday Life");
+//            CESubjectBox.addItem("Contemporary Topics in Biology");
+//            CESubjectBox.addItem("Chemistry: Science that Matters");
+//            CESubjectBox.addItem("Creative Writing for Beginners");
+//            CESubjectBox.addItem("Disaster Risk Mitigation Strategies");
+//            CESubjectBox.addItem("Markets and the State");
+//            CESubjectBox.addItem("Literature and Society");
+//            CESubjectBox.setSelectedItem(null);
+//            
+//        } else if (CEYearLevelBox.getSelectedItem().equals("Year 4")) {
+//            CESubjectBox.removeAllItems();
+//            CESubjectBox.addItem("World Literatures");
+//            CESubjectBox.addItem("Mathematics in Everyday Life");
+//            CESubjectBox.addItem("Environment and Society");
+//            CESubjectBox.addItem("Wika, Kultura, at Lipunan");
+//            CESubjectBox.addItem("Art Pleasures");
+//            CESubjectBox.addItem("Logic");
+//            CESubjectBox.addItem("Social, Economic and Political Thought");
+//            CESubjectBox.setSelectedItem(null);
+//            
+//        } else {
+//            CESubjectBox.removeAllItems();
+//            CESubjectBox.setSelectedItem(null);
+//        }
+//    }
 
     void Change_Major_Courses() {
         if (CECollegeDepBox.getSelectedItem().equals("CAE - College of Accounting Education")) {
@@ -1045,6 +1221,86 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         } else if (CESubjectBox.getSelectedItem().equals("Cross Cultural Communication")) {
             CESubjectCodeField.setText("GE 12");
             CEUnitsField.setText("6");
+            
+//        } else if (CESubjectBox.getSelectedItem().equals("Critical Perspectives in the Arts")) {
+//            CESubjectCodeField.setText("ARTS 1");
+//            CEUnitsField.setText("3");
+//        } else if (CESubjectBox.getSelectedItem().equals("Writing as Thinking")) {
+//            CESubjectCodeField.setText("Eng 13");
+//            CEUnitsField.setText("6");
+//        } else if (CESubjectBox.getSelectedItem().equals("Ethics and Moral Reasoning in Everyday Life")) {
+//            CESubjectCodeField.setText("ETHICS 1");
+//            CEUnitsField.setText("3");
+//        } else if (CESubjectBox.getSelectedItem().equals("Information and Society")) {
+//            CESubjectCodeField.setText("LIS 10");
+//            CEUnitsField.setText("3");
+//        } else if (CESubjectBox.getSelectedItem().equals("Mathematics, Culture, and Society")) {
+//            CESubjectCodeField.setText("MATH 10");
+//            CEUnitsField.setText("3");
+//        } else if (CESubjectBox.getSelectedItem().equals("Philippine Arts and Culture")) {
+//            CESubjectCodeField.setText("PHILARTS 1");
+//            CEUnitsField.setText("3");
+//        } else if (CESubjectBox.getSelectedItem().equals("Public Speaking and Persuasion")) {
+//            CESubjectCodeField.setText("SPC 30");
+//            CEUnitsField.setText("6");
+//        } else if (CESubjectBox.getSelectedItem().equals("Self and Society")) {
+//            CESubjectCodeField.setText("SAS 1");
+//            CEUnitsField.setText("2");
+//        } else if (CESubjectBox.getSelectedItem().equals("Bodies, Senses and Humanity")) {
+//            CESubjectCodeField.setText("Anthro 10");
+//            CEUnitsField.setText("2");
+//            
+//        } else if (CESubjectBox.getSelectedItem().equals("Archaeological Heritage")) {
+//            CESubjectCodeField.setText("ARH 2");
+//            CEUnitsField.setText("3");
+//        } else if (CESubjectBox.getSelectedItem().equals("Ang Pilipinas: Arkiyoloji at Kasaysayan")) {
+//            CESubjectCodeField.setText("ARK 1");
+//            CEUnitsField.setText("3");
+//        } else if (CESubjectBox.getSelectedItem().equals("Art Around Us: Exploring Everyday Life")) {
+//            CESubjectCodeField.setText("ART ST 2");
+//            CEUnitsField.setText("3");
+//        } else if (CESubjectBox.getSelectedItem().equals("Contemporary Topics in Biology")) {
+//            CESubjectCodeField.setText("Bio 1");
+//            CEUnitsField.setText("3");
+//        } else if (CESubjectBox.getSelectedItem().equals("Chemistry: Science that Matters")) {
+//            CESubjectCodeField.setText("Chem 1");
+//            CEUnitsField.setText("3");
+//        } else if (CESubjectBox.getSelectedItem().equals("Creative Writing for Beginners")) {
+//            CESubjectCodeField.setText("CW 10");
+//            CEUnitsField.setText("3");
+//        } else if (CESubjectBox.getSelectedItem().equals("Disaster Risk Mitigation Strategies")) {
+//            CESubjectCodeField.setText("DRMAPS");
+//            CEUnitsField.setText("6");
+//        } else if (CESubjectBox.getSelectedItem().equals("Markets and the State")) {
+//            CESubjectCodeField.setText("ECON 11");
+//            CEUnitsField.setText("6");
+//        } else if (CESubjectBox.getSelectedItem().equals("Literature and Society")) {
+//            CESubjectCodeField.setText("Eng 11");
+//            CEUnitsField.setText("3");
+//            
+//        } else if (CESubjectBox.getSelectedItem().equals("World Literatures")) {
+//            CESubjectCodeField.setText("Eng 12");
+//            CEUnitsField.setText("6");
+//        } else if (CESubjectBox.getSelectedItem().equals("Mathematics in Everyday Life")) {
+//            CESubjectCodeField.setText("Math 2");
+//            CEUnitsField.setText("3");
+//        } else if (CESubjectBox.getSelectedItem().equals("Environment and Society")) {
+//            CESubjectCodeField.setText("GE 15");
+//            CEUnitsField.setText("3");
+//        } else if (CESubjectBox.getSelectedItem().equals("Wika, Kultura, at Lipunan")) {
+//            CESubjectCodeField.setText("Fil 40");
+//            CEUnitsField.setText("3");
+//        } else if (CESubjectBox.getSelectedItem().equals("Art Pleasures")) {
+//            CESubjectCodeField.setText("FA 30");
+//            CEUnitsField.setText("3");
+//        } else if (CESubjectBox.getSelectedItem().equals("Logic")) {
+//            CESubjectCodeField.setText("Philo 11");
+//            CEUnitsField.setText("6");
+//        } else if (CESubjectBox.getSelectedItem().equals("Social, Economic and Political Thought")) {
+//            CESubjectCodeField.setText("Soc Sci 2");
+//            CEUnitsField.setText("3");
+        
+        
         } else {
             CESubjectCodeField.setText("");
             CEUnitsField.setText("");
@@ -1137,6 +1393,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         PFTermLabel = new javax.swing.JLabel();
         jPanel7 = new javax.swing.JPanel();
         PFStudentIDLabel = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
         jPanel8 = new javax.swing.JPanel();
         jLabel40 = new javax.swing.JLabel();
         jLabel42 = new javax.swing.JLabel();
@@ -1185,6 +1442,8 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel41 = new javax.swing.JLabel();
         jLabel68 = new javax.swing.JLabel();
         CEDatePrintedLabel = new javax.swing.JLabel();
+        jLabel30 = new javax.swing.JLabel();
+        PFTotalUnitsLabel = new javax.swing.JLabel();
         PFPrintPanelButton = new javax.swing.JButton();
         PFBackButton = new javax.swing.JButton();
         courseEnrollmentPanel = new javax.swing.JPanel();
@@ -1227,6 +1486,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         CEAddButton = new javax.swing.JButton();
         CECourseButton = new javax.swing.JButton();
         CEDeleteButton = new javax.swing.JButton();
+        CEClearButton = new javax.swing.JButton();
         studentEnrollmentPanel = new javax.swing.JPanel();
         bottomPanel1 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
@@ -1756,21 +2016,28 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         PFStudentIDLabel.setForeground(new java.awt.Color(51, 102, 255));
         PFStudentIDLabel.setText("ABC129717070063");
 
+        jLabel7.setForeground(new java.awt.Color(51, 102, 255));
+        jLabel7.setText("STUDENT ID:");
+
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(84, 84, 84)
+                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(PFStudentIDLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(66, 66, 66))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(PFStudentIDLabel)
-                .addContainerGap())
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(PFStudentIDLabel)
+                    .addComponent(jLabel7))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel8.setBackground(new java.awt.Color(243, 242, 242));
@@ -1968,6 +2235,11 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         CEDatePrintedLabel.setForeground(new java.awt.Color(1, 1, 1));
         CEDatePrintedLabel.setText("12/02/2023");
 
+        jLabel30.setForeground(new java.awt.Color(1, 1, 1));
+        jLabel30.setText("Total Units: ");
+
+        PFTotalUnitsLabel.setForeground(new java.awt.Color(1, 1, 1));
+
         javax.swing.GroupLayout PFPanelToPrintLayout = new javax.swing.GroupLayout(PFPanelToPrint);
         PFPanelToPrint.setLayout(PFPanelToPrintLayout);
         PFPanelToPrintLayout.setHorizontalGroup(
@@ -1987,7 +2259,11 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                             .addGroup(PFPanelToPrintLayout.createSequentialGroup()
                                 .addComponent(jLabel68, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(CEDatePrintedLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(CEDatePrintedLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(117, 117, 117)
+                                .addComponent(jLabel30, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(PFTotalUnitsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(49, 49, 49))))
         );
         PFPanelToPrintLayout.setVerticalGroup(
@@ -2004,7 +2280,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(PFPanelToPrintLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel68)
-                    .addComponent(CEDatePrintedLabel))
+                    .addComponent(CEDatePrintedLabel)
+                    .addComponent(jLabel30)
+                    .addComponent(PFTotalUnitsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(73, 73, 73))
         );
 
@@ -2090,6 +2368,11 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         CEYearLevelBox.setForeground(new java.awt.Color(51, 51, 51));
         CEYearLevelBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Year 1", "Year 2", "Year 3", "Year 4", "Year 5" }));
         CEYearLevelBox.setFocusable(false);
+        CEYearLevelBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CEYearLevelBoxActionPerformed(evt);
+            }
+        });
 
         jLabel109.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel109.setForeground(new java.awt.Color(255, 255, 255));
@@ -2257,6 +2540,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         CEStudentIDField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         CEStudentIDField.setForeground(new java.awt.Color(51, 51, 51));
         CEStudentIDField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                CEStudentIDFieldKeyPressed(evt);
+            }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 CEStudentIDFieldKeyTyped(evt);
             }
@@ -2267,6 +2553,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel89.setText("Student Name");
 
         CESearchButton.setText("Search");
+        CESearchButton.setFocusable(false);
         CESearchButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 CESearchButtonActionPerformed(evt);
@@ -2331,6 +2618,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel113.setForeground(new java.awt.Color(255, 255, 255));
         jLabel113.setText("Course Code");
 
+        CESubjectCodeField.setEditable(false);
         CESubjectCodeField.setBackground(new java.awt.Color(98, 161, 192));
         CESubjectCodeField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         CESubjectCodeField.setForeground(new java.awt.Color(51, 51, 51));
@@ -2339,6 +2627,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel114.setForeground(new java.awt.Color(255, 255, 255));
         jLabel114.setText("Units");
 
+        CEUnitsField.setEditable(false);
         CEUnitsField.setBackground(new java.awt.Color(98, 161, 192));
         CEUnitsField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         CEUnitsField.setForeground(new java.awt.Color(51, 51, 51));
@@ -2364,6 +2653,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         CERoomBox.setFocusable(false);
 
         CEAddButton.setText("Add");
+        CEAddButton.setFocusable(false);
         CEAddButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 CEAddButtonActionPerformed(evt);
@@ -2371,6 +2661,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         });
 
         CECourseButton.setText("Update");
+        CECourseButton.setFocusable(false);
         CECourseButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 CECourseButtonActionPerformed(evt);
@@ -2378,6 +2669,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         });
 
         CEDeleteButton.setText("Delete");
+        CEDeleteButton.setFocusable(false);
         CEDeleteButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 CEDeleteButtonActionPerformed(evt);
@@ -2388,38 +2680,40 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jPanel14.setLayout(jPanel14Layout);
         jPanel14Layout.setHorizontalGroup(
             jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel14Layout.createSequentialGroup()
+            .addGroup(jPanel14Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel14Layout.createSequentialGroup()
-                        .addComponent(jLabel113, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(CESubjectCodeField, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel14Layout.createSequentialGroup()
-                        .addComponent(jLabel114, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel14Layout.createSequentialGroup()
                         .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel14Layout.createSequentialGroup()
-                                .addComponent(CEAddButton, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(CECourseButton, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(CEDeleteButton, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(CEUnitsField, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(jPanel14Layout.createSequentialGroup()
-                            .addComponent(jLabel116, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(18, 18, 18)
-                            .addComponent(CETimeDateBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel117, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(CERoomBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel14Layout.createSequentialGroup()
-                            .addComponent(jLabel112, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(18, 18, 18)
-                            .addComponent(CESubjectBox, javax.swing.GroupLayout.PREFERRED_SIZE, 337, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(29, 29, 29))
+                                .addComponent(jLabel113, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(CESubjectCodeField, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel14Layout.createSequentialGroup()
+                                .addComponent(jLabel114, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(CEUnitsField, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addGroup(jPanel14Layout.createSequentialGroup()
+                                    .addComponent(jLabel116, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(CETimeDateBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel117, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(CERoomBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel14Layout.createSequentialGroup()
+                                    .addComponent(jLabel112, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(CESubjectBox, javax.swing.GroupLayout.PREFERRED_SIZE, 337, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(29, 29, 29))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel14Layout.createSequentialGroup()
+                        .addComponent(CEAddButton, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(CECourseButton, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(CEDeleteButton, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(60, 60, 60))))
         );
         jPanel14Layout.setVerticalGroup(
             jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2442,13 +2736,21 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                     .addComponent(jLabel117, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(CETimeDateBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel116, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 23, Short.MAX_VALUE)
-                .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(CECourseButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(CEAddButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE, false)
+                    .addComponent(CECourseButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(CEAddButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(CEDeleteButton))
-                .addGap(18, 18, 18))
+                .addContainerGap(23, Short.MAX_VALUE))
         );
+
+        CEClearButton.setText("Clear");
+        CEClearButton.setFocusable(false);
+        CEClearButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CEClearButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout courseEnrollmentPanelLayout = new javax.swing.GroupLayout(courseEnrollmentPanel);
         courseEnrollmentPanel.setLayout(courseEnrollmentPanelLayout);
@@ -2463,17 +2765,18 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                     .addGroup(courseEnrollmentPanelLayout.createSequentialGroup()
                         .addGap(149, 149, 149)
                         .addGroup(courseEnrollmentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(courseEnrollmentPanelLayout.createSequentialGroup()
+                                .addComponent(CEClearButton, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(CEEnrollButton, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(CEPrintPreviewButton))
                             .addGroup(courseEnrollmentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                 .addGroup(courseEnrollmentPanelLayout.createSequentialGroup()
                                     .addComponent(jLabel115, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGap(835, 835, 835))
                                 .addComponent(searchPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(courseEnrollmentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addGroup(courseEnrollmentPanelLayout.createSequentialGroup()
-                                    .addComponent(CEEnrollButton, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                    .addComponent(CEPrintPreviewButton))
-                                .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 1067, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 1067, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(courseEnrollmentPanelLayout.createSequentialGroup()
                                 .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
@@ -2500,8 +2803,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(courseEnrollmentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(CEEnrollButton, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(CEPrintPreviewButton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(CEPrintPreviewButton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(CEClearButton, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(319, Short.MAX_VALUE))
         );
 
         mainPanel.add(courseEnrollmentPanel, "card7");
@@ -2589,12 +2893,12 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         jLabel131.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel131.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel131.setText("Marital Status");
+        jLabel131.setText("Civil Status");
 
         SEMaritalStatusField.setBackground(new java.awt.Color(98, 161, 192));
         SEMaritalStatusField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         SEMaritalStatusField.setForeground(new java.awt.Color(51, 51, 51));
-        SEMaritalStatusField.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Single", "Married", "Divorced", "Widowed" }));
+        SEMaritalStatusField.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Single", "Taken", "Married", "Divorced", "Widowed" }));
         SEMaritalStatusField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 SEMaritalStatusFieldActionPerformed(evt);
@@ -2936,6 +3240,11 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
+            }
+        });
+        MLMasterlistTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                MLMasterlistTableMouseClicked(evt);
             }
         });
         jScrollPane3.setViewportView(MLMasterlistTable);
@@ -3389,7 +3698,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         jLabel79.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel79.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel79.setText("Remarks");
+        jLabel79.setText("More details / Remarks");
 
         SDRemarksField.setBackground(new java.awt.Color(98, 161, 192));
         SDRemarksField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
@@ -3767,6 +4076,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     }//GEN-LAST:event_CEEnrollButtonActionPerformed
 
     private void CEPrintPreviewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CEPrintPreviewButtonActionPerformed
+        
         ChangeCard(printFormPanel);
         Print_Form_Action();
         Date_Today();
@@ -3958,6 +4268,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
     private void CEStudentIDFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_CEStudentIDFieldKeyTyped
         Update_Courses_Table();
+
     }//GEN-LAST:event_CEStudentIDFieldKeyTyped
 
     private void REContactNumberFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_REContactNumberFieldKeyTyped
@@ -3971,6 +4282,22 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private void SDStudentIDFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_SDStudentIDFieldKeyTyped
         Student_Details_Info_Action();
     }//GEN-LAST:event_SDStudentIDFieldKeyTyped
+
+    private void CEClearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CEClearButtonActionPerformed
+        Clear_Courses_Action();
+    }//GEN-LAST:event_CEClearButtonActionPerformed
+
+    private void CEStudentIDFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_CEStudentIDFieldKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_CEStudentIDFieldKeyPressed
+
+    private void MLMasterlistTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MLMasterlistTableMouseClicked
+//        Row_Popup(MLMasterlistTable);
+    }//GEN-LAST:event_MLMasterlistTableMouseClicked
+
+    private void CEYearLevelBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CEYearLevelBoxActionPerformed
+//        Year_Subjects();
+    }//GEN-LAST:event_CEYearLevelBoxActionPerformed
 
     /**
      * @param args the command line arguments
@@ -3990,6 +4317,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton CEAddButton;
+    private javax.swing.JButton CEClearButton;
     private javax.swing.JComboBox<String> CECollegeDepBox;
     private javax.swing.JButton CECourseButton;
     private javax.swing.JTable CECourseListTable;
@@ -4053,6 +4381,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JLabel PFTimeLabel6;
     private javax.swing.JLabel PFTimeLabel7;
     private javax.swing.JLabel PFTimeLabel8;
+    private javax.swing.JLabel PFTotalUnitsLabel;
     private javax.swing.JLabel PFUnitsLabel1;
     private javax.swing.JLabel PFUnitsLabel2;
     private javax.swing.JLabel PFUnitsLabel3;
@@ -4175,6 +4504,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel30;
     private javax.swing.JLabel jLabel32;
     private javax.swing.JLabel jLabel34;
     private javax.swing.JLabel jLabel36;
@@ -4188,6 +4518,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel63;
     private javax.swing.JLabel jLabel67;
     private javax.swing.JLabel jLabel68;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel70;
     private javax.swing.JLabel jLabel71;
     private javax.swing.JLabel jLabel72;
