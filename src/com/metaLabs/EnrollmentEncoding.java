@@ -9,10 +9,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.LayoutManager;
-import java.awt.Panel;
 import java.awt.RenderingHints;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
@@ -22,21 +19,15 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
-import org.sqlite.SQLiteException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Vector;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.RowFilter;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -72,6 +63,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         String studentMotherName = SEMotherNameField.getText();
         String studentFatherName = SEFatherNameField.getText();
 
+        String studentUsernameAcc = studentFirstName + studentLastName;
+        String studentPasswordAcc = "changeMe";
+        
         int studentYearNum = Integer.parseInt(studentBirthYear);
         int studentAge = 2023 - studentYearNum;
 
@@ -87,6 +81,8 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Please enter the student's parent details!", "Student Enrollment", JOptionPane.ERROR_MESSAGE);
         } else if (SEContactNumberField.getText().equals("") || SEMotherContactField.getText().equals("") || SEFatherContactField.getText().equals("")) {
             JOptionPane.showMessageDialog(null, "Please enter the contact details!", "Student Enrollment", JOptionPane.ERROR_MESSAGE);
+        } else if (SEBirthDateBox.getSelectedItem().equals("") || SEBirthMonthBox.getSelectedItem().equals("") || SEBirthYearBox.getSelectedItem().equals("")) {
+            JOptionPane.showMessageDialog(null, "Please enter the contact details!", "Student Enrollment", JOptionPane.ERROR_MESSAGE);
         } else {
             long studentContactNumber = Long.parseLong(SEContactNumberField.getText());
             long studentMotherContact = Long.parseLong(SEMotherContactField.getText());
@@ -98,7 +94,8 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                         + "`studentLastName`, `studentBirthDate`, `studentBirthMonth`, `studentBirthYear`, `studentAge`, `studentAddress`, "
                         + "`studentGender`, `studentCitizenship`, `studentContactNumber`, `studentMarital`, `studentReligion`, `studentMotherName`, "
                         + "`studentMotherContact`, `studentFatherName`, `studentFatherContact`) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-
+                PreparedStatement PS2 = connection.prepareStatement("INSERT INTO `student_accounts`(`username`, `password`) VALUES(?,?)");
+                
                 PS.setString(1, studentFirstName);
                 PS.setString(2, studentMiddleName);
                 PS.setString(3, studentLastName);
@@ -117,12 +114,17 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 PS.setString(16, studentFatherName);
                 PS.setLong(17, studentFatherContact);
 
+                PS2.setString(1, studentUsernameAcc);
+                PS2.setString(2, studentPasswordAcc);
+                
                 PS.executeUpdate();
+                PS2.executeUpdate();
 
                 JOptionPane.showMessageDialog(null, "Student Enrolled");
 
                 connection.close();
                 PS.close();
+                PS2.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -586,15 +588,15 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         sorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchTerm));
     }
     
-    void Masterlist_Popup() {
-        DefaultTableModel tableModel = (DefaultTableModel) MLMasterlistTable.getModel();
-        int selectedIndex = MLMasterlistTable.getSelectedRow();
-        
-        JScrollPane pane = new JScrollPane(MLMasterlistTable);
-        
-        
-        
-    }
+//    void Masterlist_Popup() {
+//        DefaultTableModel tableModel = (DefaultTableModel) MLMasterlistTable.getModel();
+//        int selectedIndex = MLMasterlistTable.getSelectedRow();
+//        
+//        JScrollPane pane = new JScrollPane(MLMasterlistTable);
+//        
+//        
+//        
+//    }
     
 //    void Row_Popup(JTable table) {
 //        
@@ -781,6 +783,43 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             e.printStackTrace();
         }
 
+    }
+    
+    void Student_Archive_Delete_Action() {
+        try {
+            Connection connection = DriverManager.getConnection(dbURL);
+            PreparedStatement ps = connection.prepareStatement("INSERT INTO student_archive(studentID, studentFirstName, studentMiddleName, "
+                    + "studentLastName, studentAge, studentAddress, studentGender, studentCitizenship, studentContactNumber, studentMarital, "
+                    + "studentReligion, studentMotherName, studentMotherContact, studentFatherName, studentFatherContact, studentRemarks) "
+                    + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            
+            ps.setInt(1, Integer.parseInt(SDStudentIDField.getText()));
+            ps.setString(2, SDFirstNameField.getText());
+            ps.setString(3, SDMiddleNameField.getText());
+            ps.setString(4, SDLastNameField.getText());
+            ps.setInt(5, Integer.parseInt(SDAgeField.getText()));
+            ps.setString(6, SDAddressField.getText());
+            ps.setString(7, SDGenderField.getText());
+            ps.setString(8, SDCitizenshipField.getText());
+            ps.setLong(9, Long.parseLong(SDStudentContactField.getText()));
+            ps.setString(10, SDMaritalStatusField.getText());
+            ps.setString(11, SDReligionField.getText());
+            ps.setString(12, SDMotherNameField.getText());
+            ps.setLong(13, Long.parseLong(SDMotherContactField.getText()));
+            ps.setString(14, SDFatherNameField.getText());
+            ps.setLong(15, Long.parseLong(SDFatherContactField.getText()));
+            ps.setString(16, SDRemarksField.getText());
+            
+            ps.executeUpdate();
+            
+            Student_Archives_Table();
+            
+            connection.close();
+            ps.close();
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     void Print_Form_Action() {
@@ -975,9 +1014,13 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 if (usernameLogged.equals("admin")) {
                     adminOnlyButton.setVisible(true);
                     adminOnlyButtonLabel.setVisible(true);
+                    studentArchiveAdminButton.setVisible(true);
+                    studentArchiveAdminButtonLabel.setVisible(true);
                 } else {
                     adminOnlyButton.setVisible(false);
                     adminOnlyButtonLabel.setVisible(false);
+                    studentArchiveAdminButton.setVisible(false);
+                    studentArchiveAdminButtonLabel.setVisible(false);
                 }
             }
             connection.close();
@@ -1037,6 +1080,48 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         }
 
+    }
+    
+    void Student_Archives_Table() {
+        DefaultTableModel tableModel = (DefaultTableModel) SAArchivesTable.getModel();
+        DefaultTableCellRenderer tableCell = new DefaultTableCellRenderer();
+        
+        tableModel.setRowCount(0);
+        tableCell.setForeground(new Color(0, 153, 255));
+        
+        SAArchivesTable.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 13));
+        SAArchivesTable.getColumnModel().getColumn(0).setCellRenderer(tableCell);
+        try {
+            Connection connection = DriverManager.getConnection(dbURL);
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM student_archive");
+            ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                Vector vector = new Vector();
+                vector.add(rs.getString("studentID"));
+                vector.add(rs.getString("studentLastName"));
+                vector.add(rs.getString("studentFirstName"));
+                vector.add(rs.getString("studentMiddleName"));
+                vector.add(rs.getString("studentContactNumber"));
+                vector.add(rs.getString("studentAddress"));
+                
+                tableModel.addRow(vector);
+                tableModel.fireTableDataChanged();
+            }
+            connection.close();
+            ps.close();
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    void Student_Archives_Table_Search() {
+        String searchTerm = SASearchField.getText();
+        DefaultTableModel model = (DefaultTableModel) SAArchivesTable.getModel();
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
+        SAArchivesTable.setRowSorter(sorter);
+        sorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchTerm));
     }
 
     void Date_Today() {
@@ -1339,6 +1424,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         Masterlist_Table();
         Update_Courses_Table();
+        Student_Archives_Table();
 
     }
 
@@ -1368,8 +1454,13 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         studentDetailsNewButtonLabel = new javax.swing.JLabel();
         adminOnlyButton = new javax.swing.JPanel();
         adminOnlyButtonLabel = new javax.swing.JLabel();
+        studentArchiveAdminButton = new javax.swing.JPanel();
+        studentArchiveAdminButtonLabel = new javax.swing.JLabel();
         mainPanel = new javax.swing.JPanel();
         printFormPanel = new javax.swing.JPanel();
+        PFPrintPanelButton = new javax.swing.JButton();
+        PFBackButton = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
         PFPanelToPrint = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
@@ -1444,8 +1535,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         CEDatePrintedLabel = new javax.swing.JLabel();
         jLabel30 = new javax.swing.JLabel();
         PFTotalUnitsLabel = new javax.swing.JLabel();
-        PFPrintPanelButton = new javax.swing.JButton();
-        PFBackButton = new javax.swing.JButton();
         courseEnrollmentPanel = new javax.swing.JPanel();
         jPanel13 = new RoundedPanel(50, new Color(55,111,138));
         jLabel101 = new javax.swing.JLabel();
@@ -1603,6 +1692,14 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel119 = new javax.swing.JLabel();
         RERegisterButton = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
+        studentArchivesPanel = new javax.swing.JPanel();
+        bottomPanel5 = new javax.swing.JPanel();
+        jLabel31 = new javax.swing.JLabel();
+        jLabel33 = new javax.swing.JLabel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        SAArchivesTable = new javax.swing.JTable();
+        SASearchField = new javax.swing.JTextField();
+        SASearchButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setIconImage(new javax.swing.ImageIcon(getClass().getResource("/com/images/metaLabs_logo_cyan-2.png")).getImage());
@@ -1851,6 +1948,37 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         sidePanel.add(adminOnlyButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 430, -1, -1));
 
+        studentArchiveAdminButton.setBackground(new java.awt.Color(33, 67, 83));
+
+        studentArchiveAdminButtonLabel.setFont(new java.awt.Font("Segoe UI Light", 1, 16)); // NOI18N
+        studentArchiveAdminButtonLabel.setForeground(new java.awt.Color(255, 255, 255));
+        studentArchiveAdminButtonLabel.setText("     STUDENT ARCHIVES");
+        studentArchiveAdminButtonLabel.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        studentArchiveAdminButtonLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                studentArchiveAdminButtonLabelMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                studentArchiveAdminButtonLabelMouseExited(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                studentArchiveAdminButtonLabelMousePressed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout studentArchiveAdminButtonLayout = new javax.swing.GroupLayout(studentArchiveAdminButton);
+        studentArchiveAdminButton.setLayout(studentArchiveAdminButtonLayout);
+        studentArchiveAdminButtonLayout.setHorizontalGroup(
+            studentArchiveAdminButtonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(studentArchiveAdminButtonLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 210, Short.MAX_VALUE)
+        );
+        studentArchiveAdminButtonLayout.setVerticalGroup(
+            studentArchiveAdminButtonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(studentArchiveAdminButtonLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 63, Short.MAX_VALUE)
+        );
+
+        sidePanel.add(studentArchiveAdminButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 500, -1, -1));
+
         getContentPane().add(sidePanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 210, 1080));
 
         mainPanel.setBackground(new java.awt.Color(255, 255, 255));
@@ -1859,6 +1987,23 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         printFormPanel.setBackground(new java.awt.Color(90, 118, 132));
         printFormPanel.setPreferredSize(new java.awt.Dimension(1710, 646));
+
+        PFPrintPanelButton.setText("PRINT");
+        PFPrintPanelButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PFPrintPanelButtonActionPerformed(evt);
+            }
+        });
+
+        PFBackButton.setText("Back");
+        PFBackButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PFBackButtonActionPerformed(evt);
+            }
+        });
+
+        jScrollPane2.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        jScrollPane2.getVerticalScrollBar().setUnitIncrement(17);
 
         PFPanelToPrint.setBackground(new java.awt.Color(255, 255, 255));
         PFPanelToPrint.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
@@ -2251,16 +2396,15 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 908, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap())
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, PFPanelToPrintLayout.createSequentialGroup()
-                        .addGroup(PFPanelToPrintLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(PFPanelToPrintLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(PFPanelToPrintLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jPanel8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jPanel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jPanel7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(PFPanelToPrintLayout.createSequentialGroup()
                                 .addComponent(jLabel68, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(CEDatePrintedLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(117, 117, 117)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jLabel30, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(PFTotalUnitsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -2276,54 +2420,42 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
+                .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(PFPanelToPrintLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel68)
                     .addComponent(CEDatePrintedLabel)
                     .addComponent(jLabel30)
                     .addComponent(PFTotalUnitsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(73, 73, 73))
+                .addContainerGap(434, Short.MAX_VALUE))
         );
 
-        PFPrintPanelButton.setText("PRINT");
-        PFPrintPanelButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                PFPrintPanelButtonActionPerformed(evt);
-            }
-        });
-
-        PFBackButton.setText("Back");
-        PFBackButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                PFBackButtonActionPerformed(evt);
-            }
-        });
+        jScrollPane2.setViewportView(PFPanelToPrint);
 
         javax.swing.GroupLayout printFormPanelLayout = new javax.swing.GroupLayout(printFormPanel);
         printFormPanel.setLayout(printFormPanelLayout);
         printFormPanelLayout.setHorizontalGroup(
             printFormPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(printFormPanelLayout.createSequentialGroup()
-                .addGap(162, 162, 162)
-                .addGroup(printFormPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(PFPanelToPrint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(160, 160, 160)
+                .addGroup(printFormPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(printFormPanelLayout.createSequentialGroup()
                         .addComponent(PFBackButton, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(746, 746, 746)
                         .addComponent(PFPrintPanelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(523, Short.MAX_VALUE))
         );
         printFormPanelLayout.setVerticalGroup(
             printFormPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(printFormPanelLayout.createSequentialGroup()
-                .addGap(46, 46, 46)
-                .addComponent(PFPanelToPrint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(48, 48, 48)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 638, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(printFormPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(PFPrintPanelButton)
                     .addComponent(PFBackButton))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(300, Short.MAX_VALUE))
         );
 
         mainPanel.add(printFormPanel, "card5");
@@ -2781,7 +2913,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                                 .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(jPanel14, javax.swing.GroupLayout.DEFAULT_SIZE, 549, Short.MAX_VALUE)))))
-                .addContainerGap(189, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         courseEnrollmentPanelLayout.setVerticalGroup(
             courseEnrollmentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2805,7 +2937,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                     .addComponent(CEEnrollButton, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(CEPrintPreviewButton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(CEClearButton, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(319, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         mainPanel.add(courseEnrollmentPanel, "card7");
@@ -2871,6 +3003,11 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         SEBirthMonthBox.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         SEBirthMonthBox.setForeground(new java.awt.Color(51, 51, 51));
         SEBirthMonthBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" }));
+        SEBirthMonthBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SEBirthMonthBoxActionPerformed(evt);
+            }
+        });
 
         SEBirthDateBox.setBackground(new java.awt.Color(98, 161, 192));
         SEBirthDateBox.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
@@ -3175,7 +3312,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jPanel15, javax.swing.GroupLayout.DEFAULT_SIZE, 1067, Short.MAX_VALUE)
                             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap(208, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         studentEnrollmentPanelLayout.setVerticalGroup(
             studentEnrollmentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -3257,8 +3394,8 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             MLMasterlistTable.getColumnModel().getColumn(2).setMaxWidth(180);
             MLMasterlistTable.getColumnModel().getColumn(3).setMinWidth(150);
             MLMasterlistTable.getColumnModel().getColumn(3).setMaxWidth(150);
-            MLMasterlistTable.getColumnModel().getColumn(4).setMinWidth(85);
-            MLMasterlistTable.getColumnModel().getColumn(4).setMaxWidth(85);
+            MLMasterlistTable.getColumnModel().getColumn(4).setMinWidth(125);
+            MLMasterlistTable.getColumnModel().getColumn(4).setMaxWidth(125);
             MLMasterlistTable.getColumnModel().getColumn(5).setMinWidth(85);
             MLMasterlistTable.getColumnModel().getColumn(5).setMaxWidth(85);
         }
@@ -3761,7 +3898,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                             .addGroup(studentDetailsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(searchPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(studentDetailsTabbedPane)))))
-                .addContainerGap(250, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         studentDetailsPanelLayout.setVerticalGroup(
             studentDetailsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -4002,7 +4139,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                                 .addComponent(searchPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(jLabel118)
                                 .addComponent(jLabel119)))))
-                .addContainerGap(172, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(registerEmployeePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(registerEmployeePanelLayout.createSequentialGroup()
                     .addGap(156, 156, 156)
@@ -4035,6 +4172,137 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         );
 
         mainPanel.add(registerEmployeePanel, "card7");
+
+        studentArchivesPanel.setBackground(new java.awt.Color(31, 48, 56));
+
+        bottomPanel5.setBackground(new java.awt.Color(8, 17, 22));
+
+        jLabel31.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        jLabel31.setForeground(new java.awt.Color(204, 204, 204));
+        jLabel31.setText("This section holds all the students information after unenrolled in the system's database.");
+
+        javax.swing.GroupLayout bottomPanel5Layout = new javax.swing.GroupLayout(bottomPanel5);
+        bottomPanel5.setLayout(bottomPanel5Layout);
+        bottomPanel5Layout.setHorizontalGroup(
+            bottomPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(bottomPanel5Layout.createSequentialGroup()
+                .addGap(168, 168, 168)
+                .addComponent(jLabel31)
+                .addContainerGap(933, Short.MAX_VALUE))
+        );
+        bottomPanel5Layout.setVerticalGroup(
+            bottomPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jLabel31, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)
+        );
+
+        jLabel33.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel33.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel33.setText("Student Archives");
+
+        SAArchivesTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
+            },
+            new String [] {
+                "Student ID", "Last Name", "First Name", "Middle Name", "Contact Number", "Home Address"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        SAArchivesTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                SAArchivesTableMouseClicked(evt);
+            }
+        });
+        jScrollPane4.setViewportView(SAArchivesTable);
+        if (SAArchivesTable.getColumnModel().getColumnCount() > 0) {
+            SAArchivesTable.getColumnModel().getColumn(0).setMinWidth(95);
+            SAArchivesTable.getColumnModel().getColumn(0).setMaxWidth(95);
+            SAArchivesTable.getColumnModel().getColumn(1).setMinWidth(150);
+            SAArchivesTable.getColumnModel().getColumn(1).setMaxWidth(150);
+            SAArchivesTable.getColumnModel().getColumn(2).setMinWidth(180);
+            SAArchivesTable.getColumnModel().getColumn(2).setMaxWidth(180);
+            SAArchivesTable.getColumnModel().getColumn(3).setMinWidth(150);
+            SAArchivesTable.getColumnModel().getColumn(3).setMaxWidth(150);
+            SAArchivesTable.getColumnModel().getColumn(4).setMinWidth(125);
+            SAArchivesTable.getColumnModel().getColumn(4).setMaxWidth(125);
+        }
+
+        SASearchField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SASearchFieldActionPerformed(evt);
+            }
+        });
+        SASearchField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                SASearchFieldKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                SASearchFieldKeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                SASearchFieldKeyTyped(evt);
+            }
+        });
+
+        SASearchButton.setText("Search");
+        SASearchButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SASearchButtonActionPerformed(evt);
+            }
+        });
+        SASearchButton.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                SASearchButtonKeyPressed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout studentArchivesPanelLayout = new javax.swing.GroupLayout(studentArchivesPanel);
+        studentArchivesPanel.setLayout(studentArchivesPanelLayout);
+        studentArchivesPanelLayout.setHorizontalGroup(
+            studentArchivesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(studentArchivesPanelLayout.createSequentialGroup()
+                .addGroup(studentArchivesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(studentArchivesPanelLayout.createSequentialGroup()
+                        .addGap(66, 66, 66)
+                        .addComponent(jLabel33, javax.swing.GroupLayout.PREFERRED_SIZE, 364, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(bottomPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(studentArchivesPanelLayout.createSequentialGroup()
+                        .addGap(149, 149, 149)
+                        .addGroup(studentArchivesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(studentArchivesPanelLayout.createSequentialGroup()
+                                .addComponent(SASearchButton, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(SASearchField, javax.swing.GroupLayout.PREFERRED_SIZE, 341, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 1067, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        studentArchivesPanelLayout.setVerticalGroup(
+            studentArchivesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(studentArchivesPanelLayout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addComponent(jLabel33)
+                .addGap(18, 18, 18)
+                .addComponent(bottomPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(47, 47, 47)
+                .addGroup(studentArchivesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(SASearchField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(SASearchButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 476, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        mainPanel.add(studentArchivesPanel, "card7");
 
         getContentPane().add(mainPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 60, 1710, 1020));
 
@@ -4226,6 +4494,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        Student_Archive_Delete_Action();
         Student_Details_Delete_Action();
     }//GEN-LAST:event_jButton5ActionPerformed
 
@@ -4298,6 +4567,50 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private void CEYearLevelBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CEYearLevelBoxActionPerformed
 //        Year_Subjects();
     }//GEN-LAST:event_CEYearLevelBoxActionPerformed
+
+    private void studentArchiveAdminButtonLabelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_studentArchiveAdminButtonLabelMouseEntered
+        SidePanel_SetColor(studentArchiveAdminButton, studentArchiveAdminButtonLabel);
+    }//GEN-LAST:event_studentArchiveAdminButtonLabelMouseEntered
+
+    private void studentArchiveAdminButtonLabelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_studentArchiveAdminButtonLabelMouseExited
+        SidePanel_ResetColor(studentArchiveAdminButton, studentArchiveAdminButtonLabel);
+    }//GEN-LAST:event_studentArchiveAdminButtonLabelMouseExited
+
+    private void studentArchiveAdminButtonLabelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_studentArchiveAdminButtonLabelMousePressed
+        ChangeCard(studentArchivesPanel);
+    }//GEN-LAST:event_studentArchiveAdminButtonLabelMousePressed
+
+    private void SAArchivesTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_SAArchivesTableMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_SAArchivesTableMouseClicked
+
+    private void SASearchFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SASearchFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_SASearchFieldActionPerformed
+
+    private void SASearchFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_SASearchFieldKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_SASearchFieldKeyPressed
+
+    private void SASearchFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_SASearchFieldKeyReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_SASearchFieldKeyReleased
+
+    private void SASearchFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_SASearchFieldKeyTyped
+        Student_Archives_Table_Search();
+    }//GEN-LAST:event_SASearchFieldKeyTyped
+
+    private void SASearchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SASearchButtonActionPerformed
+        Student_Archives_Table_Search();
+    }//GEN-LAST:event_SASearchButtonActionPerformed
+
+    private void SASearchButtonKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_SASearchButtonKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_SASearchButtonKeyPressed
+
+    private void SEBirthMonthBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SEBirthMonthBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_SEBirthMonthBoxActionPerformed
 
     /**
      * @param args the command line arguments
@@ -4399,6 +4712,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JPasswordField REPasswordField;
     private javax.swing.JButton RERegisterButton;
     private javax.swing.JTextField REUsernameField;
+    private javax.swing.JTable SAArchivesTable;
+    private javax.swing.JButton SASearchButton;
+    private javax.swing.JTextField SASearchField;
     private javax.swing.JTextField SDAddressField;
     private javax.swing.JTextField SDAgeField;
     private javax.swing.JTextField SDCitizenshipField;
@@ -4443,6 +4759,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JPanel bottomPanel2;
     private javax.swing.JPanel bottomPanel3;
     private javax.swing.JPanel bottomPanel4;
+    private javax.swing.JPanel bottomPanel5;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JPanel courseEnrollmentPanel;
     private javax.swing.JPanel courseNewButton;
@@ -4505,7 +4822,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel30;
+    private javax.swing.JLabel jLabel31;
     private javax.swing.JLabel jLabel32;
+    private javax.swing.JLabel jLabel33;
     private javax.swing.JLabel jLabel34;
     private javax.swing.JLabel jLabel36;
     private javax.swing.JLabel jLabel4;
@@ -4551,7 +4870,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JButton logoutButton;
     private javax.swing.JPanel mainPanel;
@@ -4567,6 +4888,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JPanel searchPanel3;
     private javax.swing.JPanel searchPanel4;
     private javax.swing.JPanel sidePanel;
+    private javax.swing.JPanel studentArchiveAdminButton;
+    private javax.swing.JLabel studentArchiveAdminButtonLabel;
+    private javax.swing.JPanel studentArchivesPanel;
     private javax.swing.JPanel studentDetailsNewButton;
     private javax.swing.JLabel studentDetailsNewButtonLabel;
     private javax.swing.JPanel studentDetailsPanel;

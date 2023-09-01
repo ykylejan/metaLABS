@@ -1,9 +1,6 @@
 
 package com.metaLabs;
 
-import com.formdev.flatlaf.FlatDarkLaf;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatArcDarkIJTheme;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatSolarizedDarkContrastIJTheme;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import java.awt.event.KeyEvent;
 import java.sql.Connection;
@@ -15,7 +12,7 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
 public class Login extends javax.swing.JFrame {
-
+    
     public void LoginAction() {
         LoginEncaps lgn = new LoginEncaps();
         
@@ -39,8 +36,6 @@ public class Login extends javax.swing.JFrame {
                 EnrollmentEncoding ee = new EnrollmentEncoding();
                 ee.setVisible(true);
                 ee.Current_User_Logged_In(lgn.Get_Username(), lgn.Get_Password());
-                
-                
                 
             } else {
                 JOptionPane.showMessageDialog(null, "Incorrect Password");
@@ -252,7 +247,6 @@ public class Login extends javax.swing.JFrame {
      */
     public static void main(String args[]) {
         try {
-//            FlatSolarizedDarkContrastIJTheme.setup();
             UIManager.setLookAndFeel(new FlatMacDarkLaf());
 
         } catch (Exception e) {
