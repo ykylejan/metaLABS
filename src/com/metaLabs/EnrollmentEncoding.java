@@ -27,6 +27,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Vector;
 import javax.swing.RowFilter;
 import javax.swing.SwingConstants;
@@ -65,7 +66,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         String studentUsernameAcc = "student" + studentFirstName + studentLastName;
         String studentPasswordAcc = "changeMe";
-        
+
         int studentYearNum = Integer.parseInt(studentBirthYear);
         int studentAge = 2023 - studentYearNum;
 
@@ -93,9 +94,10 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 PreparedStatement PS = connection.prepareStatement("INSERT INTO `student_enrollment`(`studentFirstName`, `studentMiddleName`, "
                         + "`studentLastName`, `studentBirthDate`, `studentBirthMonth`, `studentBirthYear`, `studentAge`, `studentAddress`, "
                         + "`studentGender`, `studentCitizenship`, `studentContactNumber`, `studentMarital`, `studentReligion`, `studentMotherName`, "
-                        + "`studentMotherContact`, `studentFatherName`, `studentFatherContact`) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                        + "`studentMotherContact`, `studentFatherName`, `studentFatherContact`, `studentUsername`, `studentPassword`) "
+                        + "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
                 PreparedStatement PS2 = connection.prepareStatement("INSERT INTO `loginDatabase`(`username`, `password`) VALUES(?,?)");
-                
+
                 PS.setString(1, studentFirstName);
                 PS.setString(2, studentMiddleName);
                 PS.setString(3, studentLastName);
@@ -113,14 +115,19 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 PS.setLong(15, studentMotherContact);
                 PS.setString(16, studentFatherName);
                 PS.setLong(17, studentFatherContact);
+                PS.setString(18, studentUsernameAcc);
+                PS.setString(19, studentPasswordAcc);
 
                 PS2.setString(1, studentUsernameAcc);
                 PS2.setString(2, studentPasswordAcc);
-                
+
                 PS.executeUpdate();
                 PS2.executeUpdate();
 
-                JOptionPane.showMessageDialog(null, "Student Enrolled");
+                JOptionPane.showMessageDialog(null, "Student Enrolled \n"
+                        + " \n"
+                        + "USERNAME: " + studentUsernameAcc + "\n"
+                        + "PASSWORD: " + studentPasswordAcc);
 
                 connection.close();
                 PS.close();
@@ -248,28 +255,27 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         CETimeDateBox.setSelectedIndex(0);
         CERoomBox.setSelectedIndex(0);
     }
-    
-    
-    public double Total_Units (String studentId) {
+
+    public double Total_Units(String studentId) {
         double totalUnits = 0;
         double units = 0;
-        
+
         try {
             Connection connection = DriverManager.getConnection(dbURL);
             PreparedStatement ps = connection.prepareStatement("SELECT * FROM student_course_enrolled WHERE studentID = ?");
-            
+
             ps.setString(1, studentId);
             ResultSet rs = ps.executeQuery();
-            
-            while(rs.next()) {
+
+            while (rs.next()) {
                 units = rs.getDouble("courseUnits");
                 totalUnits += units;
             }
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return totalUnits;
     }
 
@@ -518,24 +524,22 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
     }
 
-
     void Masterlist_Table() {
         DefaultTableModel tableModel = (DefaultTableModel) MLMasterlistTable.getModel();
         DefaultTableCellRenderer tableCell = new DefaultTableCellRenderer();
         DefaultTableCellRenderer rightCell = new DefaultTableCellRenderer();
-        
+
         tableModel.setRowCount(0);
 //        tableCell.setForeground(new Color(28, 240, 243));
         tableCell.setForeground(new Color(182, 89, 205));
         rightCell.setHorizontalAlignment(SwingConstants.RIGHT);
 //        tableCell.setForeground(Color.MAGENTA);
 //        tableCell.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        
 
         MLMasterlistTable.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 13));
         MLMasterlistTable.getColumnModel().getColumn(0).setCellRenderer(tableCell);
 //        MLMasterlistTable.getColumnModel().getColumn(0).setCellRenderer(rightCell);
-        
+
         try {
             Connection connection = DriverManager.getConnection(dbURL);
             PreparedStatement ps = connection.prepareStatement("SELECT * FROM `student_enrollment`");
@@ -563,21 +567,19 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         }
 
     }
-    
+
     void Masterlist_Redirect_Click() {
         DefaultTableModel tableModel = (DefaultTableModel) MLMasterlistTable.getModel();
         int selectedIndex = MLMasterlistTable.getSelectedRow();
-        
+
         try {
             Connection connection = DriverManager.getConnection(dbURL);
             PreparedStatement ps = connection.prepareStatement("SELECT * FROM where studentID = ?");
-            
-            
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
     }
 
     void Masterlist_Table_Search() {
@@ -587,7 +589,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         MLMasterlistTable.setRowSorter(sorter);
         sorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchTerm));
     }
-    
+
 //    void Masterlist_Popup() {
 //        DefaultTableModel tableModel = (DefaultTableModel) MLMasterlistTable.getModel();
 //        int selectedIndex = MLMasterlistTable.getSelectedRow();
@@ -597,7 +599,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 //        
 //        
 //    }
-    
 //    void Row_Popup(JTable table) {
 //        
 //        JMenuItem edit = new JMenuItem("Edit");
@@ -624,7 +625,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 //        add(edit);
 //        add(delete);
 //    }
-
     void Student_Details_Info_Action() {
         String studentID = SDStudentIDField.getText();
 
@@ -784,7 +784,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         }
 
     }
-    
+
     void Student_Archive_Delete_Action() {
         try {
             Connection connection = DriverManager.getConnection(dbURL);
@@ -792,7 +792,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                     + "studentLastName, studentAge, studentAddress, studentGender, studentCitizenship, studentContactNumber, studentMarital, "
                     + "studentReligion, studentMotherName, studentMotherContact, studentFatherName, studentFatherContact, studentRemarks) "
                     + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-            
+
             ps.setInt(1, Integer.parseInt(SDStudentIDField.getText()));
             ps.setString(2, SDFirstNameField.getText());
             ps.setString(3, SDMiddleNameField.getText());
@@ -809,14 +809,14 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             ps.setString(14, SDFatherNameField.getText());
             ps.setLong(15, Long.parseLong(SDFatherContactField.getText()));
             ps.setString(16, SDRemarksField.getText());
-            
+
             ps.executeUpdate();
-            
+
             Student_Archives_Table();
-            
+
             connection.close();
             ps.close();
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -826,7 +826,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         String studentId = CEStudentIDField.getText();
 
         PFTotalUnitsLabel.setText(Double.toString(Total_Units(studentId)));
-        
+
         courseCodeLabels.add(PFCourseCodeLabel1);
         subjectLabels.add(PFSubjectLabel1);
         unitsLabels.add(PFUnitsLabel1);
@@ -915,6 +915,53 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
     }
 
+    void Print_Form_Fees() {
+        String id = CEStudentIDField.getText();
+        double downpayment = 0;
+        try {
+            Connection connection = DriverManager.getConnection(dbURL);
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM student_enrollment WHERE `studentID` = " + id);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                downpayment = rs.getDouble("studentDownPayment");
+            }
+            
+            connection.close();
+            ps.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        double totalUnits = Double.parseDouble(PFTotalUnitsLabel.getText());
+        double perUnit = 545.00;
+
+        double internetFee = Double.parseDouble(PFInternetFeeLabel.getText()),
+                elearningFee = Double.parseDouble(PFELearningFeeLabel.getText()),
+                facilitiesFee = Double.parseDouble(PFFacilitiesFeeLabel.getText()),
+                studentinsuranceFee = Double.parseDouble(PFStudentInsuranceFeeLabel.getText()),
+                testingFee = Double.parseDouble(PFTestingFeeLabel.getText()),
+                medicalFee = Double.parseDouble(PFMedicalFeeLabel.getText()),
+                libraryFee = Double.parseDouble(PFLibraryFeeLabel.getText()),
+                guidanceFee = Double.parseDouble(PFGuidanceFeeLabel.getText());
+
+        double totalPerUnitFee = totalUnits * perUnit;
+        double totalGrandFee = totalPerUnitFee + (internetFee + elearningFee + facilitiesFee + studentinsuranceFee + testingFee + medicalFee
+                + libraryFee + guidanceFee);
+        double balance = totalGrandFee - downpayment;
+        double perExam = balance / 8;
+
+        PFPerUnitFeeLabel.setText(Double.toString(totalPerUnitFee));
+        PFGrandTotalLabel.setText(Double.toString(totalGrandFee));
+        PFDownPaymentLabel.setText(Double.toString(downpayment));
+        PFBalanceLabel.setText(Double.toString(balance));
+        PFPerExamLabel.setText(Double.toString(perExam));
+        
+        
+    }
+    
+
     void Back_Button_Action() {
         courseCodeLabels.clear();
         subjectLabels.clear();
@@ -997,37 +1044,72 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Print Error: " + e.getMessage());
             }
         }
+
+        JOptionPane.showMessageDialog(null, "Student Officially Enrolled!");
     }
 
-//    void Account_IGN(String getUsername, String getPassword) {
-//        String usernameLogged;
-//        try {
-//            Connection connection = DriverManager.getConnection(dbURL);
-//            PreparedStatement ps = connection.prepareStatement("SELECT * FROM loginDatabase WHERE `username` = '" + getUsername + "' AND password = '" + getPassword + "'");
-//            ResultSet rs = ps.executeQuery();
-//            
-//            while (rs.next()) {
-//                
-//            }
-//            
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//    }
-    
+    void Fees_DB() {
+        String id = SDashStudentIDLabel.getText();
+        double grandtotal = Double.parseDouble(PFGrandTotalLabel.getText());
+        double balance = Double.parseDouble(PFBalanceLabel.getText());
+        double perExam = Double.parseDouble(PFPerExamLabel.getText());
+
+        try {
+            Connection connection = DriverManager.getConnection(dbURL);
+            PreparedStatement ps = connection.prepareStatement("UPDATE `student_enrollment` SET `studentGrandTotalFee`= ?, `studentCurrentBalanceFee`= ?, `studentPerExamFee`= ? WHERE `studentID`=" + id);
+
+            ps.setDouble(1, grandtotal);
+            ps.setDouble(2, balance);
+            ps.setDouble(3, perExam);
+            ps.executeUpdate();
+
+            connection.close();
+            ps.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void Dashboard_Update_Action() {
+        String id = SDashStudentIDLabel.getText();
+        try {
+            Connection connection = DriverManager.getConnection(dbURL);
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM student_enrollment WHERE studentID ="+id);
+            ResultSet rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                SDashTotalAssessmentLabel.setText(Double.toString(rs.getDouble("studentGrandTotalFee")));
+                SDashCurrentBalanceLabel.setText(Double.toString(rs.getDouble("studentCurrentBalanceFee")));
+                SDashPerExamLabel.setText(Double.toString(rs.getDouble("studentPerExamFee")));
+            }
+            connection.close();
+            ps.close();
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public String Account_Details(String getUsername) {
         String un;
         un = getUsername;
         return un;
     }
-    
+
     void Current_User_Logged_In(String getUsername, String getPassword) {
         String usernameLogged;
-
+        String yearLevel;
+        String semester;
         try {
             Connection connection = DriverManager.getConnection(dbURL);
             PreparedStatement ps = connection.prepareStatement("SELECT * FROM loginDatabase WHERE `username` = '" + getUsername + "' AND password = '" + getPassword + "'");
+            PreparedStatement ps2 = connection.prepareStatement("SELECT * FROM student_enrollment WHERE `studentUsername` = '" + getUsername + "' AND studentPassword = '" + getPassword + "'");
             ResultSet rs = ps.executeQuery();
+            ResultSet rs2 = ps2.executeQuery();
+
+            semester = rs2.getString(22);
+            yearLevel = rs2.getString(21);
 
             while (rs.next()) {
                 usernameLogged = rs.getString(1);
@@ -1038,24 +1120,23 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                     adminOnlyButtonLabel.setVisible(true);
                     studentArchiveAdminButton.setVisible(true);
                     studentArchiveAdminButtonLabel.setVisible(true);
-                    
+
                     studentDashboardButton.setVisible(false);
                     studentDashboardButtonLabel.setVisible(false);
                     studentPaymentButton.setVisible(false);
                     studentPaymentButtonLabel.setVisible(false);
-                    
+
                 } else if (usernameLogged.contains("student")) {
-                    
                     mainPanel.removeAll();
                     mainPanel.add(studentDashboardPanel);
                     mainPanel.repaint();
                     mainPanel.revalidate();
-                    
+
                     studentDashboardButton.setVisible(true);
                     studentDashboardButtonLabel.setVisible(true);
                     studentPaymentButton.setVisible(true);
                     studentPaymentButtonLabel.setVisible(true);
-                    
+
                     enrollmentNewButton.setVisible(false);
                     enrollmentNewButtonLabel.setVisible(false);
                     masterlistNewButton.setVisible(false);
@@ -1064,12 +1145,52 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                     adminOnlyButtonLabel.setVisible(false);
                     studentArchiveAdminButton.setVisible(false);
                     studentArchiveAdminButtonLabel.setVisible(false);
+
+                    // Student Dashboard stuff (SDash)
+                    SDashStudentIDLabel.setText(Integer.toString(rs2.getInt(1)));
+                    SDashStudentNameLabel.setText(rs2.getString(4) + ", " + rs2.getString(2));
+                    Dashboard_Update_Action();
+
+                    if (semester.equals("1ST Sem")) {
+                        SDashSemesterLabel.setText("First Semester 2023-2024");
+                    } else if (semester.equals("2ND Sem")) {
+                        SDashSemesterLabel.setText("Second Semester 2023-2024");
+                    } else {
+                    }
+
+                    if (yearLevel.equals("Year 1")) {
+                        SDashYearCourseLabel.setText("1st Year " + rs2.getString(20));
+                    } else if (yearLevel.equals("Year 2")) {
+                        SDashYearCourseLabel.setText("2nd Year " + rs2.getString(20));
+                    } else if (yearLevel.equals("Year 3")) {
+                        SDashYearCourseLabel.setText("3rd Year " + rs2.getString(20));
+                    } else if (yearLevel.equals("Year 4")) {
+                        SDashYearCourseLabel.setText("4th Year " + rs2.getString(20));
+                    } else {
+                    }
+                    
+
+                    // Course enrollment panel stuff (CE)
+                    CEStudentIDField.setText(Integer.toString(rs2.getInt(1)));
+                    CEStudentIDField.setEditable(false);
+                    CEStudentNameField.setEditable(false);
+                    Update_Courses_Table();
+
+                    // Student Payment stuff (SP)
+                    SPStudentIDField.setText(Integer.toString(rs2.getInt(1)));
+                    SPStudentIDField.setEditable(false);
+
+                    // Student Details stuff (SD)
+                    SDStudentIDField.setText(Integer.toString(rs2.getInt(1)));
+                    SDStudentIDField.setEditable(false);
+                    Student_Details_Info_Action();
+
                 } else {
                     studentDashboardButton.setVisible(false);
                     studentDashboardButtonLabel.setVisible(false);
                     studentPaymentButton.setVisible(false);
                     studentPaymentButtonLabel.setVisible(false);
-                    
+
                     adminOnlyButton.setVisible(false);
                     adminOnlyButtonLabel.setVisible(false);
                     studentArchiveAdminButton.setVisible(false);
@@ -1078,6 +1199,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             }
             connection.close();
             ps.close();
+            ps2.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -1134,21 +1256,21 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         }
 
     }
-    
+
     void Student_Archives_Table() {
         DefaultTableModel tableModel = (DefaultTableModel) SAArchivesTable.getModel();
         DefaultTableCellRenderer tableCell = new DefaultTableCellRenderer();
-        
+
         tableModel.setRowCount(0);
         tableCell.setForeground(new Color(0, 153, 255));
-        
+
         SAArchivesTable.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 13));
         SAArchivesTable.getColumnModel().getColumn(0).setCellRenderer(tableCell);
         try {
             Connection connection = DriverManager.getConnection(dbURL);
             PreparedStatement ps = connection.prepareStatement("SELECT * FROM student_archive");
             ResultSet rs = ps.executeQuery();
-            
+
             while (rs.next()) {
                 Vector vector = new Vector();
                 vector.add(rs.getString("studentID"));
@@ -1157,18 +1279,18 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 vector.add(rs.getString("studentMiddleName"));
                 vector.add(rs.getString("studentContactNumber"));
                 vector.add(rs.getString("studentAddress"));
-                
+
                 tableModel.addRow(vector);
                 tableModel.fireTableDataChanged();
             }
             connection.close();
             ps.close();
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-    
+
     void Student_Archives_Table_Search() {
         String searchTerm = SASearchField.getText();
         DefaultTableModel model = (DefaultTableModel) SAArchivesTable.getModel();
@@ -1196,7 +1318,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         CETimeDateBox.setSelectedItem(tableModel.getValueAt(selectedIndex, 3).toString());
         CERoomBox.setSelectedItem(tableModel.getValueAt(selectedIndex, 4).toString());
     }
-    
+
 //    void Year_Subjects() {
 //        if (CEYearLevelBox.getSelectedItem().equals("Year 1")) {
 //            CESubjectBox.removeAllItems();
@@ -1256,7 +1378,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 //            CESubjectBox.setSelectedItem(null);
 //        }
 //    }
-
     void Change_Major_Courses() {
         if (CECollegeDepBox.getSelectedItem().equals("CAE - College of Accounting Education")) {
             CECourseMajorBox.removeAllItems();
@@ -1359,7 +1480,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         } else if (CESubjectBox.getSelectedItem().equals("Cross Cultural Communication")) {
             CESubjectCodeField.setText("GE 12");
             CEUnitsField.setText("6");
-            
+
 //        } else if (CESubjectBox.getSelectedItem().equals("Critical Perspectives in the Arts")) {
 //            CESubjectCodeField.setText("ARTS 1");
 //            CEUnitsField.setText("3");
@@ -1437,8 +1558,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 //        } else if (CESubjectBox.getSelectedItem().equals("Social, Economic and Political Thought")) {
 //            CESubjectCodeField.setText("Soc Sci 2");
 //            CEUnitsField.setText("3");
-        
-        
         } else {
             CESubjectCodeField.setText("");
             CEUnitsField.setText("");
@@ -1464,34 +1583,121 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
     void Course_Condition() {
         String username = TPAccountLabel.getText();
-        int downpayment = 100;
-        
+        String id = SDashStudentIDLabel.getText();
+        double downpayment = 0;
+
+        try {
+            Connection connection = DriverManager.getConnection(dbURL);
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM `student_enrollment` WHERE `studentID` = " + id);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                downpayment = rs.getDouble("studentDownPayment");
+            }
+            connection.close();
+            ps.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         if (username.contains("student")) {
-            
+
             if (downpayment <= 0) {
                 JOptionPane.showMessageDialog(null, "Must first pay downpayment to access this feature", "Invalid", JOptionPane.ERROR_MESSAGE);
             } else {
                 ChangeCard(courseEnrollmentPanel);
                 Back_Button_Action();
             }
-            
+
         } else {
             ChangeCard(courseEnrollmentPanel);
             Back_Button_Action();
         }
     }
+
+    void Online_Payment_Action() {
+
+    }
+
+    void Checkout_Action() {
+        String letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String idTag = SPStudentIDField.getText();
+        String itemTag = SPItemBox.getSelectedItem().toString();
+        String amountTag = SPAmountField.getText();
+
+        int n = 6;
+        StringBuilder sb = new StringBuilder();
+
+        Random random = new Random();
+
+        for (int x = 0; x < n; x++) {
+            int randomIndex = random.nextInt(letters.length());
+            char randomChar = letters.charAt(randomIndex);
+            sb.append(randomChar);
+        }
+
+        CPStudentIDTagLabel.setText(idTag);
+        CPReferenceTagLabel.setText(sb.toString());
+        CPItemTagLabel.setText(itemTag);
+        CPItemAmountLabel.setText(amountTag + ".00");
+        CPTotalAmountLabel.setText(amountTag + ".00");
+
+    }
+
+    void Mastercard_Payment_Action() {
+        String amountIPG = CPItemAmountLabel.getText();
+        MCiAmountIPGLabel.setText(amountIPG);
+    }
+
+    void Mastercard_Receipt_Action() {
+        String paidAmount = CPItemAmountLabel.getText();
+        String paidItem = SPItemBox.getSelectedItem().toString();
+        String paidStudentId = SPStudentIDField.getText();
+        String paidStudentName = SDashStudentNameLabel.getText();
+
+        MCPaidGiantLabel.setText(paidAmount);
+        MCPaidLabel.setText(paidAmount);
+        MCPaidItemLabel.setText(paidItem);
+        MCPaidStudentIDLabel.setText(paidStudentId);
+        MCPaidStudentNameLabel.setText(paidStudentName);
+
+    }
+
+    void Mastercard_Payment_DB() {
+        double amount = Double.parseDouble(SPAmountField.getText());
+        int id = Integer.parseInt(SDashStudentIDLabel.getText());
+
+        try {
+            Connection connection = DriverManager.getConnection(dbURL);
+            PreparedStatement ps = connection.prepareStatement("UPDATE `student_enrollment` SET `studentDownPayment`=? WHERE `studentID`=?");
+
+            ps.setDouble(1, amount);
+            ps.setInt(2, id);
+            ps.executeUpdate();
+
+            JOptionPane.showMessageDialog(null, "Payment Successful", "MasterCard", JOptionPane.DEFAULT_OPTION);
+            connection.close();
+            ps.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     /**
      * Creates new form EnrollmentEncoding
      */
     public EnrollmentEncoding() {
         initComponents();
         String account = TPAccountLabel.getText().trim();
-        
-            mainPanel.removeAll();
-            mainPanel.add(studentEnrollmentPanel);
-            mainPanel.repaint();
-            mainPanel.revalidate();
- 
+
+        mainPanel.removeAll();
+        mainPanel.add(studentEnrollmentPanel);
+        mainPanel.repaint();
+        mainPanel.revalidate();
+
         Masterlist_Table();
         Update_Courses_Table();
         Student_Archives_Table();
@@ -1606,10 +1812,41 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         PFUnitsLabel2 = new javax.swing.JLabel();
         PFUnitsLabel1 = new javax.swing.JLabel();
         jLabel41 = new javax.swing.JLabel();
+        jLabel167 = new javax.swing.JLabel();
         jLabel68 = new javax.swing.JLabel();
         CEDatePrintedLabel = new javax.swing.JLabel();
         jLabel30 = new javax.swing.JLabel();
         PFTotalUnitsLabel = new javax.swing.JLabel();
+        jPanel19 = new javax.swing.JPanel();
+        jLabel61 = new javax.swing.JLabel();
+        jLabel62 = new javax.swing.JLabel();
+        jLabel64 = new javax.swing.JLabel();
+        jLabel65 = new javax.swing.JLabel();
+        jLabel66 = new javax.swing.JLabel();
+        PFPerUnitFeeLabel = new javax.swing.JLabel();
+        PFInternetFeeLabel = new javax.swing.JLabel();
+        PFELearningFeeLabel = new javax.swing.JLabel();
+        PFFacilitiesFeeLabel = new javax.swing.JLabel();
+        jLabel151 = new javax.swing.JLabel();
+        PFStudentInsuranceFeeLabel = new javax.swing.JLabel();
+        jLabel158 = new javax.swing.JLabel();
+        jLabel159 = new javax.swing.JLabel();
+        jLabel162 = new javax.swing.JLabel();
+        jLabel163 = new javax.swing.JLabel();
+        PFTestingFeeLabel = new javax.swing.JLabel();
+        PFMedicalFeeLabel = new javax.swing.JLabel();
+        PFLibraryFeeLabel = new javax.swing.JLabel();
+        jLabel165 = new javax.swing.JLabel();
+        PFGuidanceFeeLabel = new javax.swing.JLabel();
+        jLabel166 = new javax.swing.JLabel();
+        PFGrandTotalLabel = new javax.swing.JLabel();
+        jLabel168 = new javax.swing.JLabel();
+        PFDownPaymentLabel = new javax.swing.JLabel();
+        jLabel98 = new javax.swing.JLabel();
+        PFBalanceLabel = new javax.swing.JLabel();
+        jPanel23 = new javax.swing.JPanel();
+        jLabel103 = new javax.swing.JLabel();
+        PFPerExamLabel = new javax.swing.JLabel();
         courseEnrollmentPanel = new javax.swing.JPanel();
         jPanel13 = new RoundedPanel(50, new Color(55,111,138));
         jLabel101 = new javax.swing.JLabel();
@@ -1622,8 +1859,8 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel110 = new javax.swing.JLabel();
         jLabel111 = new javax.swing.JLabel();
         CETermBox = new javax.swing.JComboBox<>();
-        jLabel115 = new javax.swing.JLabel();
         CEEnrollButton = new javax.swing.JButton();
+        jLabel115 = new javax.swing.JLabel();
         CEPrintPreviewButton = new javax.swing.JButton();
         jScrollPane7 = new javax.swing.JScrollPane();
         CECourseListTable = new javax.swing.JTable();
@@ -1780,21 +2017,21 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel35 = new javax.swing.JLabel();
         jLabel82 = new javax.swing.JLabel();
         jPanel10 = new javax.swing.JPanel();
-        jLabel142 = new javax.swing.JLabel();
-        jLabel149 = new javax.swing.JLabel();
-        jLabel150 = new javax.swing.JLabel();
-        jLabel151 = new javax.swing.JLabel();
+        SDashStudentIDLabel = new javax.swing.JLabel();
+        SDashStudentNameLabel = new javax.swing.JLabel();
+        SDashSemesterLabel = new javax.swing.JLabel();
+        SDashYearCourseLabel = new javax.swing.JLabel();
         jPanel11 = new RoundedPanel(50, new Color(55,111,138));
-        jLabel152 = new javax.swing.JLabel();
+        SDashTotalAssessmentLabel = new javax.swing.JLabel();
         jLabel51 = new javax.swing.JLabel();
         jPanel12 = new RoundedPanel(50, new Color(55,111,138));
-        jLabel153 = new javax.swing.JLabel();
+        SDashCurrentBalanceLabel = new javax.swing.JLabel();
         jLabel52 = new javax.swing.JLabel();
         jPanel16 = new RoundedPanel(50, new Color(55,111,138));
-        jLabel154 = new javax.swing.JLabel();
+        SDashExamsPaidLabel = new javax.swing.JLabel();
         jLabel53 = new javax.swing.JLabel();
         jPanel17 = new RoundedPanel(50, new Color(55,111,138));
-        jLabel155 = new javax.swing.JLabel();
+        SDashPerExamLabel = new javax.swing.JLabel();
         jLabel54 = new javax.swing.JLabel();
         studentPaymentPanel = new javax.swing.JPanel();
         bottomPanel7 = new javax.swing.JPanel();
@@ -1816,16 +2053,16 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel85 = new javax.swing.JLabel();
         jPanel5 = new RoundedPanel(50, new Color(55,111,138));
         jLabel97 = new javax.swing.JLabel();
-        jLabel98 = new javax.swing.JLabel();
+        CPStudentIDTagLabel = new javax.swing.JLabel();
         jLabel39 = new javax.swing.JLabel();
         jLabel43 = new javax.swing.JLabel();
-        jLabel99 = new javax.swing.JLabel();
+        CPReferenceTagLabel = new javax.swing.JLabel();
         jLabel100 = new javax.swing.JLabel();
         jLabel102 = new javax.swing.JLabel();
         jLabel44 = new javax.swing.JLabel();
-        jLabel103 = new javax.swing.JLabel();
-        jLabel104 = new javax.swing.JLabel();
-        jLabel105 = new javax.swing.JLabel();
+        CPItemTagLabel = new javax.swing.JLabel();
+        CPItemAmountLabel = new javax.swing.JLabel();
+        CPTotalAmountLabel = new javax.swing.JLabel();
         jLabel106 = new javax.swing.JLabel();
         jLabel122 = new javax.swing.JLabel();
         jLabel123 = new javax.swing.JLabel();
@@ -1839,24 +2076,78 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel124 = new javax.swing.JLabel();
         jPanel9 = new RoundedPanel(50, new Color(55,111,138));
         jLabel139 = new javax.swing.JLabel();
-        SPStudentIDField1 = new javax.swing.JTextField();
+        MCCardNumberField = new javax.swing.JTextField();
         jLabel141 = new javax.swing.JLabel();
         SPItemBox1 = new javax.swing.JComboBox<>();
         jLabel47 = new javax.swing.JLabel();
         jLabel143 = new javax.swing.JLabel();
-        jLabel144 = new javax.swing.JLabel();
+        MCiAmountIPGLabel = new javax.swing.JLabel();
         SPItemBox2 = new javax.swing.JComboBox<>();
         jLabel145 = new javax.swing.JLabel();
-        SPStudentIDField2 = new javax.swing.JTextField();
+        MCNameLabel = new javax.swing.JTextField();
         jLabel146 = new javax.swing.JLabel();
         jLabel147 = new javax.swing.JLabel();
-        SPStudentIDField3 = new javax.swing.JTextField();
+        MCSecurityCode = new javax.swing.JTextField();
         jLabel48 = new javax.swing.JLabel();
         jLabel49 = new javax.swing.JLabel();
         jLabel50 = new javax.swing.JLabel();
         jLabel148 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        MCNextButton = new javax.swing.JButton();
+        MCCancelButton = new javax.swing.JButton();
+        mastercardReceipt = new javax.swing.JPanel();
+        bottomPanel12 = new javax.swing.JPanel();
+        jLabel60 = new javax.swing.JLabel();
+        jLabel180 = new javax.swing.JLabel();
+        jPanel22 = new RoundedPanel(50, new Color(55,111,138));
+        jLabel191 = new javax.swing.JLabel();
+        jLabel192 = new javax.swing.JLabel();
+        jLabel193 = new javax.swing.JLabel();
+        MCPaidProceedButton = new javax.swing.JButton();
+        MCPaidGiantLabel = new javax.swing.JLabel();
+        jLabel195 = new javax.swing.JLabel();
+        jLabel196 = new javax.swing.JLabel();
+        jLabel197 = new javax.swing.JLabel();
+        jLabel198 = new javax.swing.JLabel();
+        jLabel199 = new javax.swing.JLabel();
+        MCPaidLabel = new javax.swing.JLabel();
+        MCPaidItemLabel = new javax.swing.JLabel();
+        MCPaidMethodLabel = new javax.swing.JLabel();
+        MCPaidStudentIDLabel = new javax.swing.JLabel();
+        MCPaidStudentNameLabel = new javax.swing.JLabel();
+        MCRefNoLabel = new javax.swing.JLabel();
+        MCDateLabel = new javax.swing.JLabel();
+        MCTimeLabel = new javax.swing.JLabel();
+        gcashPanel = new javax.swing.JPanel();
+        bottomPanel10 = new javax.swing.JPanel();
+        jLabel169 = new javax.swing.JLabel();
+        jLabel170 = new javax.swing.JLabel();
+        jPanel20 = new RoundedPanel(50, new Color(55,111,138));
+        jLabel173 = new javax.swing.JLabel();
+        jLabel174 = new javax.swing.JLabel();
+        jLabel182 = new javax.swing.JLabel();
+        jButton6 = new javax.swing.JButton();
+        jLabel55 = new javax.swing.JLabel();
+        jPanel18 = new javax.swing.JPanel();
+        SPStudentIDField4 = new javax.swing.JTextField();
+        jLabel57 = new javax.swing.JLabel();
+        gcashReceipt = new javax.swing.JPanel();
+        bottomPanel11 = new javax.swing.JPanel();
+        jLabel56 = new javax.swing.JLabel();
+        jLabel171 = new javax.swing.JLabel();
+        jPanel21 = new RoundedPanel(50, new Color(55,111,138));
+        jLabel172 = new javax.swing.JLabel();
+        jLabel58 = new javax.swing.JLabel();
+        jLabel176 = new javax.swing.JLabel();
+        jLabel177 = new javax.swing.JLabel();
+        jLabel59 = new javax.swing.JLabel();
+        jLabel183 = new javax.swing.JLabel();
+        jLabel188 = new javax.swing.JLabel();
+        jLabel189 = new javax.swing.JLabel();
+        jLabel190 = new javax.swing.JLabel();
+        jLabel175 = new javax.swing.JLabel();
+        jLabel178 = new javax.swing.JLabel();
+        jLabel184 = new javax.swing.JLabel();
+        jLabel179 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setIconImage(new javax.swing.ImageIcon(getClass().getResource("/com/images/metaLabs_logo_cyan-2.png")).getImage());
@@ -2414,192 +2705,326 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         jPanel8.setBackground(new java.awt.Color(243, 242, 242));
         jPanel8.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jPanel8.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel40.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel40.setForeground(new java.awt.Color(1, 1, 1));
         jLabel40.setText("Description");
-        jPanel8.add(jLabel40, new org.netbeans.lib.awtextra.AbsoluteConstraints(162, 29, 313, -1));
 
         jLabel42.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel42.setForeground(new java.awt.Color(1, 1, 1));
         jLabel42.setText("Time ");
-        jPanel8.add(jLabel42, new org.netbeans.lib.awtextra.AbsoluteConstraints(719, 29, 100, -1));
 
         jLabel45.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel45.setForeground(new java.awt.Color(1, 1, 1));
         jLabel45.setText("Title");
-        jPanel8.add(jLabel45, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 29, 64, -1));
 
         PFCourseCodeLabel1.setForeground(new java.awt.Color(1, 1, 1));
         PFCourseCodeLabel1.setText(" ");
-        jPanel8.add(PFCourseCodeLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 51, 64, -1));
 
         PFSubjectLabel1.setForeground(new java.awt.Color(1, 1, 1));
         PFSubjectLabel1.setText(" ");
-        jPanel8.add(PFSubjectLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(162, 51, 313, -1));
 
         PFTimeLabel1.setForeground(new java.awt.Color(1, 1, 1));
         PFTimeLabel1.setText(" ");
-        jPanel8.add(PFTimeLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(719, 51, 100, -1));
 
         PFCourseCodeLabel2.setForeground(new java.awt.Color(1, 1, 1));
         PFCourseCodeLabel2.setText(" ");
-        jPanel8.add(PFCourseCodeLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 73, 64, -1));
 
         PFSubjectLabel2.setForeground(new java.awt.Color(1, 1, 1));
         PFSubjectLabel2.setText(" ");
-        jPanel8.add(PFSubjectLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(162, 73, 313, -1));
 
         PFTimeLabel2.setForeground(new java.awt.Color(1, 1, 1));
         PFTimeLabel2.setText(" ");
-        jPanel8.add(PFTimeLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(719, 73, 100, -1));
 
         PFCourseCodeLabel3.setForeground(new java.awt.Color(1, 1, 1));
         PFCourseCodeLabel3.setText(" ");
-        jPanel8.add(PFCourseCodeLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 95, 64, -1));
 
         PFSubjectLabel3.setForeground(new java.awt.Color(1, 1, 1));
         PFSubjectLabel3.setText(" ");
-        jPanel8.add(PFSubjectLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(162, 95, 313, -1));
 
         PFTimeLabel3.setForeground(new java.awt.Color(1, 1, 1));
         PFTimeLabel3.setText(" ");
-        jPanel8.add(PFTimeLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(719, 95, 100, -1));
 
         jLabel63.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel63.setForeground(new java.awt.Color(1, 1, 1));
         jLabel63.setText("Room");
-        jPanel8.add(jLabel63, new org.netbeans.lib.awtextra.AbsoluteConstraints(591, 29, 91, -1));
 
         PFRoomLabel1.setForeground(new java.awt.Color(1, 1, 1));
         PFRoomLabel1.setText(" ");
-        jPanel8.add(PFRoomLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(591, 51, 91, -1));
 
         PFRoomLabel2.setForeground(new java.awt.Color(1, 1, 1));
         PFRoomLabel2.setText(" ");
-        jPanel8.add(PFRoomLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(591, 73, 91, -1));
 
         PFRoomLabel3.setForeground(new java.awt.Color(1, 1, 1));
         PFRoomLabel3.setText(" ");
-        jPanel8.add(PFRoomLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(591, 95, 91, -1));
 
         PFCourseCodeLabel4.setForeground(new java.awt.Color(1, 1, 1));
         PFCourseCodeLabel4.setText(" ");
-        jPanel8.add(PFCourseCodeLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 117, 64, -1));
 
         PFSubjectLabel4.setForeground(new java.awt.Color(1, 1, 1));
         PFSubjectLabel4.setText(" ");
-        jPanel8.add(PFSubjectLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(162, 117, 313, -1));
 
         PFRoomLabel4.setForeground(new java.awt.Color(1, 1, 1));
         PFRoomLabel4.setText(" ");
-        jPanel8.add(PFRoomLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(591, 117, 91, -1));
 
         PFTimeLabel4.setForeground(new java.awt.Color(1, 1, 1));
         PFTimeLabel4.setText(" ");
-        jPanel8.add(PFTimeLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(719, 117, 100, -1));
 
         PFCourseCodeLabel5.setForeground(new java.awt.Color(1, 1, 1));
         PFCourseCodeLabel5.setText(" ");
-        jPanel8.add(PFCourseCodeLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 139, 64, -1));
 
         PFSubjectLabel5.setForeground(new java.awt.Color(1, 1, 1));
         PFSubjectLabel5.setText(" ");
-        jPanel8.add(PFSubjectLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(162, 139, 313, -1));
 
         PFRoomLabel5.setForeground(new java.awt.Color(1, 1, 1));
         PFRoomLabel5.setText(" ");
-        jPanel8.add(PFRoomLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(591, 139, 91, -1));
 
         PFTimeLabel5.setForeground(new java.awt.Color(1, 1, 1));
         PFTimeLabel5.setText(" ");
-        jPanel8.add(PFTimeLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(719, 139, 100, -1));
 
         PFCourseCodeLabel6.setForeground(new java.awt.Color(1, 1, 1));
         PFCourseCodeLabel6.setText(" ");
-        jPanel8.add(PFCourseCodeLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 161, 64, -1));
 
         PFCourseCodeLabel7.setForeground(new java.awt.Color(1, 1, 1));
         PFCourseCodeLabel7.setText(" ");
-        jPanel8.add(PFCourseCodeLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 183, 64, -1));
 
         PFCourseCodeLabel8.setForeground(new java.awt.Color(1, 1, 1));
         PFCourseCodeLabel8.setText(" ");
-        jPanel8.add(PFCourseCodeLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 205, 64, -1));
 
         PFSubjectLabel6.setForeground(new java.awt.Color(1, 1, 1));
         PFSubjectLabel6.setText(" ");
-        jPanel8.add(PFSubjectLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(162, 161, 313, -1));
 
         PFSubjectLabel7.setForeground(new java.awt.Color(1, 1, 1));
         PFSubjectLabel7.setText(" ");
-        jPanel8.add(PFSubjectLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(162, 183, 313, -1));
 
         PFSubjectLabel8.setForeground(new java.awt.Color(1, 1, 1));
         PFSubjectLabel8.setText(" ");
-        jPanel8.add(PFSubjectLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(162, 205, 313, -1));
 
         PFRoomLabel6.setForeground(new java.awt.Color(1, 1, 1));
         PFRoomLabel6.setText(" ");
-        jPanel8.add(PFRoomLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(591, 161, 91, -1));
 
         PFRoomLabel7.setForeground(new java.awt.Color(1, 1, 1));
         PFRoomLabel7.setText(" ");
-        jPanel8.add(PFRoomLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(591, 183, 91, -1));
 
         PFRoomLabel8.setForeground(new java.awt.Color(1, 1, 1));
         PFRoomLabel8.setText(" ");
-        jPanel8.add(PFRoomLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(591, 205, 91, -1));
 
         PFTimeLabel6.setForeground(new java.awt.Color(1, 1, 1));
         PFTimeLabel6.setText(" ");
-        jPanel8.add(PFTimeLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(719, 161, 100, -1));
 
         PFTimeLabel7.setForeground(new java.awt.Color(1, 1, 1));
         PFTimeLabel7.setText(" ");
-        jPanel8.add(PFTimeLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(719, 183, 100, -1));
 
         PFTimeLabel8.setForeground(new java.awt.Color(1, 1, 1));
         PFTimeLabel8.setText(" ");
-        jPanel8.add(PFTimeLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(719, 205, 100, -1));
 
         PFUnitsLabel8.setForeground(new java.awt.Color(1, 1, 1));
         PFUnitsLabel8.setText(" ");
-        jPanel8.add(PFUnitsLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(506, 205, 52, -1));
 
         PFUnitsLabel7.setForeground(new java.awt.Color(1, 1, 1));
         PFUnitsLabel7.setText(" ");
-        jPanel8.add(PFUnitsLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(506, 183, 52, -1));
 
         PFUnitsLabel6.setForeground(new java.awt.Color(1, 1, 1));
         PFUnitsLabel6.setText(" ");
-        jPanel8.add(PFUnitsLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(506, 161, 52, -1));
 
         PFUnitsLabel5.setForeground(new java.awt.Color(1, 1, 1));
         PFUnitsLabel5.setText(" ");
-        jPanel8.add(PFUnitsLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(506, 139, 52, -1));
 
         PFUnitsLabel4.setForeground(new java.awt.Color(1, 1, 1));
         PFUnitsLabel4.setText(" ");
-        jPanel8.add(PFUnitsLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(506, 117, 52, -1));
 
         PFUnitsLabel3.setForeground(new java.awt.Color(1, 1, 1));
         PFUnitsLabel3.setText(" ");
-        jPanel8.add(PFUnitsLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(506, 95, 52, -1));
 
         PFUnitsLabel2.setForeground(new java.awt.Color(1, 1, 1));
         PFUnitsLabel2.setText(" ");
-        jPanel8.add(PFUnitsLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(506, 73, 52, -1));
 
         PFUnitsLabel1.setForeground(new java.awt.Color(1, 1, 1));
         PFUnitsLabel1.setText(" ");
-        jPanel8.add(PFUnitsLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(506, 51, 52, -1));
 
         jLabel41.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel41.setForeground(new java.awt.Color(1, 1, 1));
         jLabel41.setText("Unit(s)");
-        jPanel8.add(jLabel41, new org.netbeans.lib.awtextra.AbsoluteConstraints(506, 29, 52, -1));
+
+        jLabel167.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel167.setForeground(new java.awt.Color(0, 0, 1));
+        jLabel167.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel167.setText("SUBJECTS ENROLLED");
+        jLabel167.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
+        jPanel8.setLayout(jPanel8Layout);
+        jPanel8Layout.setHorizontalGroup(
+            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addComponent(jLabel45, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel40, javax.swing.GroupLayout.PREFERRED_SIZE, 313, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(31, 31, 31)
+                        .addComponent(jLabel41, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(33, 33, 33)
+                        .addComponent(jLabel63, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(37, 37, 37)
+                        .addComponent(jLabel42, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addComponent(PFCourseCodeLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(PFSubjectLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 313, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(31, 31, 31)
+                        .addComponent(PFUnitsLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(33, 33, 33)
+                        .addComponent(PFRoomLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(37, 37, 37)
+                        .addComponent(PFTimeLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addComponent(PFCourseCodeLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(PFSubjectLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 313, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(31, 31, 31)
+                        .addComponent(PFUnitsLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(33, 33, 33)
+                        .addComponent(PFRoomLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(37, 37, 37)
+                        .addComponent(PFTimeLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addComponent(PFCourseCodeLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(PFSubjectLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 313, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(31, 31, 31)
+                        .addComponent(PFUnitsLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(33, 33, 33)
+                        .addComponent(PFRoomLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(37, 37, 37)
+                        .addComponent(PFTimeLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addComponent(PFCourseCodeLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(PFSubjectLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 313, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(31, 31, 31)
+                        .addComponent(PFUnitsLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(33, 33, 33)
+                        .addComponent(PFRoomLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(37, 37, 37)
+                        .addComponent(PFTimeLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addComponent(PFCourseCodeLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(PFSubjectLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 313, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(31, 31, 31)
+                        .addComponent(PFUnitsLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(33, 33, 33)
+                        .addComponent(PFRoomLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(37, 37, 37)
+                        .addComponent(PFTimeLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addComponent(PFCourseCodeLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(PFSubjectLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 313, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(31, 31, 31)
+                        .addComponent(PFUnitsLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(33, 33, 33)
+                        .addComponent(PFRoomLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(37, 37, 37)
+                        .addComponent(PFTimeLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addComponent(PFCourseCodeLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(PFSubjectLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 313, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(31, 31, 31)
+                        .addComponent(PFUnitsLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(33, 33, 33)
+                        .addComponent(PFRoomLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(37, 37, 37)
+                        .addComponent(PFTimeLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addComponent(PFCourseCodeLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(PFSubjectLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 313, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(31, 31, 31)
+                        .addComponent(PFUnitsLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(33, 33, 33)
+                        .addComponent(PFRoomLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(37, 37, 37)
+                        .addComponent(PFTimeLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(21, 21, 21))
+            .addGroup(jPanel8Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel167, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel8Layout.setVerticalGroup(
+            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel167)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel45)
+                    .addComponent(jLabel40)
+                    .addComponent(jLabel41)
+                    .addComponent(jLabel63)
+                    .addComponent(jLabel42))
+                .addGap(6, 6, 6)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(PFCourseCodeLabel1)
+                    .addComponent(PFSubjectLabel1)
+                    .addComponent(PFUnitsLabel1)
+                    .addComponent(PFRoomLabel1)
+                    .addComponent(PFTimeLabel1))
+                .addGap(6, 6, 6)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(PFCourseCodeLabel2)
+                    .addComponent(PFSubjectLabel2)
+                    .addComponent(PFUnitsLabel2)
+                    .addComponent(PFRoomLabel2)
+                    .addComponent(PFTimeLabel2))
+                .addGap(6, 6, 6)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(PFCourseCodeLabel3)
+                    .addComponent(PFSubjectLabel3)
+                    .addComponent(PFUnitsLabel3)
+                    .addComponent(PFRoomLabel3)
+                    .addComponent(PFTimeLabel3))
+                .addGap(6, 6, 6)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(PFCourseCodeLabel4)
+                    .addComponent(PFSubjectLabel4)
+                    .addComponent(PFUnitsLabel4)
+                    .addComponent(PFRoomLabel4)
+                    .addComponent(PFTimeLabel4))
+                .addGap(6, 6, 6)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(PFCourseCodeLabel5)
+                    .addComponent(PFSubjectLabel5)
+                    .addComponent(PFUnitsLabel5)
+                    .addComponent(PFRoomLabel5)
+                    .addComponent(PFTimeLabel5))
+                .addGap(6, 6, 6)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(PFCourseCodeLabel6)
+                    .addComponent(PFSubjectLabel6)
+                    .addComponent(PFUnitsLabel6)
+                    .addComponent(PFRoomLabel6)
+                    .addComponent(PFTimeLabel6))
+                .addGap(6, 6, 6)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(PFCourseCodeLabel7)
+                    .addComponent(PFSubjectLabel7)
+                    .addComponent(PFUnitsLabel7)
+                    .addComponent(PFRoomLabel7)
+                    .addComponent(PFTimeLabel7))
+                .addGap(6, 6, 6)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(PFCourseCodeLabel8)
+                    .addComponent(PFSubjectLabel8)
+                    .addComponent(PFUnitsLabel8)
+                    .addComponent(PFRoomLabel8)
+                    .addComponent(PFTimeLabel8))
+                .addGap(40, 40, 40))
+        );
 
         jLabel68.setForeground(new java.awt.Color(1, 1, 1));
         jLabel68.setText("Date Printed:");
@@ -2612,16 +3037,239 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         PFTotalUnitsLabel.setForeground(new java.awt.Color(1, 1, 1));
 
+        jPanel19.setBackground(new java.awt.Color(243, 242, 242));
+        jPanel19.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        jLabel61.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        jLabel61.setForeground(new java.awt.Color(1, 1, 1));
+        jLabel61.setText("Per Unit Fee(545.00)");
+
+        jLabel62.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel62.setForeground(new java.awt.Color(0, 0, 1));
+        jLabel62.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel62.setText("TOTAL ASSESSMENT");
+        jLabel62.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        jLabel64.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        jLabel64.setForeground(new java.awt.Color(1, 1, 1));
+        jLabel64.setText("Internet Fee");
+
+        jLabel65.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        jLabel65.setForeground(new java.awt.Color(1, 1, 1));
+        jLabel65.setText("E-Learning IT/CS/IS");
+
+        jLabel66.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        jLabel66.setForeground(new java.awt.Color(1, 1, 1));
+        jLabel66.setText("Facilities Upgrading/Modernization");
+
+        PFPerUnitFeeLabel.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        PFPerUnitFeeLabel.setForeground(new java.awt.Color(1, 1, 1));
+        PFPerUnitFeeLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        PFPerUnitFeeLabel.setText("0000.00");
+
+        PFInternetFeeLabel.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        PFInternetFeeLabel.setForeground(new java.awt.Color(1, 1, 1));
+        PFInternetFeeLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        PFInternetFeeLabel.setText("315.00");
+
+        PFELearningFeeLabel.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        PFELearningFeeLabel.setForeground(new java.awt.Color(1, 1, 1));
+        PFELearningFeeLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        PFELearningFeeLabel.setText("1000.00");
+
+        PFFacilitiesFeeLabel.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        PFFacilitiesFeeLabel.setForeground(new java.awt.Color(1, 1, 1));
+        PFFacilitiesFeeLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        PFFacilitiesFeeLabel.setText("1525.00");
+
+        jLabel151.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        jLabel151.setForeground(new java.awt.Color(1, 1, 1));
+        jLabel151.setText("Testing Material Fee");
+
+        PFStudentInsuranceFeeLabel.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        PFStudentInsuranceFeeLabel.setForeground(new java.awt.Color(1, 1, 1));
+        PFStudentInsuranceFeeLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        PFStudentInsuranceFeeLabel.setText("150.00");
+
+        jLabel158.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        jLabel158.setForeground(new java.awt.Color(1, 1, 1));
+        jLabel158.setText("Student Insurance");
+
+        jLabel159.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        jLabel159.setForeground(new java.awt.Color(1, 1, 1));
+        jLabel159.setText("Medical Fee");
+
+        jLabel162.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        jLabel162.setForeground(new java.awt.Color(1, 1, 1));
+
+        jLabel163.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        jLabel163.setForeground(new java.awt.Color(1, 1, 1));
+        jLabel163.setText("Library Fee");
+
+        PFTestingFeeLabel.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        PFTestingFeeLabel.setForeground(new java.awt.Color(1, 1, 1));
+        PFTestingFeeLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        PFTestingFeeLabel.setText("326.25");
+
+        PFMedicalFeeLabel.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        PFMedicalFeeLabel.setForeground(new java.awt.Color(1, 1, 1));
+        PFMedicalFeeLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        PFMedicalFeeLabel.setText("340.00");
+
+        PFLibraryFeeLabel.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        PFLibraryFeeLabel.setForeground(new java.awt.Color(1, 1, 1));
+        PFLibraryFeeLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        PFLibraryFeeLabel.setText("1250.00");
+
+        jLabel165.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        jLabel165.setForeground(new java.awt.Color(1, 1, 1));
+        jLabel165.setText("Guidance Fee");
+
+        PFGuidanceFeeLabel.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        PFGuidanceFeeLabel.setForeground(new java.awt.Color(1, 1, 1));
+        PFGuidanceFeeLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        PFGuidanceFeeLabel.setText("350.00");
+
+        javax.swing.GroupLayout jPanel19Layout = new javax.swing.GroupLayout(jPanel19);
+        jPanel19.setLayout(jPanel19Layout);
+        jPanel19Layout.setHorizontalGroup(
+            jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel19Layout.createSequentialGroup()
+                .addGap(49, 49, 49)
+                .addGroup(jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel66, javax.swing.GroupLayout.DEFAULT_SIZE, 261, Short.MAX_VALUE)
+                    .addComponent(jLabel65, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel64, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel61, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel158, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel151, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(PFELearningFeeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(PFInternetFeeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(PFFacilitiesFeeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(PFStudentInsuranceFeeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(PFTestingFeeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(PFPerUnitFeeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(28, 28, 28)
+                .addGroup(jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel159, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel162, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel163, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel165, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(PFMedicalFeeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(PFLibraryFeeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(PFGuidanceFeeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(59, 59, 59))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel19Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel62, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel19Layout.setVerticalGroup(
+            jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel19Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel62)
+                .addGroup(jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel19Layout.createSequentialGroup()
+                        .addGap(28, 28, 28)
+                        .addComponent(jLabel162)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel159, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(PFMedicalFeeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel163, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(PFLibraryFeeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel19Layout.createSequentialGroup()
+                        .addGap(42, 42, 42)
+                        .addGroup(jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel61)
+                            .addComponent(PFPerUnitFeeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel64, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(PFInternetFeeLabel))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel65)
+                    .addComponent(PFELearningFeeLabel)
+                    .addComponent(jLabel165, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(PFGuidanceFeeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel66)
+                    .addComponent(PFFacilitiesFeeLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel158)
+                    .addComponent(PFStudentInsuranceFeeLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel151)
+                    .addComponent(PFTestingFeeLabel))
+                .addContainerGap(56, Short.MAX_VALUE))
+        );
+
+        jLabel166.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel166.setForeground(new java.awt.Color(0, 0, 1));
+        jLabel166.setText("GRAND TOTAL:");
+
+        PFGrandTotalLabel.setForeground(new java.awt.Color(0, 0, 1));
+        PFGrandTotalLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        PFGrandTotalLabel.setText("0000");
+
+        jLabel168.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel168.setForeground(new java.awt.Color(0, 0, 1));
+        jLabel168.setText("Less (Downpayment):");
+
+        PFDownPaymentLabel.setForeground(new java.awt.Color(0, 0, 1));
+        PFDownPaymentLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        PFDownPaymentLabel.setText("0000");
+
+        jLabel98.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel98.setForeground(new java.awt.Color(0, 0, 1));
+        jLabel98.setText("Balance:");
+
+        PFBalanceLabel.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        PFBalanceLabel.setForeground(new java.awt.Color(0, 0, 1));
+        PFBalanceLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        PFBalanceLabel.setText("0000");
+
+        jPanel23.setBackground(new java.awt.Color(0, 0, 1));
+        jPanel23.setPreferredSize(new java.awt.Dimension(0, 3));
+
+        javax.swing.GroupLayout jPanel23Layout = new javax.swing.GroupLayout(jPanel23);
+        jPanel23.setLayout(jPanel23Layout);
+        jPanel23Layout.setHorizontalGroup(
+            jPanel23Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        jPanel23Layout.setVerticalGroup(
+            jPanel23Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 3, Short.MAX_VALUE)
+        );
+
+        jLabel103.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel103.setForeground(new java.awt.Color(0, 0, 1));
+        jLabel103.setText("Per Exam:");
+
+        PFPerExamLabel.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        PFPerExamLabel.setForeground(new java.awt.Color(0, 0, 1));
+        PFPerExamLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        PFPerExamLabel.setText("0000");
+
         javax.swing.GroupLayout PFPanelToPrintLayout = new javax.swing.GroupLayout(PFPanelToPrint);
         PFPanelToPrint.setLayout(PFPanelToPrintLayout);
         PFPanelToPrintLayout.setHorizontalGroup(
             PFPanelToPrintLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, PFPanelToPrintLayout.createSequentialGroup()
-                .addContainerGap(66, Short.MAX_VALUE)
+            .addGroup(PFPanelToPrintLayout.createSequentialGroup()
+                .addContainerGap(47, Short.MAX_VALUE)
                 .addGroup(PFPanelToPrintLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(PFPanelToPrintLayout.createSequentialGroup()
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 908, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, PFPanelToPrintLayout.createSequentialGroup()
                         .addGroup(PFPanelToPrintLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jPanel8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -2634,8 +3282,30 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jLabel30, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(PFTotalUnitsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(49, 49, 49))))
+                                .addComponent(PFTotalUnitsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jPanel19, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(68, 68, 68))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, PFPanelToPrintLayout.createSequentialGroup()
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 908, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(25, 25, 25))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, PFPanelToPrintLayout.createSequentialGroup()
+                        .addGroup(PFPanelToPrintLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jPanel23, javax.swing.GroupLayout.DEFAULT_SIZE, 209, Short.MAX_VALUE)
+                            .addGroup(PFPanelToPrintLayout.createSequentialGroup()
+                                .addGroup(PFPanelToPrintLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(jLabel98, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel168, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel166, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(PFPanelToPrintLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(PFGrandTotalLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(PFDownPaymentLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(PFBalanceLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)))
+                            .addGroup(PFPanelToPrintLayout.createSequentialGroup()
+                                .addComponent(jLabel103, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(PFPerExamLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(67, 67, 67))))
         );
         PFPanelToPrintLayout.setVerticalGroup(
             PFPanelToPrintLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2646,15 +3316,35 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(PFPanelToPrintLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel68)
                     .addComponent(CEDatePrintedLabel)
                     .addComponent(jLabel30)
                     .addComponent(PFTotalUnitsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(434, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jPanel19, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(26, 26, 26)
+                .addGroup(PFPanelToPrintLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel166)
+                    .addComponent(PFGrandTotalLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(PFPanelToPrintLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel168)
+                    .addComponent(PFDownPaymentLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(PFPanelToPrintLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel98)
+                    .addComponent(PFBalanceLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel23, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(PFPanelToPrintLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel103)
+                    .addComponent(PFPerExamLabel))
+                .addContainerGap(40, Short.MAX_VALUE))
         );
 
         jScrollPane2.setViewportView(PFPanelToPrint);
@@ -2664,14 +3354,14 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         printFormPanelLayout.setHorizontalGroup(
             printFormPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(printFormPanelLayout.createSequentialGroup()
-                .addGap(160, 160, 160)
-                .addGroup(printFormPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGap(201, 201, 201)
+                .addGroup(printFormPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(printFormPanelLayout.createSequentialGroup()
                         .addComponent(PFBackButton, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(746, 746, 746)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(PFPrintPanelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(525, Short.MAX_VALUE))
         );
         printFormPanelLayout.setVerticalGroup(
             printFormPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2757,6 +3447,14 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         CETermBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "1ST Term", "2ND Term" }));
         CETermBox.setFocusable(false);
 
+        CEEnrollButton.setText("Enroll");
+        CEEnrollButton.setFocusable(false);
+        CEEnrollButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CEEnrollButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel13Layout = new javax.swing.GroupLayout(jPanel13);
         jPanel13.setLayout(jPanel13Layout);
         jPanel13Layout.setHorizontalGroup(
@@ -2773,18 +3471,22 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(CEYearLevelBox, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel13Layout.createSequentialGroup()
+                        .addComponent(jLabel101, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(CECollegeDepBox, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel13Layout.createSequentialGroup()
                         .addComponent(jLabel110, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(CESemesterBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(jLabel111, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(CETermBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel13Layout.createSequentialGroup()
-                        .addComponent(jLabel101, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(CECollegeDepBox, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(47, Short.MAX_VALUE))
+                        .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel13Layout.createSequentialGroup()
+                                .addGap(6, 6, 6)
+                                .addComponent(CEEnrollButton, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(CETermBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(37, Short.MAX_VALUE))
         );
         jPanel13Layout.setVerticalGroup(
             jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2807,20 +3509,14 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                     .addComponent(CESemesterBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel111, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(CETermBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(60, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(CEEnrollButton)
+                .addContainerGap(26, Short.MAX_VALUE))
         );
 
         jLabel115.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel115.setForeground(new java.awt.Color(255, 255, 255));
         jLabel115.setText("COURSE(S) LIST AND SCHEDULE ");
-
-        CEEnrollButton.setText("Enroll");
-        CEEnrollButton.setFocusable(false);
-        CEEnrollButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                CEEnrollButtonActionPerformed(evt);
-            }
-        });
 
         CEPrintPreviewButton.setText("Print Preview");
         CEPrintPreviewButton.setFocusable(false);
@@ -3127,8 +3823,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                             .addGroup(courseEnrollmentPanelLayout.createSequentialGroup()
                                 .addComponent(CEClearButton, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(CEEnrollButton, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(CEPrintPreviewButton))
                             .addGroup(courseEnrollmentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                 .addGroup(courseEnrollmentPanelLayout.createSequentialGroup()
@@ -3140,7 +3834,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                                 .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(jPanel14, javax.swing.GroupLayout.DEFAULT_SIZE, 549, Short.MAX_VALUE)))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(189, Short.MAX_VALUE))
         );
         courseEnrollmentPanelLayout.setVerticalGroup(
             courseEnrollmentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -3161,10 +3855,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(courseEnrollmentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(CEEnrollButton, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(CEPrintPreviewButton, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(CEClearButton, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(319, Short.MAX_VALUE))
         );
 
         mainPanel.add(courseEnrollmentPanel, "card7");
@@ -4559,59 +5252,59 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         jPanel10.setBackground(new java.awt.Color(31, 48, 56));
 
-        jLabel142.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
-        jLabel142.setForeground(new java.awt.Color(0, 204, 255));
-        jLabel142.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel142.setText("123456");
+        SDashStudentIDLabel.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
+        SDashStudentIDLabel.setForeground(new java.awt.Color(0, 204, 255));
+        SDashStudentIDLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        SDashStudentIDLabel.setText("123456");
 
-        jLabel149.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
-        jLabel149.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel149.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel149.setText("Light, Meteor");
+        SDashStudentNameLabel.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        SDashStudentNameLabel.setForeground(new java.awt.Color(255, 255, 255));
+        SDashStudentNameLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        SDashStudentNameLabel.setText("Light, Meteor");
 
-        jLabel150.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
-        jLabel150.setForeground(new java.awt.Color(0, 204, 255));
-        jLabel150.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel150.setText("First Semester 2023-24");
+        SDashSemesterLabel.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
+        SDashSemesterLabel.setForeground(new java.awt.Color(0, 204, 255));
+        SDashSemesterLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        SDashSemesterLabel.setText("First Semester 2023-24");
 
-        jLabel151.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
-        jLabel151.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel151.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel151.setText("1st Year Bachelor of Science in Hospitality");
+        SDashYearCourseLabel.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        SDashYearCourseLabel.setForeground(new java.awt.Color(255, 255, 255));
+        SDashYearCourseLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        SDashYearCourseLabel.setText("1st Year Bachelor of Science in Hospitality");
 
         javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
         jPanel10.setLayout(jPanel10Layout);
         jPanel10Layout.setHorizontalGroup(
             jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel150, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(SDashSemesterLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel10Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel142, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel149, javax.swing.GroupLayout.DEFAULT_SIZE, 496, Short.MAX_VALUE)
-                    .addComponent(jLabel151, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 496, Short.MAX_VALUE))
+                    .addComponent(SDashStudentIDLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(SDashStudentNameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(SDashYearCourseLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 724, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel10Layout.setVerticalGroup(
             jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel10Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel142)
+                .addComponent(SDashStudentIDLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel149)
+                .addComponent(SDashStudentNameLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel150, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(SDashSemesterLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel151)
+                .addComponent(SDashYearCourseLabel)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel11.setBackground(new java.awt.Color(31, 48, 56));
 
-        jLabel152.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel152.setForeground(new java.awt.Color(0, 204, 255));
-        jLabel152.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabel152.setText("28,311.50");
+        SDashTotalAssessmentLabel.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        SDashTotalAssessmentLabel.setForeground(new java.awt.Color(0, 204, 255));
+        SDashTotalAssessmentLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        SDashTotalAssessmentLabel.setText("0000.00");
 
         jLabel51.setForeground(new java.awt.Color(255, 255, 255));
         jLabel51.setText("Total Assessment");
@@ -4624,14 +5317,14 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addGap(21, 21, 21)
                 .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel51, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel152, javax.swing.GroupLayout.DEFAULT_SIZE, 286, Short.MAX_VALUE))
+                    .addComponent(SDashTotalAssessmentLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 286, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel11Layout.setVerticalGroup(
             jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel11Layout.createSequentialGroup()
                 .addGap(31, 31, 31)
-                .addComponent(jLabel152)
+                .addComponent(SDashTotalAssessmentLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel51)
                 .addContainerGap(42, Short.MAX_VALUE))
@@ -4639,10 +5332,10 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         jPanel12.setBackground(new java.awt.Color(31, 48, 56));
 
-        jLabel153.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel153.setForeground(new java.awt.Color(0, 204, 255));
-        jLabel153.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabel153.setText("19,921.50");
+        SDashCurrentBalanceLabel.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        SDashCurrentBalanceLabel.setForeground(new java.awt.Color(0, 204, 255));
+        SDashCurrentBalanceLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        SDashCurrentBalanceLabel.setText("0000.00");
 
         jLabel52.setForeground(new java.awt.Color(255, 255, 255));
         jLabel52.setText("Current Balance");
@@ -4655,14 +5348,14 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addGap(21, 21, 21)
                 .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel52, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel153, javax.swing.GroupLayout.DEFAULT_SIZE, 286, Short.MAX_VALUE))
+                    .addComponent(SDashCurrentBalanceLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 286, Short.MAX_VALUE))
                 .addContainerGap(48, Short.MAX_VALUE))
         );
         jPanel12Layout.setVerticalGroup(
             jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel12Layout.createSequentialGroup()
                 .addGap(31, 31, 31)
-                .addComponent(jLabel153)
+                .addComponent(SDashCurrentBalanceLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel52)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -4670,10 +5363,10 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         jPanel16.setBackground(new java.awt.Color(31, 48, 56));
 
-        jLabel154.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel154.setForeground(new java.awt.Color(0, 204, 255));
-        jLabel154.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabel154.setText("2.0");
+        SDashExamsPaidLabel.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        SDashExamsPaidLabel.setForeground(new java.awt.Color(0, 204, 255));
+        SDashExamsPaidLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        SDashExamsPaidLabel.setText("0.0");
 
         jLabel53.setForeground(new java.awt.Color(255, 255, 255));
         jLabel53.setText("Exams Paid");
@@ -4686,14 +5379,14 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addGap(21, 21, 21)
                 .addGroup(jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel53, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel154, javax.swing.GroupLayout.DEFAULT_SIZE, 286, Short.MAX_VALUE))
+                    .addComponent(SDashExamsPaidLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 286, Short.MAX_VALUE))
                 .addContainerGap(36, Short.MAX_VALUE))
         );
         jPanel16Layout.setVerticalGroup(
             jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel16Layout.createSequentialGroup()
                 .addGap(31, 31, 31)
-                .addComponent(jLabel154)
+                .addComponent(SDashExamsPaidLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel53)
                 .addContainerGap(42, Short.MAX_VALUE))
@@ -4701,13 +5394,13 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         jPanel17.setBackground(new java.awt.Color(31, 48, 56));
 
-        jLabel155.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel155.setForeground(new java.awt.Color(0, 204, 255));
-        jLabel155.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabel155.setText("8,390.00");
+        SDashPerExamLabel.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        SDashPerExamLabel.setForeground(new java.awt.Color(0, 204, 255));
+        SDashPerExamLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        SDashPerExamLabel.setText("0000.00");
 
         jLabel54.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel54.setText("Total Payment");
+        jLabel54.setText("Per Exam");
 
         javax.swing.GroupLayout jPanel17Layout = new javax.swing.GroupLayout(jPanel17);
         jPanel17.setLayout(jPanel17Layout);
@@ -4717,14 +5410,14 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addGap(21, 21, 21)
                 .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel54, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel155, javax.swing.GroupLayout.DEFAULT_SIZE, 286, Short.MAX_VALUE))
+                    .addComponent(SDashPerExamLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 286, Short.MAX_VALUE))
                 .addContainerGap(36, Short.MAX_VALUE))
         );
         jPanel17Layout.setVerticalGroup(
             jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel17Layout.createSequentialGroup()
                 .addGap(31, 31, 31)
-                .addComponent(jLabel155)
+                .addComponent(SDashPerExamLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel54)
                 .addContainerGap(42, Short.MAX_VALUE))
@@ -4740,21 +5433,20 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                         .addGap(66, 66, 66)
                         .addComponent(jLabel82, javax.swing.GroupLayout.PREFERRED_SIZE, 364, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(bottomPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(studentDashboardPanelLayout.createSequentialGroup()
-                        .addGap(305, 305, 305)
-                        .addGroup(studentDashboardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(studentDashboardPanelLayout.createSequentialGroup()
-                                .addGap(107, 107, 107)
-                                .addComponent(jPanel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(studentDashboardPanelLayout.createSequentialGroup()
-                                .addGroup(studentDashboardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jPanel16, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jPanel17, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(38, 38, 38)
-                                .addGroup(studentDashboardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jPanel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jPanel12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))))
-                .addContainerGap(275, Short.MAX_VALUE))
+                    .addGroup(studentDashboardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(studentDashboardPanelLayout.createSequentialGroup()
+                            .addContainerGap()
+                            .addComponent(jPanel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, studentDashboardPanelLayout.createSequentialGroup()
+                            .addGap(305, 305, 305)
+                            .addGroup(studentDashboardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(jPanel16, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jPanel17, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGap(38, 38, 38)
+                            .addGroup(studentDashboardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(jPanel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jPanel12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         studentDashboardPanelLayout.setVerticalGroup(
             studentDashboardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -4773,7 +5465,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addGroup(studentDashboardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel12, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel17, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(335, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         mainPanel.add(studentDashboardPanel, "card7");
@@ -4898,7 +5590,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                             .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel120, javax.swing.GroupLayout.PREFERRED_SIZE, 483, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel121, javax.swing.GroupLayout.PREFERRED_SIZE, 483, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(171, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         studentPaymentPanelLayout.setVerticalGroup(
             studentPaymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -4915,7 +5607,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(37, 37, 37)
                 .addComponent(SPProceedButton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(322, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         mainPanel.add(studentPaymentPanel, "card7");
@@ -4952,9 +5644,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel97.setForeground(new java.awt.Color(0, 0, 1));
         jLabel97.setText("Student ID");
 
-        jLabel98.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
-        jLabel98.setForeground(new java.awt.Color(0, 0, 1));
-        jLabel98.setText("12345");
+        CPStudentIDTagLabel.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
+        CPStudentIDTagLabel.setForeground(new java.awt.Color(0, 0, 1));
+        CPStudentIDTagLabel.setText("12345");
 
         jLabel39.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel39.setForeground(new java.awt.Color(0, 0, 1));
@@ -4964,9 +5656,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel43.setForeground(new java.awt.Color(0, 0, 1));
         jLabel43.setText("_______________________________________________________________________________________________________________________________________");
 
-        jLabel99.setFont(new java.awt.Font("SansSerif", 1, 36)); // NOI18N
-        jLabel99.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel99.setText("QWERTYUI");
+        CPReferenceTagLabel.setFont(new java.awt.Font("SansSerif", 1, 36)); // NOI18N
+        CPReferenceTagLabel.setForeground(new java.awt.Color(255, 255, 255));
+        CPReferenceTagLabel.setText("QWERTYUI");
 
         jLabel100.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
         jLabel100.setForeground(new java.awt.Color(0, 0, 1));
@@ -4980,19 +5672,19 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel44.setForeground(new java.awt.Color(0, 0, 1));
         jLabel44.setText("_______________________________________________________________________________________________________________________________________");
 
-        jLabel103.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
-        jLabel103.setForeground(new java.awt.Color(0, 0, 1));
-        jLabel103.setText("Down Payment");
+        CPItemTagLabel.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        CPItemTagLabel.setForeground(new java.awt.Color(0, 0, 1));
+        CPItemTagLabel.setText("Down Payment");
 
-        jLabel104.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
-        jLabel104.setForeground(new java.awt.Color(0, 0, 1));
-        jLabel104.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel104.setText("7,890.00");
+        CPItemAmountLabel.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        CPItemAmountLabel.setForeground(new java.awt.Color(0, 0, 1));
+        CPItemAmountLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        CPItemAmountLabel.setText("7,890.00");
 
-        jLabel105.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
-        jLabel105.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel105.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel105.setText("7,890.00");
+        CPTotalAmountLabel.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
+        CPTotalAmountLabel.setForeground(new java.awt.Color(255, 255, 255));
+        CPTotalAmountLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        CPTotalAmountLabel.setText("7,890.00");
 
         jLabel106.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
         jLabel106.setForeground(new java.awt.Color(255, 255, 255));
@@ -5005,15 +5697,15 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addGap(30, 30, 30)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel103, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(CPItemTagLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(jLabel102, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGroup(jPanel5Layout.createSequentialGroup()
                             .addComponent(jLabel100)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jLabel98, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(CPStudentIDTagLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel104, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(CPItemAmountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(50, 50, 50))
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -5024,19 +5716,19 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                                 .addComponent(jLabel97, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel5Layout.createSequentialGroup()
                                 .addGap(51, 51, 51)
-                                .addComponent(jLabel99, javax.swing.GroupLayout.PREFERRED_SIZE, 539, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(CPReferenceTagLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 539, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel39, javax.swing.GroupLayout.DEFAULT_SIZE, 654, Short.MAX_VALUE)
+                            .addComponent(jLabel39, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel43, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel44, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                                 .addGap(29, 29, 29)
                                 .addComponent(jLabel106, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jLabel105, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(CPTotalAmountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(19, 19, 19)))))
                 .addContainerGap())
         );
@@ -5046,26 +5738,26 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addGap(11, 11, 11)
                 .addComponent(jLabel97, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel99, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(CPReferenceTagLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel39)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel43)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel98, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(CPStudentIDTagLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel100, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel102, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel103, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel104, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(CPItemTagLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(CPItemAmountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(12, 12, 12)
                 .addComponent(jLabel44)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel105, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(CPTotalAmountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel106, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(35, Short.MAX_VALUE))
         );
@@ -5121,7 +5813,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addComponent(COGcashButton, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(44, 44, 44)
                 .addComponent(COMasterCardButton, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(51, Short.MAX_VALUE))
         );
         searchPanel5Layout.setVerticalGroup(
             searchPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -5147,17 +5839,17 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                         .addGap(66, 66, 66)
                         .addComponent(jLabel85, javax.swing.GroupLayout.PREFERRED_SIZE, 364, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(bottomPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(checkoutPanelLayout.createSequentialGroup()
-                        .addGap(399, 399, 399)
-                        .addGroup(checkoutPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel122, javax.swing.GroupLayout.PREFERRED_SIZE, 483, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel123, javax.swing.GroupLayout.PREFERRED_SIZE, 483, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(checkoutPanelLayout.createSequentialGroup()
-                        .addGap(330, 330, 330)
-                        .addGroup(checkoutPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(searchPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap(171, Short.MAX_VALUE))
+                    .addGroup(checkoutPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(checkoutPanelLayout.createSequentialGroup()
+                            .addContainerGap()
+                            .addComponent(jLabel122, javax.swing.GroupLayout.PREFERRED_SIZE, 660, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, checkoutPanelLayout.createSequentialGroup()
+                            .addGap(330, 330, 330)
+                            .addGroup(checkoutPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel123, javax.swing.GroupLayout.PREFERRED_SIZE, 666, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(searchPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         checkoutPanelLayout.setVerticalGroup(
             checkoutPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -5174,7 +5866,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(searchPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(322, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         mainPanel.add(checkoutPanel, "card7");
@@ -5211,9 +5903,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel139.setForeground(new java.awt.Color(255, 255, 255));
         jLabel139.setText("Card Number*");
 
-        SPStudentIDField1.setBackground(new java.awt.Color(98, 161, 192));
-        SPStudentIDField1.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
-        SPStudentIDField1.setForeground(new java.awt.Color(51, 51, 51));
+        MCCardNumberField.setBackground(new java.awt.Color(98, 161, 192));
+        MCCardNumberField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        MCCardNumberField.setForeground(new java.awt.Color(51, 51, 51));
 
         jLabel141.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
         jLabel141.setForeground(new java.awt.Color(255, 255, 255));
@@ -5222,7 +5914,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         SPItemBox1.setBackground(new java.awt.Color(98, 161, 192));
         SPItemBox1.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         SPItemBox1.setForeground(new java.awt.Color(51, 51, 51));
-        SPItemBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Down Payment", "Tuition" }));
+        SPItemBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "MM", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" }));
 
         jLabel47.setText("_______________________________________________________________________________________");
 
@@ -5230,23 +5922,23 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel143.setForeground(new java.awt.Color(255, 255, 255));
         jLabel143.setText("MetaLABS IPG:");
 
-        jLabel144.setFont(new java.awt.Font("SansSerif", 0, 24)); // NOI18N
-        jLabel144.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel144.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel144.setText("6,750.00");
+        MCiAmountIPGLabel.setFont(new java.awt.Font("SansSerif", 0, 24)); // NOI18N
+        MCiAmountIPGLabel.setForeground(new java.awt.Color(255, 255, 255));
+        MCiAmountIPGLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        MCiAmountIPGLabel.setText("0000.00");
 
         SPItemBox2.setBackground(new java.awt.Color(98, 161, 192));
         SPItemBox2.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         SPItemBox2.setForeground(new java.awt.Color(51, 51, 51));
-        SPItemBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Down Payment", "Tuition" }));
+        SPItemBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "YY", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44" }));
 
         jLabel145.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
         jLabel145.setForeground(new java.awt.Color(255, 255, 255));
         jLabel145.setText("Expiry Year*");
 
-        SPStudentIDField2.setBackground(new java.awt.Color(98, 161, 192));
-        SPStudentIDField2.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
-        SPStudentIDField2.setForeground(new java.awt.Color(51, 51, 51));
+        MCNameLabel.setBackground(new java.awt.Color(98, 161, 192));
+        MCNameLabel.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        MCNameLabel.setForeground(new java.awt.Color(51, 51, 51));
 
         jLabel146.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
         jLabel146.setForeground(new java.awt.Color(255, 255, 255));
@@ -5256,9 +5948,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel147.setForeground(new java.awt.Color(255, 255, 255));
         jLabel147.setText("Security Code*");
 
-        SPStudentIDField3.setBackground(new java.awt.Color(98, 161, 192));
-        SPStudentIDField3.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
-        SPStudentIDField3.setForeground(new java.awt.Color(51, 51, 51));
+        MCSecurityCode.setBackground(new java.awt.Color(98, 161, 192));
+        MCSecurityCode.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        MCSecurityCode.setForeground(new java.awt.Color(51, 51, 51));
 
         jLabel48.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/images/mcard.png"))); // NOI18N
 
@@ -5270,19 +5962,19 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel148.setForeground(new java.awt.Color(255, 255, 255));
         jLabel148.setText("3 digits on back of your card");
 
-        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jButton2.setText("Next");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        MCNextButton.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        MCNextButton.setText("Next");
+        MCNextButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                MCNextButtonActionPerformed(evt);
             }
         });
 
-        jButton4.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
-        jButton4.setText("Cancel");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        MCCancelButton.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
+        MCCancelButton.setText("Cancel");
+        MCCancelButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+                MCCancelButtonActionPerformed(evt);
             }
         });
 
@@ -5294,7 +5986,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(jLabel143, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jLabel144, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(MCiAmountIPGLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -5327,10 +6019,10 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createSequentialGroup()
                                                 .addComponent(jLabel146, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addGap(252, 252, 252))
-                                            .addComponent(SPStudentIDField2, javax.swing.GroupLayout.PREFERRED_SIZE, 381, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(MCNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 381, javax.swing.GroupLayout.PREFERRED_SIZE)
                                             .addComponent(jLabel147, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                                             .addGroup(jPanel9Layout.createSequentialGroup()
-                                                .addComponent(SPStudentIDField3, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(MCSecurityCode, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                                 .addComponent(jLabel50, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -5339,12 +6031,12 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                                             .addComponent(jLabel48, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
                                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                             .addComponent(jLabel49))
-                                        .addComponent(SPStudentIDField1, javax.swing.GroupLayout.PREFERRED_SIZE, 322, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(MCCardNumberField, javax.swing.GroupLayout.PREFERRED_SIZE, 322, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addContainerGap()))))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createSequentialGroup()
-                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(MCCancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(MCNextButton, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(22, 22, 22))))
         );
         jPanel9Layout.setVerticalGroup(
@@ -5353,13 +6045,13 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel143, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel144, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(MCiAmountIPGLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel47)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel139, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(SPStudentIDField1, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(MCCardNumberField, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(8, 8, 8)
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel48)
@@ -5377,18 +6069,18 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel146, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(SPStudentIDField2, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(MCNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel147, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(SPStudentIDField3, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(MCSecurityCode, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel50)
                     .addComponent(jLabel148, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(MCNextButton, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(MCCancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(25, 25, 25))
         );
 
@@ -5405,7 +6097,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                     .addGroup(mastercardPanelLayout.createSequentialGroup()
                         .addGap(396, 396, 396)
                         .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(171, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         mastercardPanelLayout.setVerticalGroup(
             mastercardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -5416,10 +6108,517 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addComponent(bottomPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(59, 59, 59)
                 .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(315, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         mainPanel.add(mastercardPanel, "card7");
+
+        mastercardReceipt.setBackground(new java.awt.Color(31, 48, 56));
+
+        bottomPanel12.setBackground(new java.awt.Color(8, 17, 22));
+
+        jLabel60.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        jLabel60.setForeground(new java.awt.Color(204, 204, 204));
+        jLabel60.setText("This section features the payment process for the student's downpayment or tuition. ");
+
+        javax.swing.GroupLayout bottomPanel12Layout = new javax.swing.GroupLayout(bottomPanel12);
+        bottomPanel12.setLayout(bottomPanel12Layout);
+        bottomPanel12Layout.setHorizontalGroup(
+            bottomPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(bottomPanel12Layout.createSequentialGroup()
+                .addGap(168, 168, 168)
+                .addComponent(jLabel60)
+                .addContainerGap(933, Short.MAX_VALUE))
+        );
+        bottomPanel12Layout.setVerticalGroup(
+            bottomPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jLabel60, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)
+        );
+
+        jLabel180.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel180.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel180.setText("Payment");
+
+        jPanel22.setBackground(new java.awt.Color(31, 48, 56));
+
+        jLabel191.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
+        jLabel191.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel191.setText("Amount Paid");
+
+        jLabel192.setText("_____________________________________________________________________________");
+
+        jLabel193.setFont(new java.awt.Font("SansSerif", 1, 24)); // NOI18N
+        jLabel193.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel193.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel193.setText("Successfully Paid!");
+
+        MCPaidProceedButton.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        MCPaidProceedButton.setText("Proceed");
+        MCPaidProceedButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MCPaidProceedButtonActionPerformed(evt);
+            }
+        });
+
+        MCPaidGiantLabel.setFont(new java.awt.Font("SansSerif", 0, 24)); // NOI18N
+        MCPaidGiantLabel.setForeground(new java.awt.Color(255, 255, 255));
+        MCPaidGiantLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        MCPaidGiantLabel.setText("PHP 0000.00");
+
+        jLabel195.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
+        jLabel195.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel195.setText("Item");
+
+        jLabel196.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
+        jLabel196.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel196.setText("Student ID");
+
+        jLabel197.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
+        jLabel197.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel197.setText("Payment Method");
+
+        jLabel198.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
+        jLabel198.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel198.setText("Student Name");
+
+        jLabel199.setText("_____________________________________________________________________________");
+
+        MCPaidLabel.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
+        MCPaidLabel.setForeground(new java.awt.Color(255, 255, 255));
+        MCPaidLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        MCPaidLabel.setText("0000");
+
+        MCPaidItemLabel.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
+        MCPaidItemLabel.setForeground(new java.awt.Color(255, 255, 255));
+        MCPaidItemLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        MCPaidItemLabel.setText("Item");
+
+        MCPaidMethodLabel.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
+        MCPaidMethodLabel.setForeground(new java.awt.Color(255, 255, 255));
+        MCPaidMethodLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        MCPaidMethodLabel.setText("MasterCard");
+
+        MCPaidStudentIDLabel.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
+        MCPaidStudentIDLabel.setForeground(new java.awt.Color(255, 255, 255));
+        MCPaidStudentIDLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        MCPaidStudentIDLabel.setText("ID");
+
+        MCPaidStudentNameLabel.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
+        MCPaidStudentNameLabel.setForeground(new java.awt.Color(255, 255, 255));
+        MCPaidStudentNameLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        MCPaidStudentNameLabel.setText("StudentName");
+
+        MCRefNoLabel.setFont(new java.awt.Font("SansSerif", 0, 10)); // NOI18N
+        MCRefNoLabel.setForeground(new java.awt.Color(255, 255, 255));
+        MCRefNoLabel.setText("Ref No. 74941044480");
+
+        MCDateLabel.setFont(new java.awt.Font("SansSerif", 0, 10)); // NOI18N
+        MCDateLabel.setForeground(new java.awt.Color(255, 255, 255));
+        MCDateLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        MCDateLabel.setText("Date");
+
+        MCTimeLabel.setFont(new java.awt.Font("SansSerif", 0, 10)); // NOI18N
+        MCTimeLabel.setForeground(new java.awt.Color(255, 255, 255));
+        MCTimeLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        MCTimeLabel.setText("Time");
+
+        javax.swing.GroupLayout jPanel22Layout = new javax.swing.GroupLayout(jPanel22);
+        jPanel22.setLayout(jPanel22Layout);
+        jPanel22Layout.setHorizontalGroup(
+            jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel22Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel22Layout.createSequentialGroup()
+                        .addComponent(jLabel193, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())
+                    .addComponent(MCPaidGiantLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel22Layout.createSequentialGroup()
+                        .addGap(0, 22, Short.MAX_VALUE)
+                        .addGroup(jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel192, javax.swing.GroupLayout.PREFERRED_SIZE, 379, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel22Layout.createSequentialGroup()
+                                    .addComponent(MCRefNoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(34, 34, 34)
+                                    .addComponent(MCDateLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(MCTimeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel22Layout.createSequentialGroup()
+                                    .addComponent(jLabel198, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(MCPaidStudentNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel22Layout.createSequentialGroup()
+                                    .addComponent(jLabel196, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(MCPaidStudentIDLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel22Layout.createSequentialGroup()
+                                    .addComponent(jLabel197, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(MCPaidMethodLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel22Layout.createSequentialGroup()
+                                    .addComponent(jLabel195, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(MCPaidItemLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jLabel199, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(jPanel22Layout.createSequentialGroup()
+                                    .addComponent(jLabel191, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(MCPaidLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addContainerGap(27, Short.MAX_VALUE))))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel22Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(MCPaidProceedButton, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(168, 168, 168))
+        );
+        jPanel22Layout.setVerticalGroup(
+            jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel22Layout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addComponent(jLabel193)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(MCPaidGiantLabel)
+                .addGap(8, 8, 8)
+                .addComponent(jLabel192)
+                .addGap(30, 30, 30)
+                .addGroup(jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel191, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(MCPaidLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(27, 27, 27)
+                .addGroup(jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel195, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(MCPaidItemLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(27, 27, 27)
+                .addGroup(jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel197, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(MCPaidMethodLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(27, 27, 27)
+                .addGroup(jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel196, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(MCPaidStudentIDLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(29, 29, 29)
+                .addGroup(jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel198, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(MCPaidStudentNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(31, 31, 31)
+                .addComponent(jLabel199)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(MCRefNoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(MCDateLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(MCTimeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
+                .addComponent(MCPaidProceedButton, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(44, 44, 44))
+        );
+
+        javax.swing.GroupLayout mastercardReceiptLayout = new javax.swing.GroupLayout(mastercardReceipt);
+        mastercardReceipt.setLayout(mastercardReceiptLayout);
+        mastercardReceiptLayout.setHorizontalGroup(
+            mastercardReceiptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(mastercardReceiptLayout.createSequentialGroup()
+                .addGroup(mastercardReceiptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(mastercardReceiptLayout.createSequentialGroup()
+                        .addGap(66, 66, 66)
+                        .addComponent(jLabel180, javax.swing.GroupLayout.PREFERRED_SIZE, 364, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(bottomPanel12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(mastercardReceiptLayout.createSequentialGroup()
+                        .addGap(433, 433, 433)
+                        .addComponent(jPanel22, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        mastercardReceiptLayout.setVerticalGroup(
+            mastercardReceiptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(mastercardReceiptLayout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addComponent(jLabel180)
+                .addGap(18, 18, 18)
+                .addComponent(bottomPanel12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(59, 59, 59)
+                .addComponent(jPanel22, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        mainPanel.add(mastercardReceipt, "card7");
+
+        gcashPanel.setBackground(new java.awt.Color(31, 48, 56));
+
+        bottomPanel10.setBackground(new java.awt.Color(8, 17, 22));
+
+        jLabel169.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        jLabel169.setForeground(new java.awt.Color(204, 204, 204));
+        jLabel169.setText("This section features the payment process for the student's downpayment or tuition. ");
+
+        javax.swing.GroupLayout bottomPanel10Layout = new javax.swing.GroupLayout(bottomPanel10);
+        bottomPanel10.setLayout(bottomPanel10Layout);
+        bottomPanel10Layout.setHorizontalGroup(
+            bottomPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(bottomPanel10Layout.createSequentialGroup()
+                .addGap(168, 168, 168)
+                .addComponent(jLabel169)
+                .addContainerGap(933, Short.MAX_VALUE))
+        );
+        bottomPanel10Layout.setVerticalGroup(
+            bottomPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jLabel169, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)
+        );
+
+        jLabel170.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel170.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel170.setText("Payment");
+
+        jPanel20.setBackground(new java.awt.Color(31, 48, 56));
+
+        jLabel173.setText("_______________________________________________________________________________________");
+
+        jLabel174.setFont(new java.awt.Font("SansSerif", 1, 36)); // NOI18N
+        jLabel174.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel174.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel174.setText("Pay with GCash");
+
+        jLabel182.setFont(new java.awt.Font("SansSerif", 2, 13)); // NOI18N
+        jLabel182.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel182.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel182.setText("Input your Mobile Number");
+
+        jButton6.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jButton6.setText("PAY");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
+
+        jLabel55.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel55.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/images/gcash2.png"))); // NOI18N
+        jLabel55.setText(" ");
+
+        jPanel18.setBackground(new java.awt.Color(98, 161, 192));
+        jPanel18.setForeground(new java.awt.Color(98, 161, 192));
+
+        SPStudentIDField4.setBackground(new java.awt.Color(98, 161, 192));
+        SPStudentIDField4.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SPStudentIDField4.setForeground(new java.awt.Color(51, 51, 51));
+
+        jLabel57.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel57.setForeground(new java.awt.Color(254, 255, 255));
+        jLabel57.setText("+63");
+
+        javax.swing.GroupLayout jPanel18Layout = new javax.swing.GroupLayout(jPanel18);
+        jPanel18.setLayout(jPanel18Layout);
+        jPanel18Layout.setHorizontalGroup(
+            jPanel18Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel18Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel57, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(SPStudentIDField4, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+        jPanel18Layout.setVerticalGroup(
+            jPanel18Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel18Layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addGroup(jPanel18Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(SPStudentIDField4, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel57)))
+        );
+
+        javax.swing.GroupLayout jPanel20Layout = new javax.swing.GroupLayout(jPanel20);
+        jPanel20.setLayout(jPanel20Layout);
+        jPanel20Layout.setHorizontalGroup(
+            jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel20Layout.createSequentialGroup()
+                .addGroup(jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel174, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel20Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel20Layout.createSequentialGroup()
+                                .addComponent(jLabel173, javax.swing.GroupLayout.PREFERRED_SIZE, 422, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(jLabel182, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel55, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel20Layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addGroup(jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel20Layout.createSequentialGroup()
+                        .addComponent(jPanel18, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(43, 43, 43))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel20Layout.createSequentialGroup()
+                        .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(168, 168, 168))))
+        );
+        jPanel20Layout.setVerticalGroup(
+            jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel20Layout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addComponent(jLabel55)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel173)
+                .addGap(33, 33, 33)
+                .addComponent(jLabel174, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel182, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(83, 83, 83)
+                .addComponent(jPanel18, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(61, 61, 61)
+                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(49, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout gcashPanelLayout = new javax.swing.GroupLayout(gcashPanel);
+        gcashPanel.setLayout(gcashPanelLayout);
+        gcashPanelLayout.setHorizontalGroup(
+            gcashPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(gcashPanelLayout.createSequentialGroup()
+                .addGroup(gcashPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(gcashPanelLayout.createSequentialGroup()
+                        .addGap(66, 66, 66)
+                        .addComponent(jLabel170, javax.swing.GroupLayout.PREFERRED_SIZE, 364, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(bottomPanel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(gcashPanelLayout.createSequentialGroup()
+                        .addGap(422, 422, 422)
+                        .addComponent(jPanel20, javax.swing.GroupLayout.PREFERRED_SIZE, 425, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        gcashPanelLayout.setVerticalGroup(
+            gcashPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(gcashPanelLayout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addComponent(jLabel170)
+                .addGap(18, 18, 18)
+                .addComponent(bottomPanel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(59, 59, 59)
+                .addComponent(jPanel20, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        mainPanel.add(gcashPanel, "card7");
+
+        gcashReceipt.setBackground(new java.awt.Color(31, 48, 56));
+
+        bottomPanel11.setBackground(new java.awt.Color(8, 17, 22));
+
+        jLabel56.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        jLabel56.setForeground(new java.awt.Color(204, 204, 204));
+        jLabel56.setText("This section features the payment process for the student's downpayment or tuition. ");
+
+        javax.swing.GroupLayout bottomPanel11Layout = new javax.swing.GroupLayout(bottomPanel11);
+        bottomPanel11.setLayout(bottomPanel11Layout);
+        bottomPanel11Layout.setHorizontalGroup(
+            bottomPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(bottomPanel11Layout.createSequentialGroup()
+                .addGap(168, 168, 168)
+                .addComponent(jLabel56)
+                .addContainerGap(933, Short.MAX_VALUE))
+        );
+        bottomPanel11Layout.setVerticalGroup(
+            bottomPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jLabel56, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)
+        );
+
+        jLabel171.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel171.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel171.setText("Payment");
+
+        jPanel21.setBackground(new java.awt.Color(31, 48, 56));
+        jPanel21.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel172.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
+        jLabel172.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel172.setText("Amount Paid");
+        jPanel21.add(jLabel172, new org.netbeans.lib.awtextra.AbsoluteConstraints(28, 279, 169, 22));
+
+        jLabel58.setText("_____________________________________________________________________________");
+        jPanel21.add(jLabel58, new org.netbeans.lib.awtextra.AbsoluteConstraints(28, 233, 379, -1));
+
+        jLabel176.setFont(new java.awt.Font("SansSerif", 1, 24)); // NOI18N
+        jLabel176.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel176.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel176.setText("Successfully Paid!");
+        jPanel21.add(jLabel176, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 158, 428, -1));
+
+        jLabel177.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        jLabel177.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel177.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel177.setText("Sent via GCash");
+        jPanel21.add(jLabel177, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 196, 428, -1));
+
+        jLabel59.setText("_____________________________________________________________________________");
+        jPanel21.add(jLabel59, new org.netbeans.lib.awtextra.AbsoluteConstraints(28, 319, 379, -1));
+
+        jLabel183.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
+        jLabel183.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel183.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel183.setText("Amount");
+        jPanel21.add(jLabel183, new org.netbeans.lib.awtextra.AbsoluteConstraints(238, 279, 169, 22));
+
+        jLabel188.setFont(new java.awt.Font("SansSerif", 0, 10)); // NOI18N
+        jLabel188.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel188.setText("Ref No. 74941044480");
+        jPanel21.add(jLabel188, new org.netbeans.lib.awtextra.AbsoluteConstraints(18, 429, 169, 22));
+
+        jLabel189.setFont(new java.awt.Font("SansSerif", 0, 10)); // NOI18N
+        jLabel189.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel189.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel189.setText("Date");
+        jPanel21.add(jLabel189, new org.netbeans.lib.awtextra.AbsoluteConstraints(238, 429, 83, 22));
+
+        jLabel190.setFont(new java.awt.Font("SansSerif", 0, 10)); // NOI18N
+        jLabel190.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel190.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel190.setText("Time");
+        jPanel21.add(jLabel190, new org.netbeans.lib.awtextra.AbsoluteConstraints(333, 429, 83, 22));
+
+        jLabel175.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel175.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/images/ok.png"))); // NOI18N
+        jLabel175.setText(" ");
+        jPanel21.add(jLabel175, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 36, 422, -1));
+
+        jLabel178.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
+        jLabel178.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel178.setText("Total Amount Spent");
+        jPanel21.add(jLabel178, new org.netbeans.lib.awtextra.AbsoluteConstraints(28, 353, 169, 22));
+
+        jLabel184.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
+        jLabel184.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel184.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel184.setText("PHP350.00");
+        jPanel21.add(jLabel184, new org.netbeans.lib.awtextra.AbsoluteConstraints(238, 353, 169, 22));
+
+        jLabel179.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/images/receipt.png"))); // NOI18N
+        jLabel179.setText(" ");
+        jPanel21.add(jLabel179, new org.netbeans.lib.awtextra.AbsoluteConstraints(-2, 501, 430, -1));
+
+        javax.swing.GroupLayout gcashReceiptLayout = new javax.swing.GroupLayout(gcashReceipt);
+        gcashReceipt.setLayout(gcashReceiptLayout);
+        gcashReceiptLayout.setHorizontalGroup(
+            gcashReceiptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(gcashReceiptLayout.createSequentialGroup()
+                .addGroup(gcashReceiptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(gcashReceiptLayout.createSequentialGroup()
+                        .addGap(66, 66, 66)
+                        .addComponent(jLabel171, javax.swing.GroupLayout.PREFERRED_SIZE, 364, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(bottomPanel11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(gcashReceiptLayout.createSequentialGroup()
+                        .addGap(427, 427, 427)
+                        .addComponent(jPanel21, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        gcashReceiptLayout.setVerticalGroup(
+            gcashReceiptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(gcashReceiptLayout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addComponent(jLabel171)
+                .addGap(18, 18, 18)
+                .addComponent(bottomPanel11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(60, 60, 60)
+                .addComponent(jPanel21, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        mainPanel.add(gcashReceipt, "card7");
 
         getContentPane().add(mainPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 60, 1710, 1020));
 
@@ -5461,9 +6660,10 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     }//GEN-LAST:event_CEEnrollButtonActionPerformed
 
     private void CEPrintPreviewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CEPrintPreviewButtonActionPerformed
-        
+
         ChangeCard(printFormPanel);
         Print_Form_Action();
+        Print_Form_Fees();
         Date_Today();
     }//GEN-LAST:event_CEPrintPreviewButtonActionPerformed
 
@@ -5477,8 +6677,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
     private void courseNewButtonLabelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_courseNewButtonLabelMousePressed
         Course_Condition();
-        
-        
+
 //        ChangeCard(courseEnrollmentPanel);
 //        Back_Button_Action();
     }//GEN-LAST:event_courseNewButtonLabelMousePressed
@@ -5640,6 +6839,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
     private void PFPrintPanelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PFPrintPanelButtonActionPerformed
         Print_Form_Save(PFPanelToPrint);
+        ChangeCard(courseEnrollmentPanel);
+        Fees_DB();
+        Dashboard_Update_Action();
     }//GEN-LAST:event_PFPrintPanelButtonActionPerformed
 
     private void PFBackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PFBackButtonActionPerformed
@@ -5761,24 +6963,46 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     }//GEN-LAST:event_studentPaymentButtonMousePressed
 
     private void SPProceedButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SPProceedButtonActionPerformed
-        ChangeCard(checkoutPanel);
+        String item = SPItemBox.getSelectedItem().toString();
+        String amount = SPAmountField.getText();
+
+        if (item.equals("")) {
+            JOptionPane.showMessageDialog(null, "Cannot proceed. Must fill out the remaining fields.", "Invalid", JOptionPane.ERROR_MESSAGE);
+        } else if (amount.equals("")) {
+            JOptionPane.showMessageDialog(null, "Cannot proceed. Must fill out the remaining fields.", "Invalid", JOptionPane.ERROR_MESSAGE);
+        } else {
+            ChangeCard(checkoutPanel);
+            Checkout_Action();
+        }
+
     }//GEN-LAST:event_SPProceedButtonActionPerformed
 
     private void COGcashButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_COGcashButtonActionPerformed
-        // TODO add your handling code here:
+        ChangeCard(gcashPanel);
     }//GEN-LAST:event_COGcashButtonActionPerformed
 
     private void COMasterCardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_COMasterCardButtonActionPerformed
         ChangeCard(mastercardPanel);
+        Mastercard_Payment_Action();
     }//GEN-LAST:event_COMasterCardButtonActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+    private void MCNextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MCNextButtonActionPerformed
+        ChangeCard(mastercardReceipt);
+        Mastercard_Receipt_Action();
+    }//GEN-LAST:event_MCNextButtonActionPerformed
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton4ActionPerformed
+    private void MCCancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MCCancelButtonActionPerformed
+        ChangeCard(checkoutPanel);
+    }//GEN-LAST:event_MCCancelButtonActionPerformed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        ChangeCard(gcashReceipt);
+    }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void MCPaidProceedButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MCPaidProceedButtonActionPerformed
+        Mastercard_Payment_DB();
+        ChangeCard(studentDashboardPanel);
+    }//GEN-LAST:event_MCPaidProceedButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -5820,10 +7044,32 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> CEYearLevelBox;
     private javax.swing.JButton COGcashButton;
     private javax.swing.JButton COMasterCardButton;
+    private javax.swing.JLabel CPItemAmountLabel;
+    private javax.swing.JLabel CPItemTagLabel;
+    private javax.swing.JLabel CPReferenceTagLabel;
+    private javax.swing.JLabel CPStudentIDTagLabel;
+    private javax.swing.JLabel CPTotalAmountLabel;
+    private javax.swing.JButton MCCancelButton;
+    private javax.swing.JTextField MCCardNumberField;
+    private javax.swing.JLabel MCDateLabel;
+    private javax.swing.JTextField MCNameLabel;
+    private javax.swing.JButton MCNextButton;
+    private javax.swing.JLabel MCPaidGiantLabel;
+    private javax.swing.JLabel MCPaidItemLabel;
+    private javax.swing.JLabel MCPaidLabel;
+    private javax.swing.JLabel MCPaidMethodLabel;
+    private javax.swing.JButton MCPaidProceedButton;
+    private javax.swing.JLabel MCPaidStudentIDLabel;
+    private javax.swing.JLabel MCPaidStudentNameLabel;
+    private javax.swing.JLabel MCRefNoLabel;
+    private javax.swing.JTextField MCSecurityCode;
+    private javax.swing.JLabel MCTimeLabel;
+    private javax.swing.JLabel MCiAmountIPGLabel;
     private javax.swing.JTable MLMasterlistTable;
     private javax.swing.JButton MLSearchButton;
     private javax.swing.JTextField MLSearchField;
     private javax.swing.JButton PFBackButton;
+    private javax.swing.JLabel PFBalanceLabel;
     private javax.swing.JLabel PFCollegeDepLabel;
     private javax.swing.JLabel PFCourseCodeLabel1;
     private javax.swing.JLabel PFCourseCodeLabel2;
@@ -5834,7 +7080,17 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JLabel PFCourseCodeLabel7;
     private javax.swing.JLabel PFCourseCodeLabel8;
     private javax.swing.JLabel PFCourseMajorLabel;
+    private javax.swing.JLabel PFDownPaymentLabel;
+    private javax.swing.JLabel PFELearningFeeLabel;
+    private javax.swing.JLabel PFFacilitiesFeeLabel;
+    private javax.swing.JLabel PFGrandTotalLabel;
+    private javax.swing.JLabel PFGuidanceFeeLabel;
+    private javax.swing.JLabel PFInternetFeeLabel;
+    private javax.swing.JLabel PFLibraryFeeLabel;
+    private javax.swing.JLabel PFMedicalFeeLabel;
     private javax.swing.JPanel PFPanelToPrint;
+    private javax.swing.JLabel PFPerExamLabel;
+    private javax.swing.JLabel PFPerUnitFeeLabel;
     private javax.swing.JButton PFPrintPanelButton;
     private javax.swing.JLabel PFRoomLabel1;
     private javax.swing.JLabel PFRoomLabel2;
@@ -5846,6 +7102,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JLabel PFRoomLabel8;
     private javax.swing.JLabel PFSemesterLabel;
     private javax.swing.JLabel PFStudentIDLabel;
+    private javax.swing.JLabel PFStudentInsuranceFeeLabel;
     private javax.swing.JLabel PFStudentNameLabel;
     private javax.swing.JLabel PFSubjectLabel1;
     private javax.swing.JLabel PFSubjectLabel2;
@@ -5856,6 +7113,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JLabel PFSubjectLabel7;
     private javax.swing.JLabel PFSubjectLabel8;
     private javax.swing.JLabel PFTermLabel;
+    private javax.swing.JLabel PFTestingFeeLabel;
     private javax.swing.JLabel PFTimeLabel1;
     private javax.swing.JLabel PFTimeLabel2;
     private javax.swing.JLabel PFTimeLabel3;
@@ -5903,6 +7161,14 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JTextField SDStudentContactField;
     private javax.swing.JTextField SDStudentIDField;
     private javax.swing.JTextField SDStudentNameField;
+    private javax.swing.JLabel SDashCurrentBalanceLabel;
+    private javax.swing.JLabel SDashExamsPaidLabel;
+    private javax.swing.JLabel SDashPerExamLabel;
+    private javax.swing.JLabel SDashSemesterLabel;
+    private javax.swing.JLabel SDashStudentIDLabel;
+    private javax.swing.JLabel SDashStudentNameLabel;
+    private javax.swing.JLabel SDashTotalAssessmentLabel;
+    private javax.swing.JLabel SDashYearCourseLabel;
     private javax.swing.JTextField SEAddressField;
     private javax.swing.JComboBox<String> SEBirthDateBox;
     private javax.swing.JComboBox<String> SEBirthMonthBox;
@@ -5926,15 +7192,16 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> SPItemBox2;
     private javax.swing.JButton SPProceedButton;
     private javax.swing.JTextField SPStudentIDField;
-    private javax.swing.JTextField SPStudentIDField1;
-    private javax.swing.JTextField SPStudentIDField2;
-    private javax.swing.JTextField SPStudentIDField3;
+    private javax.swing.JTextField SPStudentIDField4;
     private javax.swing.JLabel TPAccountLabel;
     private javax.swing.JPanel addtionalInfoPanel;
     private javax.swing.JPanel adminOnlyButton;
     private javax.swing.JLabel adminOnlyButtonLabel;
     private javax.swing.JPanel bottomPanel;
     private javax.swing.JPanel bottomPanel1;
+    private javax.swing.JPanel bottomPanel10;
+    private javax.swing.JPanel bottomPanel11;
+    private javax.swing.JPanel bottomPanel12;
     private javax.swing.JPanel bottomPanel2;
     private javax.swing.JPanel bottomPanel3;
     private javax.swing.JPanel bottomPanel4;
@@ -5950,11 +7217,12 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JLabel courseNewButtonLabel;
     private javax.swing.JPanel enrollmentNewButton;
     private javax.swing.JLabel enrollmentNewButtonLabel;
+    private javax.swing.JPanel gcashPanel;
+    private javax.swing.JPanel gcashReceipt;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
+    private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -5962,8 +7230,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel101;
     private javax.swing.JLabel jLabel102;
     private javax.swing.JLabel jLabel103;
-    private javax.swing.JLabel jLabel104;
-    private javax.swing.JLabel jLabel105;
     private javax.swing.JLabel jLabel106;
     private javax.swing.JLabel jLabel107;
     private javax.swing.JLabel jLabel108;
@@ -6004,25 +7270,51 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel140;
     private javax.swing.JLabel jLabel141;
-    private javax.swing.JLabel jLabel142;
     private javax.swing.JLabel jLabel143;
-    private javax.swing.JLabel jLabel144;
     private javax.swing.JLabel jLabel145;
     private javax.swing.JLabel jLabel146;
     private javax.swing.JLabel jLabel147;
     private javax.swing.JLabel jLabel148;
-    private javax.swing.JLabel jLabel149;
     private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel150;
     private javax.swing.JLabel jLabel151;
-    private javax.swing.JLabel jLabel152;
-    private javax.swing.JLabel jLabel153;
-    private javax.swing.JLabel jLabel154;
-    private javax.swing.JLabel jLabel155;
+    private javax.swing.JLabel jLabel158;
+    private javax.swing.JLabel jLabel159;
     private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel162;
+    private javax.swing.JLabel jLabel163;
+    private javax.swing.JLabel jLabel165;
+    private javax.swing.JLabel jLabel166;
+    private javax.swing.JLabel jLabel167;
+    private javax.swing.JLabel jLabel168;
+    private javax.swing.JLabel jLabel169;
     private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel170;
+    private javax.swing.JLabel jLabel171;
+    private javax.swing.JLabel jLabel172;
+    private javax.swing.JLabel jLabel173;
+    private javax.swing.JLabel jLabel174;
+    private javax.swing.JLabel jLabel175;
+    private javax.swing.JLabel jLabel176;
+    private javax.swing.JLabel jLabel177;
+    private javax.swing.JLabel jLabel178;
+    private javax.swing.JLabel jLabel179;
     private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel180;
+    private javax.swing.JLabel jLabel182;
+    private javax.swing.JLabel jLabel183;
+    private javax.swing.JLabel jLabel184;
+    private javax.swing.JLabel jLabel188;
+    private javax.swing.JLabel jLabel189;
     private javax.swing.JLabel jLabel19;
+    private javax.swing.JLabel jLabel190;
+    private javax.swing.JLabel jLabel191;
+    private javax.swing.JLabel jLabel192;
+    private javax.swing.JLabel jLabel193;
+    private javax.swing.JLabel jLabel195;
+    private javax.swing.JLabel jLabel196;
+    private javax.swing.JLabel jLabel197;
+    private javax.swing.JLabel jLabel198;
+    private javax.swing.JLabel jLabel199;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
@@ -6062,8 +7354,19 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel52;
     private javax.swing.JLabel jLabel53;
     private javax.swing.JLabel jLabel54;
+    private javax.swing.JLabel jLabel55;
+    private javax.swing.JLabel jLabel56;
+    private javax.swing.JLabel jLabel57;
+    private javax.swing.JLabel jLabel58;
+    private javax.swing.JLabel jLabel59;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel60;
+    private javax.swing.JLabel jLabel61;
+    private javax.swing.JLabel jLabel62;
     private javax.swing.JLabel jLabel63;
+    private javax.swing.JLabel jLabel64;
+    private javax.swing.JLabel jLabel65;
+    private javax.swing.JLabel jLabel66;
     private javax.swing.JLabel jLabel67;
     private javax.swing.JLabel jLabel68;
     private javax.swing.JLabel jLabel7;
@@ -6098,7 +7401,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel96;
     private javax.swing.JLabel jLabel97;
     private javax.swing.JLabel jLabel98;
-    private javax.swing.JLabel jLabel99;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
@@ -6108,7 +7410,13 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel16;
     private javax.swing.JPanel jPanel17;
+    private javax.swing.JPanel jPanel18;
+    private javax.swing.JPanel jPanel19;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel20;
+    private javax.swing.JPanel jPanel21;
+    private javax.swing.JPanel jPanel22;
+    private javax.swing.JPanel jPanel23;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
@@ -6123,6 +7431,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JButton logoutButton;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JPanel mastercardPanel;
+    private javax.swing.JPanel mastercardReceipt;
     private javax.swing.JPanel masterlistNewButton;
     private javax.swing.JLabel masterlistNewButtonLabel;
     private javax.swing.JPanel masterlistPanel;
