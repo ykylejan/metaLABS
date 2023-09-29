@@ -1035,7 +1035,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 }
                 Graphics2D graphics2D = (Graphics2D) graphics;
                 graphics2D.translate(pageFormat.getImageableX() * 2, pageFormat.getImageableY() * 2);
-                graphics2D.scale(0.59, 0.59);
+                graphics2D.scale(0.63, 0.63);
 
                 panel.paint(graphics2D);
 
@@ -1668,8 +1668,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
     void Mastercard_Payment_Action() {
         String amountIPG = CPItemAmountLabel.getText();
-        MCiAmountIPGLabel.setText(amountIPG);
+        MCAmountIPGLabel.setText(amountIPG);
     }
+    
 
     void Mastercard_Receipt_Action() {
         String paidAmount = CPItemAmountLabel.getText();
@@ -1684,8 +1685,21 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         MCPaidStudentNameLabel.setText(paidStudentName);
 
     }
+    
+    void GCash_Receipt_Action() {
+        String number = GCNumberField.getText();
+        String paidAmount = CPItemAmountLabel.getText();
+        String paidStudentId = SPStudentIDField.getText();
+        
+        GCPaidAmountGiantLabel.setText("PHP " + paidAmount);
+        GCPaidAmountLabel.setText(paidAmount);
+        GCNumberField.setText(number);
+        GCPaidStudentIDLabel.setText(paidStudentId);
+        
+        
+    }
 
-    void Mastercard_Payment_DB() {
+    void Payment_DB() {
         double amount = Double.parseDouble(SPAmountField.getText());
         int id = Integer.parseInt(SDashStudentIDLabel.getText());
 
@@ -2179,7 +2193,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         SPItemBox1 = new javax.swing.JComboBox<>();
         jLabel47 = new javax.swing.JLabel();
         jLabel143 = new javax.swing.JLabel();
-        MCiAmountIPGLabel = new javax.swing.JLabel();
+        MCAmountIPGLabel = new javax.swing.JLabel();
         SPItemBox2 = new javax.swing.JComboBox<>();
         jLabel145 = new javax.swing.JLabel();
         MCNameLabel = new javax.swing.JTextField();
@@ -2223,10 +2237,10 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel173 = new javax.swing.JLabel();
         jLabel174 = new javax.swing.JLabel();
         jLabel182 = new javax.swing.JLabel();
-        jButton6 = new javax.swing.JButton();
+        GCPayButton = new javax.swing.JButton();
         jLabel55 = new javax.swing.JLabel();
         jPanel18 = new javax.swing.JPanel();
-        SPStudentIDField4 = new javax.swing.JTextField();
+        GCNumberField = new javax.swing.JTextField();
         jLabel57 = new javax.swing.JLabel();
         gcashReceipt = new javax.swing.JPanel();
         bottomPanel11 = new javax.swing.JPanel();
@@ -2236,16 +2250,18 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel172 = new javax.swing.JLabel();
         jLabel58 = new javax.swing.JLabel();
         jLabel176 = new javax.swing.JLabel();
-        jLabel177 = new javax.swing.JLabel();
+        GCPaidAmountGiantLabel = new javax.swing.JLabel();
         jLabel59 = new javax.swing.JLabel();
-        jLabel183 = new javax.swing.JLabel();
+        GCPaidAmountLabel = new javax.swing.JLabel();
         jLabel188 = new javax.swing.JLabel();
-        jLabel189 = new javax.swing.JLabel();
-        jLabel190 = new javax.swing.JLabel();
+        GCPaidDateLabel = new javax.swing.JLabel();
         jLabel175 = new javax.swing.JLabel();
         jLabel178 = new javax.swing.JLabel();
-        jLabel184 = new javax.swing.JLabel();
+        GCPaidNumberLabel = new javax.swing.JLabel();
         jLabel179 = new javax.swing.JLabel();
+        GCPaidProceedButton = new javax.swing.JButton();
+        jLabel181 = new javax.swing.JLabel();
+        GCPaidStudentIDLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setIconImage(new javax.swing.ImageIcon(getClass().getResource("/com/images/metaLabs_logo_cyan-2.png")).getImage());
@@ -5471,13 +5487,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jPanel10Layout.setHorizontalGroup(
             jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(SDashSemesterLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(jPanel10Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(SDashStudentIDLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(SDashStudentNameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(SDashYearCourseLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 724, Short.MAX_VALUE))
-                .addContainerGap())
+            .addComponent(SDashYearCourseLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 736, Short.MAX_VALUE)
+            .addComponent(SDashStudentNameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(SDashStudentIDLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel10Layout.setVerticalGroup(
             jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -6121,10 +6133,10 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel143.setForeground(new java.awt.Color(255, 255, 255));
         jLabel143.setText("MetaLABS IPG:");
 
-        MCiAmountIPGLabel.setFont(new java.awt.Font("SansSerif", 0, 24)); // NOI18N
-        MCiAmountIPGLabel.setForeground(new java.awt.Color(255, 255, 255));
-        MCiAmountIPGLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        MCiAmountIPGLabel.setText("0000.00");
+        MCAmountIPGLabel.setFont(new java.awt.Font("SansSerif", 0, 24)); // NOI18N
+        MCAmountIPGLabel.setForeground(new java.awt.Color(255, 255, 255));
+        MCAmountIPGLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        MCAmountIPGLabel.setText("0000.00");
 
         SPItemBox2.setBackground(new java.awt.Color(98, 161, 192));
         SPItemBox2.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
@@ -6185,7 +6197,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(jLabel143, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(MCiAmountIPGLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(MCAmountIPGLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -6244,7 +6256,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel143, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(MCiAmountIPGLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(MCAmountIPGLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel47)
                 .addGap(18, 18, 18)
@@ -6580,11 +6592,11 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel182.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel182.setText("Input your Mobile Number");
 
-        jButton6.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jButton6.setText("PAY");
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
+        GCPayButton.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        GCPayButton.setText("PAY");
+        GCPayButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton6ActionPerformed(evt);
+                GCPayButtonActionPerformed(evt);
             }
         });
 
@@ -6595,9 +6607,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jPanel18.setBackground(new java.awt.Color(98, 161, 192));
         jPanel18.setForeground(new java.awt.Color(98, 161, 192));
 
-        SPStudentIDField4.setBackground(new java.awt.Color(98, 161, 192));
-        SPStudentIDField4.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
-        SPStudentIDField4.setForeground(new java.awt.Color(51, 51, 51));
+        GCNumberField.setBackground(new java.awt.Color(98, 161, 192));
+        GCNumberField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        GCNumberField.setForeground(new java.awt.Color(51, 51, 51));
 
         jLabel57.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel57.setForeground(new java.awt.Color(254, 255, 255));
@@ -6611,14 +6623,14 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel57, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(SPStudentIDField4, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(GCNumberField, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jPanel18Layout.setVerticalGroup(
             jPanel18Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel18Layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addGroup(jPanel18Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(SPStudentIDField4, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(GCNumberField, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel57)))
         );
 
@@ -6645,7 +6657,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                         .addComponent(jPanel18, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(43, 43, 43))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel20Layout.createSequentialGroup()
-                        .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(GCPayButton, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(168, 168, 168))))
         );
         jPanel20Layout.setVerticalGroup(
@@ -6662,7 +6674,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 .addGap(83, 83, 83)
                 .addComponent(jPanel18, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(61, 61, 61)
-                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(GCPayButton, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(49, Short.MAX_VALUE))
         );
 
@@ -6738,37 +6750,31 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel176.setText("Successfully Paid!");
         jPanel21.add(jLabel176, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 158, 428, -1));
 
-        jLabel177.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        jLabel177.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel177.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel177.setText("Sent via GCash");
-        jPanel21.add(jLabel177, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 196, 428, -1));
+        GCPaidAmountGiantLabel.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        GCPaidAmountGiantLabel.setForeground(new java.awt.Color(255, 255, 255));
+        GCPaidAmountGiantLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        GCPaidAmountGiantLabel.setText("PHP 0.00");
+        jPanel21.add(GCPaidAmountGiantLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 196, 428, -1));
 
         jLabel59.setText("_____________________________________________________________________________");
         jPanel21.add(jLabel59, new org.netbeans.lib.awtextra.AbsoluteConstraints(28, 319, 379, -1));
 
-        jLabel183.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
-        jLabel183.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel183.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel183.setText("Amount");
-        jPanel21.add(jLabel183, new org.netbeans.lib.awtextra.AbsoluteConstraints(238, 279, 169, 22));
+        GCPaidAmountLabel.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
+        GCPaidAmountLabel.setForeground(new java.awt.Color(255, 255, 255));
+        GCPaidAmountLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        GCPaidAmountLabel.setText("0.00");
+        jPanel21.add(GCPaidAmountLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(238, 279, 169, 22));
 
         jLabel188.setFont(new java.awt.Font("SansSerif", 0, 10)); // NOI18N
         jLabel188.setForeground(new java.awt.Color(255, 255, 255));
         jLabel188.setText("Ref No. 74941044480");
         jPanel21.add(jLabel188, new org.netbeans.lib.awtextra.AbsoluteConstraints(18, 429, 169, 22));
 
-        jLabel189.setFont(new java.awt.Font("SansSerif", 0, 10)); // NOI18N
-        jLabel189.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel189.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel189.setText("Date");
-        jPanel21.add(jLabel189, new org.netbeans.lib.awtextra.AbsoluteConstraints(238, 429, 83, 22));
-
-        jLabel190.setFont(new java.awt.Font("SansSerif", 0, 10)); // NOI18N
-        jLabel190.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel190.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel190.setText("Time");
-        jPanel21.add(jLabel190, new org.netbeans.lib.awtextra.AbsoluteConstraints(333, 429, 83, 22));
+        GCPaidDateLabel.setFont(new java.awt.Font("SansSerif", 0, 10)); // NOI18N
+        GCPaidDateLabel.setForeground(new java.awt.Color(255, 255, 255));
+        GCPaidDateLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        GCPaidDateLabel.setText("Date");
+        jPanel21.add(GCPaidDateLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 430, 83, 22));
 
         jLabel175.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel175.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/images/ok.png"))); // NOI18N
@@ -6777,18 +6783,37 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         jLabel178.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
         jLabel178.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel178.setText("Total Amount Spent");
-        jPanel21.add(jLabel178, new org.netbeans.lib.awtextra.AbsoluteConstraints(28, 353, 169, 22));
+        jLabel178.setText("Account Number");
+        jPanel21.add(jLabel178, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 350, 169, 22));
 
-        jLabel184.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
-        jLabel184.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel184.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel184.setText("PHP350.00");
-        jPanel21.add(jLabel184, new org.netbeans.lib.awtextra.AbsoluteConstraints(238, 353, 169, 22));
+        GCPaidNumberLabel.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
+        GCPaidNumberLabel.setForeground(new java.awt.Color(255, 255, 255));
+        GCPaidNumberLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        GCPaidNumberLabel.setText("09123456789");
+        jPanel21.add(GCPaidNumberLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 350, 169, 22));
 
         jLabel179.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/images/receipt.png"))); // NOI18N
         jLabel179.setText(" ");
         jPanel21.add(jLabel179, new org.netbeans.lib.awtextra.AbsoluteConstraints(-2, 501, 430, -1));
+
+        GCPaidProceedButton.setText("Proceed");
+        GCPaidProceedButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                GCPaidProceedButtonActionPerformed(evt);
+            }
+        });
+        jPanel21.add(GCPaidProceedButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 470, -1, -1));
+
+        jLabel181.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
+        jLabel181.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel181.setText("Student ID");
+        jPanel21.add(jLabel181, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 380, 169, 22));
+
+        GCPaidStudentIDLabel.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
+        GCPaidStudentIDLabel.setForeground(new java.awt.Color(255, 255, 255));
+        GCPaidStudentIDLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        GCPaidStudentIDLabel.setText("00000");
+        jPanel21.add(GCPaidStudentIDLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 380, 169, 22));
 
         javax.swing.GroupLayout gcashReceiptLayout = new javax.swing.GroupLayout(gcashReceipt);
         gcashReceipt.setLayout(gcashReceiptLayout);
@@ -7201,17 +7226,21 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         ChangeCard(checkoutPanel);
     }//GEN-LAST:event_MCCancelButtonActionPerformed
 
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+    private void GCPayButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GCPayButtonActionPerformed
         ChangeCard(gcashReceipt);
-    }//GEN-LAST:event_jButton6ActionPerformed
+    }//GEN-LAST:event_GCPayButtonActionPerformed
 
     private void MCPaidProceedButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MCPaidProceedButtonActionPerformed
-        Mastercard_Payment_DB();
+        Payment_DB();
     }//GEN-LAST:event_MCPaidProceedButtonActionPerformed
 
     private void SPItemBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SPItemBoxActionPerformed
         Payment_Auto();
     }//GEN-LAST:event_SPItemBoxActionPerformed
+
+    private void GCPaidProceedButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GCPaidProceedButtonActionPerformed
+        Payment_DB();
+    }//GEN-LAST:event_GCPaidProceedButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -7258,6 +7287,15 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JLabel CPReferenceTagLabel;
     private javax.swing.JLabel CPStudentIDTagLabel;
     private javax.swing.JLabel CPTotalAmountLabel;
+    private javax.swing.JTextField GCNumberField;
+    private javax.swing.JLabel GCPaidAmountGiantLabel;
+    private javax.swing.JLabel GCPaidAmountLabel;
+    private javax.swing.JLabel GCPaidDateLabel;
+    private javax.swing.JLabel GCPaidNumberLabel;
+    private javax.swing.JButton GCPaidProceedButton;
+    private javax.swing.JLabel GCPaidStudentIDLabel;
+    private javax.swing.JButton GCPayButton;
+    private javax.swing.JLabel MCAmountIPGLabel;
     private javax.swing.JButton MCCancelButton;
     private javax.swing.JTextField MCCardNumberField;
     private javax.swing.JLabel MCDateLabel;
@@ -7273,7 +7311,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JLabel MCRefNoLabel;
     private javax.swing.JTextField MCSecurityCode;
     private javax.swing.JLabel MCTimeLabel;
-    private javax.swing.JLabel MCiAmountIPGLabel;
     private javax.swing.JTable MLMasterlistTable;
     private javax.swing.JButton MLSearchButton;
     private javax.swing.JTextField MLSearchField;
@@ -7404,7 +7441,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> SPItemBox2;
     private javax.swing.JButton SPProceedButton;
     private javax.swing.JTextField SPStudentIDField;
-    private javax.swing.JTextField SPStudentIDField4;
     private javax.swing.JLabel TPAccountLabel;
     private javax.swing.JPanel addtionalInfoPanel;
     private javax.swing.JPanel adminOnlyButton;
@@ -7434,7 +7470,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -7512,18 +7547,14 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel174;
     private javax.swing.JLabel jLabel175;
     private javax.swing.JLabel jLabel176;
-    private javax.swing.JLabel jLabel177;
     private javax.swing.JLabel jLabel178;
     private javax.swing.JLabel jLabel179;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel180;
+    private javax.swing.JLabel jLabel181;
     private javax.swing.JLabel jLabel182;
-    private javax.swing.JLabel jLabel183;
-    private javax.swing.JLabel jLabel184;
     private javax.swing.JLabel jLabel188;
-    private javax.swing.JLabel jLabel189;
     private javax.swing.JLabel jLabel19;
-    private javax.swing.JLabel jLabel190;
     private javax.swing.JLabel jLabel191;
     private javax.swing.JLabel jLabel192;
     private javax.swing.JLabel jLabel193;
