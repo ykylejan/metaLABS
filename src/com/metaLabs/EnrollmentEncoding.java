@@ -7228,6 +7228,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
     private void GCPayButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GCPayButtonActionPerformed
         ChangeCard(gcashReceipt);
+        GCash_Receipt_Action();
     }//GEN-LAST:event_GCPayButtonActionPerformed
 
     private void MCPaidProceedButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MCPaidProceedButtonActionPerformed
