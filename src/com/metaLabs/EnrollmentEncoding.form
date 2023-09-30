@@ -5301,21 +5301,24 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace min="-2" pref="340" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Component id="jLabel142" min="-2" pref="129" max="-2" attributes="0"/>
-                                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="SDFatherNameField2" min="-2" pref="214" max="-2" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Component id="jLabel105" min="-2" pref="129" max="-2" attributes="0"/>
-                                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="SDFatherNameField1" min="-2" pref="214" max="-2" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Component id="jLabel99" min="-2" pref="129" max="-2" attributes="0"/>
-                                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="SDMotherNameField1" min="-2" pref="214" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="1" attributes="0">
+                                  <Component id="SDUpdatePasswordButton" min="-2" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <Component id="jLabel142" min="-2" pref="129" max="-2" attributes="0"/>
+                                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                                          <Component id="SDConfirmPasswordField" min="-2" pref="214" max="-2" attributes="0"/>
+                                      </Group>
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <Component id="jLabel105" min="-2" pref="129" max="-2" attributes="0"/>
+                                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                                          <Component id="SDPasswordField" min="-2" pref="214" max="-2" attributes="0"/>
+                                      </Group>
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <Component id="jLabel99" min="-2" pref="129" max="-2" attributes="0"/>
+                                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                                          <Component id="SDUsernameField" min="-2" pref="214" max="-2" attributes="0"/>
+                                      </Group>
                                   </Group>
                               </Group>
                               <EmptySpace pref="353" max="32767" attributes="0"/>
@@ -5327,20 +5330,22 @@
                           <Group type="102" attributes="0">
                               <EmptySpace min="-2" pref="84" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="SDMotherNameField1" alignment="3" max="32767" attributes="0"/>
+                                  <Component id="SDUsernameField" alignment="3" max="32767" attributes="0"/>
                                   <Component id="jLabel99" alignment="3" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="SDFatherNameField1" alignment="3" max="32767" attributes="0"/>
+                                  <Component id="SDPasswordField" alignment="3" max="32767" attributes="0"/>
                                   <Component id="jLabel105" alignment="3" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="SDFatherNameField2" alignment="3" max="32767" attributes="0"/>
+                                  <Component id="SDConfirmPasswordField" alignment="3" max="32767" attributes="0"/>
                                   <Component id="jLabel142" alignment="3" max="32767" attributes="0"/>
                               </Group>
-                              <EmptySpace min="-2" pref="102" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="SDUpdatePasswordButton" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="62" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -5357,7 +5362,7 @@
                         <Property name="text" type="java.lang.String" value="Username"/>
                       </Properties>
                     </Component>
-                    <Component class="javax.swing.JTextField" name="SDMotherNameField1">
+                    <Component class="javax.swing.JTextField" name="SDUsernameField">
                       <Properties>
                         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                           <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -5381,7 +5386,7 @@
                         <Property name="text" type="java.lang.String" value="Password"/>
                       </Properties>
                     </Component>
-                    <Component class="javax.swing.JTextField" name="SDFatherNameField1">
+                    <Component class="javax.swing.JTextField" name="SDPasswordField">
                       <Properties>
                         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                           <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -5394,7 +5399,7 @@
                         </Property>
                       </Properties>
                     </Component>
-                    <Component class="javax.swing.JTextField" name="SDFatherNameField2">
+                    <Component class="javax.swing.JTextField" name="SDConfirmPasswordField">
                       <Properties>
                         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                           <Color blue="c0" green="a1" red="62" type="rgb"/>
@@ -5417,6 +5422,14 @@
                         </Property>
                         <Property name="text" type="java.lang.String" value="Confirm Password"/>
                       </Properties>
+                    </Component>
+                    <Component class="javax.swing.JButton" name="SDUpdatePasswordButton">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="Update Password"/>
+                      </Properties>
+                      <Events>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="SDUpdatePasswordButtonActionPerformed"/>
+                      </Events>
                     </Component>
                   </SubComponents>
                 </Container>

@@ -2,6 +2,9 @@
 package com.metaLabs;
 
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -9,9 +12,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
+import javax.swing.Timer;
 import javax.swing.UIManager;
 
 public class Login extends javax.swing.JFrame {
+    
+    static int x = 0;
+    static Timer timer;
     
     public void LoginAction() {
         LoginEncaps lgn = new LoginEncaps();
@@ -70,13 +77,17 @@ public class Login extends javax.swing.JFrame {
         showPasswordCheckbox = new javax.swing.JCheckBox();
         jPanel2 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setIconImage(new javax.swing.ImageIcon(getClass().getResource("/com/images/metaLabs_logo_cyan-2.png")).getImage());
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setBackground(new java.awt.Color(90, 118, 132));
 
         userNameField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -89,7 +100,7 @@ public class Login extends javax.swing.JFrame {
             }
         });
 
-        loginButton.setBackground(new java.awt.Color(61, 153, 198));
+        loginButton.setBackground(new java.awt.Color(28, 240, 243));
         loginButton.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         loginButton.setForeground(new java.awt.Color(51, 51, 51));
         loginButton.setText("LOGIN");
@@ -108,15 +119,15 @@ public class Login extends javax.swing.JFrame {
         });
 
         jLabel1.setBackground(new java.awt.Color(0, 0, 0));
-        jLabel1.setForeground(new java.awt.Color(51, 51, 51));
+        jLabel1.setForeground(new java.awt.Color(251, 255, 255));
         jLabel1.setText("Username");
 
         jLabel2.setBackground(new java.awt.Color(0, 0, 0));
-        jLabel2.setForeground(new java.awt.Color(51, 51, 51));
+        jLabel2.setForeground(new java.awt.Color(251, 255, 255));
         jLabel2.setText("Password");
 
-        showPasswordCheckbox.setBackground(new java.awt.Color(255, 255, 255));
-        showPasswordCheckbox.setForeground(new java.awt.Color(51, 51, 51));
+        showPasswordCheckbox.setBackground(new java.awt.Color(90, 118, 132));
+        showPasswordCheckbox.setForeground(new java.awt.Color(251, 255, 255));
         showPasswordCheckbox.setText("Show Password");
         showPasswordCheckbox.setFocusable(false);
         showPasswordCheckbox.addActionListener(new java.awt.event.ActionListener() {
@@ -163,27 +174,48 @@ public class Login extends javax.swing.JFrame {
                 .addContainerGap(100, Short.MAX_VALUE))
         );
 
-        jPanel2.setBackground(new java.awt.Color(21, 40, 48));
+        jPanel2.setBackground(new java.awt.Color(31, 48, 56));
         jPanel2.setPreferredSize(new java.awt.Dimension(350, 0));
+        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/images/logo-metalabs3.png"))); // NOI18N
+        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/images/Small METALABS LOGO 1 Loop.gif"))); // NOI18N
+        jPanel2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 114, -1, 120));
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(102, 102, 102)
-                .addComponent(jLabel3)
-                .addContainerGap(113, Short.MAX_VALUE))
+        jLabel4.setBackground(new java.awt.Color(242, 242, 241));
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel4.setText("meta");
+        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 250, 80, 26));
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(28, 240, 243));
+        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel5.setText("LABS");
+        jPanel2.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 250, 80, 26));
+
+        jLabel6.setFont(new java.awt.Font("Dubai Light", 0, 14)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(204, 204, 204));
+        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel6.setText("Student Enrollment Manager");
+        jPanel2.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(91, 279, -1, 15));
+
+        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel3.setForeground(new java.awt.Color(28, 240, 243));
+        jPanel3.setPreferredSize(new java.awt.Dimension(166, 3));
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 166, Short.MAX_VALUE)
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(100, 100, 100)
-                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(102, Short.MAX_VALUE))
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 3, Short.MAX_VALUE)
         );
+
+        jPanel2.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(92, 240, -1, -1));
 
         javax.swing.GroupLayout mainLoginPanelLayout = new javax.swing.GroupLayout(mainLoginPanel);
         mainLoginPanel.setLayout(mainLoginPanelLayout);
@@ -246,13 +278,29 @@ public class Login extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+        timer = new Timer(45,new ActionListener() {
+          
+          @Override
+          public void actionPerformed(ActionEvent e){
+        
+              if (x == 255){
+                  timer.stop();
+              }
+          }
+          
+      });
+        
+        
         try {
             UIManager.setLookAndFeel(new FlatMacDarkLaf());
 
         } catch (Exception e) {
         }
+        
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
+                new SplashScreen(null, true).setVisible(true);
+                timer.start();
                 new Login().setVisible(true);
             }
         });
@@ -262,8 +310,12 @@ public class Login extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JButton loginButton;
     private javax.swing.JPanel mainLoginPanel;
     private javax.swing.JPasswordField passwordField;

@@ -661,6 +661,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 SDFatherNameField.setText(rs.getString(17));
                 SDFatherContactField.setText(Long.toString(rs.getLong(18)));
 
+                SDUsernameField.setText(rs.getString("studentUsername"));
+                SDPasswordField.setText(rs.getString("studentPassword"));
+
                 SDRemarksField.setText(rs.getString("studentRemarks"));
             } else {
                 SDStudentNameField.setText("");
@@ -744,6 +747,47 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             e.printStackTrace();
         }
 
+    }
+
+    void Student_Details_Password_Update_Action() {
+        int studentID = Integer.parseInt(SDStudentIDField.getText());
+        String studentUsername = SDUsernameField.getText();
+        String studentPassword = SDPasswordField.getText();
+        String studentConfirmPassword = SDConfirmPasswordField.getText();
+
+        if (studentPassword.equals(studentConfirmPassword)) {
+            int confirm = JOptionPane.showConfirmDialog(null, "Are you sure?");
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                try {
+                    Connection connection = DriverManager.getConnection(dbURL);
+                    PreparedStatement ps = connection.prepareStatement("UPDATE `student_enrollment` SET `studentPassword`=? WHERE `studentID`=? ");
+                    PreparedStatement ps2 = connection.prepareStatement("UPDATE `loginDatabase` SET `password`=? WHERE `username`=? ");
+                    
+                    ps.setString(1, studentConfirmPassword);
+                    ps.setInt(2, studentID);
+                    
+                    ps2.setString(1, studentConfirmPassword);
+                    ps2.setString(2, studentUsername);
+                    
+                    ps.executeUpdate();
+                    ps2.executeUpdate();
+                    
+                    JOptionPane.showMessageDialog(null, "Student Details Updated");
+
+                    connection.close();
+                    ps.close();
+                    ps2.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                
+            } else {
+            }
+
+        } else {
+            JOptionPane.showMessageDialog(null, "Password did not match!", "Invalid", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     void Student_Details_Delete_Action() {
@@ -1670,7 +1714,6 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         String amountIPG = CPItemAmountLabel.getText();
         MCAmountIPGLabel.setText(amountIPG);
     }
-    
 
     void Mastercard_Receipt_Action() {
         String paidAmount = CPItemAmountLabel.getText();
@@ -1685,18 +1728,17 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         MCPaidStudentNameLabel.setText(paidStudentName);
 
     }
-    
+
     void GCash_Receipt_Action() {
         String number = GCNumberField.getText();
         String paidAmount = CPItemAmountLabel.getText();
         String paidStudentId = SPStudentIDField.getText();
-        
+
         GCPaidAmountGiantLabel.setText("PHP " + paidAmount);
         GCPaidAmountLabel.setText(paidAmount);
         GCNumberField.setText(number);
         GCPaidStudentIDLabel.setText(paidStudentId);
-        
-        
+
     }
 
     void Payment_DB() {
@@ -1705,7 +1747,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
         double currentBalance = Double.parseDouble(SDashCurrentBalanceLabel.getText());
         double examsPaid = Double.parseDouble(SDashExamsPaidLabel.getText());
-        
+
         String item = SPItemBox.getSelectedItem().toString();
 
         try {
@@ -1724,23 +1766,22 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
             } else if (item.equals("Tuition")) {
                 ps = connection.prepareStatement("UPDATE `student_enrollment` SET `studentCurrentBalanceFee`=?, `studentExamsPaid`=? WHERE `studentID`=?");
-                
+
                 currentBalance -= amount;
                 examsPaid += 1;
-                
+
                 ps.setDouble(1, currentBalance);
                 ps.setDouble(2, examsPaid);
                 ps.setInt(3, id);
                 ps.executeUpdate();
-                
+
                 JOptionPane.showMessageDialog(null, "Tuition Payment Successful", "MasterCard", JOptionPane.DEFAULT_OPTION);
                 connection.close();
                 ps.close();
-                
+
                 Dashboard_Update_Action();
             } else {
             }
-
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -2082,11 +2123,12 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         SDFatherContactField = new javax.swing.JTextField();
         parentsInfoPanel1 = new RoundedPanel(50, new Color(55,111,138));
         jLabel99 = new javax.swing.JLabel();
-        SDMotherNameField1 = new javax.swing.JTextField();
+        SDUsernameField = new javax.swing.JTextField();
         jLabel105 = new javax.swing.JLabel();
-        SDFatherNameField1 = new javax.swing.JTextField();
-        SDFatherNameField2 = new javax.swing.JTextField();
+        SDPasswordField = new javax.swing.JTextField();
+        SDConfirmPasswordField = new javax.swing.JTextField();
         jLabel142 = new javax.swing.JLabel();
+        SDUpdatePasswordButton = new javax.swing.JButton();
         addtionalInfoPanel = new RoundedPanel(50, new Color(55,111,138));
         jLabel79 = new javax.swing.JLabel();
         SDRemarksField = new javax.swing.JTextField();
@@ -4900,25 +4942,32 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         jLabel99.setForeground(new java.awt.Color(255, 255, 255));
         jLabel99.setText("Username");
 
-        SDMotherNameField1.setBackground(new java.awt.Color(98, 161, 192));
-        SDMotherNameField1.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
-        SDMotherNameField1.setForeground(new java.awt.Color(51, 51, 51));
+        SDUsernameField.setBackground(new java.awt.Color(98, 161, 192));
+        SDUsernameField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SDUsernameField.setForeground(new java.awt.Color(51, 51, 51));
 
         jLabel105.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel105.setForeground(new java.awt.Color(255, 255, 255));
         jLabel105.setText("Password");
 
-        SDFatherNameField1.setBackground(new java.awt.Color(98, 161, 192));
-        SDFatherNameField1.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
-        SDFatherNameField1.setForeground(new java.awt.Color(51, 51, 51));
+        SDPasswordField.setBackground(new java.awt.Color(98, 161, 192));
+        SDPasswordField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SDPasswordField.setForeground(new java.awt.Color(51, 51, 51));
 
-        SDFatherNameField2.setBackground(new java.awt.Color(98, 161, 192));
-        SDFatherNameField2.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
-        SDFatherNameField2.setForeground(new java.awt.Color(51, 51, 51));
+        SDConfirmPasswordField.setBackground(new java.awt.Color(98, 161, 192));
+        SDConfirmPasswordField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SDConfirmPasswordField.setForeground(new java.awt.Color(51, 51, 51));
 
         jLabel142.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel142.setForeground(new java.awt.Color(255, 255, 255));
         jLabel142.setText("Confirm Password");
+
+        SDUpdatePasswordButton.setText("Update Password");
+        SDUpdatePasswordButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SDUpdatePasswordButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout parentsInfoPanel1Layout = new javax.swing.GroupLayout(parentsInfoPanel1);
         parentsInfoPanel1.setLayout(parentsInfoPanel1Layout);
@@ -4926,19 +4975,21 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             parentsInfoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(parentsInfoPanel1Layout.createSequentialGroup()
                 .addGap(340, 340, 340)
-                .addGroup(parentsInfoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(parentsInfoPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel142, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(SDFatherNameField2, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(parentsInfoPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel105, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(SDFatherNameField1, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(parentsInfoPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel99, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(SDMotherNameField1, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(parentsInfoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(SDUpdatePasswordButton)
+                    .addGroup(parentsInfoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(parentsInfoPanel1Layout.createSequentialGroup()
+                            .addComponent(jLabel142, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(18, 18, 18)
+                            .addComponent(SDConfirmPasswordField, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(parentsInfoPanel1Layout.createSequentialGroup()
+                            .addComponent(jLabel105, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(18, 18, 18)
+                            .addComponent(SDPasswordField, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(parentsInfoPanel1Layout.createSequentialGroup()
+                            .addComponent(jLabel99, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(18, 18, 18)
+                            .addComponent(SDUsernameField, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(353, Short.MAX_VALUE))
         );
         parentsInfoPanel1Layout.setVerticalGroup(
@@ -4946,17 +4997,19 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             .addGroup(parentsInfoPanel1Layout.createSequentialGroup()
                 .addGap(84, 84, 84)
                 .addGroup(parentsInfoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(SDMotherNameField1)
+                    .addComponent(SDUsernameField)
                     .addComponent(jLabel99, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addGroup(parentsInfoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(SDFatherNameField1)
+                    .addComponent(SDPasswordField)
                     .addComponent(jLabel105, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addGroup(parentsInfoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(SDFatherNameField2)
+                    .addComponent(SDConfirmPasswordField)
                     .addComponent(jLabel142, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(102, 102, 102))
+                .addGap(18, 18, 18)
+                .addComponent(SDUpdatePasswordButton)
+                .addGap(62, 62, 62))
         );
 
         studentDetailsTabbedPane.addTab("Account Information", parentsInfoPanel1);
@@ -7243,6 +7296,10 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         Payment_DB();
     }//GEN-LAST:event_GCPaidProceedButtonActionPerformed
 
+    private void SDUpdatePasswordButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SDUpdatePasswordButtonActionPerformed
+        Student_Details_Password_Update_Action();
+    }//GEN-LAST:event_SDUpdatePasswordButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -7393,10 +7450,9 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JTextField SDAddressField;
     private javax.swing.JTextField SDAgeField;
     private javax.swing.JTextField SDCitizenshipField;
+    private javax.swing.JTextField SDConfirmPasswordField;
     private javax.swing.JTextField SDFatherContactField;
     private javax.swing.JTextField SDFatherNameField;
-    private javax.swing.JTextField SDFatherNameField1;
-    private javax.swing.JTextField SDFatherNameField2;
     private javax.swing.JTextField SDFirstNameField;
     private javax.swing.JTextField SDGenderField;
     private javax.swing.JTextField SDLastNameField;
@@ -7404,13 +7460,15 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JTextField SDMiddleNameField;
     private javax.swing.JTextField SDMotherContactField;
     private javax.swing.JTextField SDMotherNameField;
-    private javax.swing.JTextField SDMotherNameField1;
+    private javax.swing.JTextField SDPasswordField;
     private javax.swing.JTextField SDReligionField;
     private javax.swing.JTextField SDRemarksField;
     private javax.swing.JButton SDSearchButton;
     private javax.swing.JTextField SDStudentContactField;
     private javax.swing.JTextField SDStudentIDField;
     private javax.swing.JTextField SDStudentNameField;
+    private javax.swing.JButton SDUpdatePasswordButton;
+    private javax.swing.JTextField SDUsernameField;
     private javax.swing.JLabel SDashCurrentBalanceLabel;
     private javax.swing.JLabel SDashExamsPaidLabel;
     private javax.swing.JLabel SDashPerExamLabel;
