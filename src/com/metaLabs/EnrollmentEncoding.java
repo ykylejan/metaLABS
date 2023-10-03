@@ -663,6 +663,11 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
                 SDUsernameField.setText(rs.getString("studentUsername"));
                 SDPasswordField.setText(rs.getString("studentPassword"));
+                
+                SDGrandTotalFeeField.setText(rs.getString("studentGrandTotalFee"));
+                SDCurrentBalanceField.setText(rs.getString("studentCurrentBalanceFee"));
+                SDPerExamFeeField.setText(rs.getString("studentPerExamFee"));
+                SDExamsPaidField.setText(rs.getString("studentExamsPaid"));
 
                 SDRemarksField.setText(rs.getString("studentRemarks"));
             } else {
@@ -683,6 +688,14 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 SDFatherNameField.setText("");
                 SDFatherContactField.setText("");
 
+                SDUsernameField.setText("");
+                SDPasswordField.setText("");
+                
+                SDGrandTotalFeeField.setText("");
+                SDCurrentBalanceField.setText("");
+                SDPerExamFeeField.setText("");
+                SDExamsPaidField.setText("");
+                
                 SDRemarksField.setText("");
             }
             connection.close();
@@ -712,13 +725,19 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         long fatherContact = Long.parseLong(SDFatherContactField.getText());
 
         String studentRemarks = SDRemarksField.getText();
+        
+        double grandTotalFee = Double.parseDouble(SDGrandTotalFeeField.getText());
+        double currentBalanceFee = Double.parseDouble(SDCurrentBalanceField.getText());
+        double perExamFee = Double.parseDouble(SDPerExamFeeField.getText());
+        double examsPaid = Double.parseDouble(SDExamsPaidField.getText());
 
         try {
             Connection connection = DriverManager.getConnection(dbURL);
             PreparedStatement ps = connection.prepareStatement("UPDATE `student_enrollment` SET `studentFirstName`=?, `studentMiddleName`=?, "
                     + "`studentLastName`=?, `studentAge`=?, `studentAddress`=?, `studentContactNumber`=?, `studentGender`=?, "
                     + "`studentMarital`=?, `studentCitizenship`=?, `studentReligion`=?, `studentMotherName`=?, "
-                    + "`studentMotherContact`=?, `studentFatherName`=?, `studentFatherContact`=?, `studentRemarks`=? WHERE `studentID` = ?");
+                    + "`studentMotherContact`=?, `studentFatherName`=?, `studentFatherContact`=?, `studentRemarks`=?,"
+                    + "`studentGrandTotalFee`=?, `studentCurrentBalanceFee`=?, `studentPerExamFee`=?, `studentExamsPaid`=? WHERE `studentID` = ?");
 
             ps.setString(1, studentFirstName);
             ps.setString(2, studentMiddleName);
@@ -735,7 +754,12 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             ps.setString(13, fatherName);
             ps.setLong(14, fatherContact);
             ps.setString(15, studentRemarks);
-            ps.setInt(16, studentID);
+            ps.setDouble(16, grandTotalFee);
+            ps.setDouble(17, currentBalanceFee);
+            ps.setDouble(18, perExamFee);
+            ps.setDouble(19, examsPaid);
+            
+            ps.setInt(20, studentID);
 
             ps.executeUpdate();
             JOptionPane.showMessageDialog(null, "Student Details Updated");
@@ -763,16 +787,16 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                     Connection connection = DriverManager.getConnection(dbURL);
                     PreparedStatement ps = connection.prepareStatement("UPDATE `student_enrollment` SET `studentPassword`=? WHERE `studentID`=? ");
                     PreparedStatement ps2 = connection.prepareStatement("UPDATE `loginDatabase` SET `password`=? WHERE `username`=? ");
-                    
+
                     ps.setString(1, studentConfirmPassword);
                     ps.setInt(2, studentID);
-                    
+
                     ps2.setString(1, studentConfirmPassword);
                     ps2.setString(2, studentUsername);
-                    
+
                     ps.executeUpdate();
                     ps2.executeUpdate();
-                    
+
                     JOptionPane.showMessageDialog(null, "Student Details Updated");
 
                     connection.close();
@@ -781,7 +805,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-                
+
             } else {
             }
 
@@ -803,7 +827,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 ps.setInt(1, studentID);
 
                 ps.executeUpdate();
-                JOptionPane.showMessageDialog(null, "Student Dropped");
+                JOptionPane.showMessageDialog(null, "Student Withdrawn");
                 Masterlist_Table();
 
                 SDStudentIDField.setText("");
@@ -1197,6 +1221,15 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                     adminOnlyButtonLabel.setVisible(false);
                     studentArchiveAdminButton.setVisible(false);
                     studentArchiveAdminButtonLabel.setVisible(false);
+                    
+                    SDGrandTotalLabel.setVisible(false);
+                    SDGrandTotalFeeField.setVisible(false);
+                    SDCurrentBalanceLabel.setVisible(false);
+                    SDCurrentBalanceField.setVisible(false);
+                    SDPerExamLabel.setVisible(false);
+                    SDPerExamFeeField.setVisible(false);
+                    SDExamsPaidLabel.setVisible(false);
+                    SDExamsPaidField.setVisible(false);
 
                     // Student Dashboard stuff (SDash)
                     SDashStudentIDLabel.setText(Integer.toString(rs2.getInt(1)));
@@ -1743,12 +1776,15 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
     void Payment_DB() {
         double amount = Double.parseDouble(SPAmountField.getText());
+        double amountM = Double.parseDouble(SDashPerExamLabel.getText());
         int id = Integer.parseInt(SDashStudentIDLabel.getText());
 
         double currentBalance = Double.parseDouble(SDashCurrentBalanceLabel.getText());
         double examsPaid = Double.parseDouble(SDashExamsPaidLabel.getText());
 
         String item = SPItemBox.getSelectedItem().toString();
+        
+        DecimalFormat df = new DecimalFormat("0.00");
 
         try {
             Connection connection = DriverManager.getConnection(dbURL);
@@ -1768,10 +1804,20 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                 ps = connection.prepareStatement("UPDATE `student_enrollment` SET `studentCurrentBalanceFee`=?, `studentExamsPaid`=? WHERE `studentID`=?");
 
                 currentBalance -= amount;
-                examsPaid += 1;
 
-                ps.setDouble(1, currentBalance);
-                ps.setDouble(2, examsPaid);
+                if (currentBalance <= 0) {
+                    examsPaid = 8;
+                } else {
+                    if (amount == amountM) {
+                        examsPaid += 1;
+                    } else {
+                        examsPaid += (amount / amountM);
+                    }
+                    
+                }
+           
+                ps.setDouble(1, Double.parseDouble(df.format(currentBalance)));
+                ps.setDouble(2, Double.parseDouble(df.format(examsPaid)));
                 ps.setInt(3, id);
                 ps.executeUpdate();
 
@@ -2129,6 +2175,14 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         SDConfirmPasswordField = new javax.swing.JTextField();
         jLabel142 = new javax.swing.JLabel();
         SDUpdatePasswordButton = new javax.swing.JButton();
+        SDCurrentBalanceLabel = new javax.swing.JLabel();
+        SDCurrentBalanceField = new javax.swing.JTextField();
+        SDPerExamLabel = new javax.swing.JLabel();
+        SDPerExamFeeField = new javax.swing.JTextField();
+        SDGrandTotalLabel = new javax.swing.JLabel();
+        SDGrandTotalFeeField = new javax.swing.JTextField();
+        SDExamsPaidLabel = new javax.swing.JLabel();
+        SDExamsPaidField = new javax.swing.JTextField();
         addtionalInfoPanel = new RoundedPanel(50, new Color(55,111,138));
         jLabel79 = new javax.swing.JLabel();
         SDRemarksField = new javax.swing.JTextField();
@@ -4048,6 +4102,11 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
         mainPanel.add(courseEnrollmentPanel, "card7");
 
         studentEnrollmentPanel.setBackground(new java.awt.Color(31, 48, 56));
+        studentEnrollmentPanel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                studentEnrollmentPanelMouseEntered(evt);
+            }
+        });
 
         bottomPanel1.setBackground(new java.awt.Color(8, 17, 22));
 
@@ -4969,12 +5028,44 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
             }
         });
 
+        SDCurrentBalanceLabel.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        SDCurrentBalanceLabel.setForeground(new java.awt.Color(255, 255, 255));
+        SDCurrentBalanceLabel.setText("Current Balance:");
+
+        SDCurrentBalanceField.setBackground(new java.awt.Color(98, 161, 192));
+        SDCurrentBalanceField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SDCurrentBalanceField.setForeground(new java.awt.Color(51, 51, 51));
+
+        SDPerExamLabel.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        SDPerExamLabel.setForeground(new java.awt.Color(255, 255, 255));
+        SDPerExamLabel.setText("Per Exam Fee:");
+
+        SDPerExamFeeField.setBackground(new java.awt.Color(98, 161, 192));
+        SDPerExamFeeField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SDPerExamFeeField.setForeground(new java.awt.Color(51, 51, 51));
+
+        SDGrandTotalLabel.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        SDGrandTotalLabel.setForeground(new java.awt.Color(255, 255, 255));
+        SDGrandTotalLabel.setText("Grand Total Fee");
+
+        SDGrandTotalFeeField.setBackground(new java.awt.Color(98, 161, 192));
+        SDGrandTotalFeeField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SDGrandTotalFeeField.setForeground(new java.awt.Color(51, 51, 51));
+
+        SDExamsPaidLabel.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        SDExamsPaidLabel.setForeground(new java.awt.Color(255, 255, 255));
+        SDExamsPaidLabel.setText("Exams Paid:");
+
+        SDExamsPaidField.setBackground(new java.awt.Color(98, 161, 192));
+        SDExamsPaidField.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        SDExamsPaidField.setForeground(new java.awt.Color(51, 51, 51));
+
         javax.swing.GroupLayout parentsInfoPanel1Layout = new javax.swing.GroupLayout(parentsInfoPanel1);
         parentsInfoPanel1.setLayout(parentsInfoPanel1Layout);
         parentsInfoPanel1Layout.setHorizontalGroup(
             parentsInfoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(parentsInfoPanel1Layout.createSequentialGroup()
-                .addGap(340, 340, 340)
+                .addGap(128, 128, 128)
                 .addGroup(parentsInfoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(SDUpdatePasswordButton)
                     .addGroup(parentsInfoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -4990,26 +5081,61 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
                             .addComponent(jLabel99, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGap(18, 18, 18)
                             .addComponent(SDUsernameField, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(353, Short.MAX_VALUE))
+                .addGap(75, 75, 75)
+                .addGroup(parentsInfoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(parentsInfoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(parentsInfoPanel1Layout.createSequentialGroup()
+                            .addComponent(SDCurrentBalanceLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(18, 18, 18)
+                            .addComponent(SDCurrentBalanceField, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(parentsInfoPanel1Layout.createSequentialGroup()
+                            .addComponent(SDPerExamLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(18, 18, 18)
+                            .addComponent(SDPerExamFeeField, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(parentsInfoPanel1Layout.createSequentialGroup()
+                        .addComponent(SDGrandTotalLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(SDGrandTotalFeeField, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, parentsInfoPanel1Layout.createSequentialGroup()
+                        .addComponent(SDExamsPaidLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(SDExamsPaidField, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(129, Short.MAX_VALUE))
         );
         parentsInfoPanel1Layout.setVerticalGroup(
             parentsInfoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(parentsInfoPanel1Layout.createSequentialGroup()
-                .addGap(84, 84, 84)
+                .addGap(60, 60, 60)
                 .addGroup(parentsInfoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(SDUsernameField)
-                    .addComponent(jLabel99, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabel99, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(SDGrandTotalFeeField)
+                    .addComponent(SDGrandTotalLabel))
                 .addGap(18, 18, 18)
-                .addGroup(parentsInfoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(SDPasswordField)
-                    .addComponent(jLabel105, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
-                .addGroup(parentsInfoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(SDConfirmPasswordField)
-                    .addComponent(jLabel142, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
-                .addComponent(SDUpdatePasswordButton)
-                .addGap(62, 62, 62))
+                .addGroup(parentsInfoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(parentsInfoPanel1Layout.createSequentialGroup()
+                        .addGroup(parentsInfoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(SDCurrentBalanceField)
+                            .addComponent(SDCurrentBalanceLabel))
+                        .addGap(18, 18, 18)
+                        .addGroup(parentsInfoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(SDPerExamFeeField)
+                            .addComponent(SDPerExamLabel))
+                        .addGap(18, 18, 18)
+                        .addGroup(parentsInfoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(SDExamsPaidField)
+                            .addComponent(SDExamsPaidLabel)))
+                    .addGroup(parentsInfoPanel1Layout.createSequentialGroup()
+                        .addGroup(parentsInfoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(SDPasswordField)
+                            .addComponent(jLabel105, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(18, 18, 18)
+                        .addGroup(parentsInfoPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(SDConfirmPasswordField)
+                            .addComponent(jLabel142, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(18, 18, 18)
+                        .addComponent(SDUpdatePasswordButton)))
+                .addGap(86, 86, 86))
         );
 
         studentDetailsTabbedPane.addTab("Account Information", parentsInfoPanel1);
@@ -7229,6 +7355,7 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
 
     private void studentDashboardButtonLabelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_studentDashboardButtonLabelMousePressed
         ChangeCard(studentDashboardPanel);
+
     }//GEN-LAST:event_studentDashboardButtonLabelMousePressed
 
     private void studentPaymentButtonLabelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_studentPaymentButtonLabelMouseEntered
@@ -7299,6 +7426,10 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private void SDUpdatePasswordButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SDUpdatePasswordButtonActionPerformed
         Student_Details_Password_Update_Action();
     }//GEN-LAST:event_SDUpdatePasswordButtonActionPerformed
+
+    private void studentEnrollmentPanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_studentEnrollmentPanelMouseEntered
+        // TODO add your handling code here:
+    }//GEN-LAST:event_studentEnrollmentPanelMouseEntered
 
     /**
      * @param args the command line arguments
@@ -7451,16 +7582,24 @@ public class EnrollmentEncoding extends javax.swing.JFrame {
     private javax.swing.JTextField SDAgeField;
     private javax.swing.JTextField SDCitizenshipField;
     private javax.swing.JTextField SDConfirmPasswordField;
+    private javax.swing.JTextField SDCurrentBalanceField;
+    private javax.swing.JLabel SDCurrentBalanceLabel;
+    private javax.swing.JTextField SDExamsPaidField;
+    private javax.swing.JLabel SDExamsPaidLabel;
     private javax.swing.JTextField SDFatherContactField;
     private javax.swing.JTextField SDFatherNameField;
     private javax.swing.JTextField SDFirstNameField;
     private javax.swing.JTextField SDGenderField;
+    private javax.swing.JTextField SDGrandTotalFeeField;
+    private javax.swing.JLabel SDGrandTotalLabel;
     private javax.swing.JTextField SDLastNameField;
     private javax.swing.JTextField SDMaritalStatusField;
     private javax.swing.JTextField SDMiddleNameField;
     private javax.swing.JTextField SDMotherContactField;
     private javax.swing.JTextField SDMotherNameField;
     private javax.swing.JTextField SDPasswordField;
+    private javax.swing.JTextField SDPerExamFeeField;
+    private javax.swing.JLabel SDPerExamLabel;
     private javax.swing.JTextField SDReligionField;
     private javax.swing.JTextField SDRemarksField;
     private javax.swing.JButton SDSearchButton;
